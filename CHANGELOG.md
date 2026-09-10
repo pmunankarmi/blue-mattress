@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.7.24
+
+- Added an optional mobile-specific homepage hero banner image.
+- Phones use the mobile banner instead of the desktop image or video when the mobile field is populated.
+- Mobile falls back automatically to the existing desktop hero when no mobile image is selected.
+
 ## 2.7.23
 
 - Added a Homepage Content toggle for showing or hiding the hero banner caption.
