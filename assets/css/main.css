@@ -224,6 +224,7 @@ html[lang="ar"] .display { line-height: 1.35; font-weight: 700; }
 .annbar a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
 .annbar b { color: #fff; }
 .annbar .brass { color: var(--brass); }
+.woocommerce-store-notice.demo_store { display: none !important; }
 
 /* ---------------------------------------------- header */
 .site-header {

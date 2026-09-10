@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.7.27
+
+- Removed WooCommerce's purple dismissible Store Notice overlay after its frontend hooks are registered.
+- Added a defensive style fallback so only the custom slim navy header notice is visible.
+- Published as a follow-up release for verifying the repaired WordPress theme updater on live.
+
 ## 2.7.26
 
 - Replaced the legacy ACF announcement with WooCommerce's Store Notice setting.

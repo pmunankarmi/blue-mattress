@@ -7,8 +7,12 @@
 
 defined( 'ABSPATH' ) || exit;
 
-// The theme renders WooCommerce's Store Notice above the site header.
-remove_action( 'wp_footer', 'woocommerce_demo_store' );
+/** Suppress WooCommerce's dismissible footer overlay; the theme renders the notice in the header. */
+function blue_remove_default_store_notice(): void {
+	remove_action( 'wp_footer', 'woocommerce_demo_store' );
+}
+add_action( 'wp', 'blue_remove_default_store_notice', 1 );
+add_filter( 'woocommerce_demo_store', '__return_empty_string', PHP_INT_MAX );
 
 /**
  * Return the current-language mattress category slug when Polylang is active.
