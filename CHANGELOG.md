@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.7.21
+
+- Redesigned the WooCommerce order-received summary and order details.
+- Placed Billing and Shipping addresses in one responsive row, with Shipping on the right.
+- Added mobile stacking and dark-theme support for the confirmation layout.
+
 ## 2.7.20
 
 - Redesigned checkout billing and shipping addresses as responsive two-column forms.
