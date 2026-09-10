@@ -434,11 +434,22 @@ add_action(
 	'init',
 	function (): void {
 		if ( function_exists( 'pll_register_string' ) ) {
-			pll_register_string( 'blue-announcement', (string) blue_option( 'announcement_en', 'Free delivery and setup across Saudi Arabia.' ), 'Blue Mattress' );
 			pll_register_string( 'blue-footer-tagline', (string) blue_option( 'footer_tagline_en', 'Feels like magic, but it is really just science.' ), 'Blue Mattress' );
 		}
 	}
 );
+
+/** Seed the requested WooCommerce Store Notice once without overriding later edits. */
+function blue_seed_store_notice(): void {
+	if ( '1' === get_option( 'blue_store_notice_seeded', '' ) ) {
+		return;
+	}
+
+	update_option( 'woocommerce_demo_store_notice', 'Free delivery and setup across Saudi Arabia.' );
+	update_option( 'woocommerce_demo_store', 'yes' );
+	update_option( 'blue_store_notice_seeded', '1', false );
+}
+add_action( 'after_setup_theme', 'blue_seed_store_notice', 30 );
 
 /** Create the theme's core content pages without duplicating existing slugs. */
 function blue_ensure_core_pages(): void {

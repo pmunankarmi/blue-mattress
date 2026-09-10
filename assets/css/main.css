@@ -215,12 +215,13 @@ html[lang="ar"] .display { line-height: 1.35; font-weight: 700; }
 /* ---------------------------------------------- announcement bar */
 .annbar {
   display: block; position: relative; z-index: 60;
-  background: var(--navy); color: #DCE9F8;
-  font-size: var(--text-xs); font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
-  text-align: center; padding: 10px var(--gutter);
-  transition: background .2s;
+  margin: 0; border: 0; border-bottom: 1px solid #8aa8d0;
+  background: #101c34; color: #eef4ff;
+  font-size: var(--text-xs); font-weight: 700; line-height: 1.35; letter-spacing: .15em; text-transform: uppercase;
+  text-align: center; padding: 13px var(--gutter) 12px;
 }
-.annbar:hover { background: var(--navy-2); }
+.annbar p { margin: 0; }
+.annbar a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
 .annbar b { color: #fff; }
 .annbar .brass { color: var(--brass); }
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.7.26
+
+- Replaced the legacy ACF announcement with WooCommerce's Store Notice setting.
+- Styled the notice as the requested slim navy delivery bar and added the default Arabic equivalent.
+- Added WordPress's supported custom Update URI response so GitHub releases appear reliably on every installation.
+- Added a public repository fallback for hosts that cannot reach or are rate-limited by the GitHub API.
+
 ## 2.7.25
 
 - Fixed the reversed desktop My Account columns.

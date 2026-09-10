@@ -7,6 +7,9 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// The theme renders WooCommerce's Store Notice above the site header.
+remove_action( 'wp_footer', 'woocommerce_demo_store' );
+
 /**
  * Return the current-language mattress category slug when Polylang is active.
  */

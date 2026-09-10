@@ -10,6 +10,12 @@ $shop_url    = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalin
 $cart_url    = function_exists( 'wc_get_cart_url' ) ? wc_get_cart_url() : blue_home_url( '/cart/' );
 $account_url = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'myaccount' ) : wp_login_url();
 $cart_count  = function_exists( 'WC' ) && WC()->cart ? WC()->cart->get_cart_contents_count() : 0;
+$notice_on   = 'yes' === get_option( 'woocommerce_demo_store', 'no' );
+$notice_text = (string) get_option( 'woocommerce_demo_store_notice', '' );
+
+if ( blue_is_arabic() && 'Free delivery and setup across Saudi Arabia.' === trim( wp_strip_all_tags( $notice_text ) ) ) {
+	$notice_text = 'توصيل وتركيب مجاني في جميع أنحاء المملكة العربية السعودية.';
+}
 ?>
 <!doctype html>
 <html <?php language_attributes(); ?> dir="<?php echo esc_attr( is_rtl() || blue_is_arabic() ? 'rtl' : 'ltr' ); ?>">
@@ -24,9 +30,11 @@ $cart_count  = function_exists( 'WC' ) && WC()->cart ? WC()->cart->get_cart_cont
 <?php wp_body_open(); ?>
 <a class="skip-link" href="#primary"><?php echo esc_html( blue_text( 'Skip to content', 'تخطَّ إلى المحتوى' ) ); ?></a>
 
-<a class="annbar" href="<?php echo esc_url( $shop_url ); ?>">
-	<?php echo esc_html( blue_option( 'announcement', blue_text( 'Free delivery and setup across Saudi Arabia.', 'توصيل وتركيب مجاني في جميع أنحاء المملكة العربية السعودية.' ) ) ); ?>
-</a>
+<?php if ( $notice_on && '' !== trim( wp_strip_all_tags( $notice_text ) ) ) : ?>
+	<div class="annbar blue-store-notice" role="note">
+		<?php echo wp_kses_post( $notice_text ); ?>
+	</div>
+<?php endif; ?>
 <header class="site-header<?php echo is_page_template( 'page-home.php' ) ? '' : ' solid'; ?>" id="siteHeader">
 	<nav class="nav-row" aria-label="<?php esc_attr_e( 'Main navigation', 'blue-mattress' ); ?>">
 		<a class="brand" href="<?php echo esc_url( blue_home_url( '/' ) ); ?>" aria-label="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>">

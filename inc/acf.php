@@ -168,8 +168,6 @@ add_action(
 				'title'    => __( 'Theme Options', 'blue-mattress' ),
 				'fields'   => array(
 					array( 'key' => 'field_blue_tab_global', 'label' => __( 'Global content', 'blue-mattress' ), 'name' => '', 'type' => 'tab' ),
-					array( 'key' => 'field_blue_announcement_en', 'label' => __( 'Announcement (English)', 'blue-mattress' ), 'name' => 'announcement_en', 'type' => 'text', 'default_value' => 'Free delivery and setup across Saudi Arabia.' ),
-					array( 'key' => 'field_blue_announcement_ar', 'label' => __( 'Announcement (Arabic)', 'blue-mattress' ), 'name' => 'announcement_ar', 'type' => 'text', 'default_value' => 'توصيل وتركيب مجاني في جميع أنحاء المملكة العربية السعودية.' ),
 					array( 'key' => 'field_blue_footer_tagline_en', 'label' => __( 'Footer tagline (English)', 'blue-mattress' ), 'name' => 'footer_tagline_en', 'type' => 'textarea', 'rows' => 2, 'default_value' => 'Feels like magic, but it is really just science.' ),
 					array( 'key' => 'field_blue_footer_tagline_ar', 'label' => __( 'Footer tagline (Arabic)', 'blue-mattress' ), 'name' => 'footer_tagline_ar', 'type' => 'textarea', 'rows' => 2, 'default_value' => 'الإحساس كالسحر، لكنه علمٌ خالص.' ),
 					array( 'key' => 'field_blue_footer_note_en', 'label' => __( 'Footer description (English)', 'blue-mattress' ), 'name' => 'footer_note_en', 'type' => 'textarea', 'rows' => 3, 'default_value' => 'Where dreams begin — mattresses, pillows, toppers and bedding, delivered across the Kingdom from Alrowdah, Jeddah.' ),
