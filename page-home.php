@@ -12,6 +12,10 @@ $finder_url = blue_page_url( 'page-mattress-finder.php', '/mattress-finder/' );
 $hero_video      = blue_image_url( blue_field( 'hero_video' ) );
 $hero_image      = blue_image_url( blue_field( 'hero_poster' ), BLUE_THEME_URI . '/assets/img/hero-sea.jpg' );
 $hero_video_type = $hero_video ? ( wp_check_filetype( $hero_video )['type'] ?: 'video/mp4' ) : '';
+$show_hero_caption = true;
+if ( function_exists( 'get_field' ) && metadata_exists( 'post', get_queried_object_id(), 'hero_show_caption' ) ) {
+	$show_hero_caption = (bool) get_field( 'hero_show_caption' );
+}
 $lifestyle_img = blue_image_url( blue_field( 'lifestyle_image' ), BLUE_THEME_URI . '/assets/img/lifestyle-sleep.jpg' );
 $home_stark_img = blue_image_url( blue_field( 'home_stark_image' ), BLUE_THEME_URI . '/assets/img/stark-factory.jpg' );
 $stark_url  = blue_page_url( 'page-stark.php', '/stark/' );
@@ -44,14 +48,16 @@ $home_stark_stats = is_array( $home_stark_stats ) ? $home_stark_stats : array();
 			<?php endif; ?>
 		</div>
 		<div class="hero-veil" aria-hidden="true"></div>
-		<div class="hero-inner container-wide">
-			<h1 class="display h-hero hero-title"><span class="hero-line"><span class="hero-line-in"><?php echo esc_html( blue_field( 'hero_heading' ) ); ?></span></span></h1>
-			<p class="hero-lead"><?php echo esc_html( blue_field( 'hero_lead' ) ); ?></p>
-			<div class="hero-ctas">
-				<a class="btn" href="<?php echo esc_url( $shop_url ); ?>"><?php echo esc_html( blue_field( 'hero_primary_cta' ) ); ?> <span class="arr"><?php echo esc_html( blue_text( '→', '←' ) ); ?></span></a>
-				<a class="btn btn-light" href="<?php echo esc_url( $finder_url ); ?>"><?php echo esc_html( blue_field( 'hero_secondary_cta' ) ); ?></a>
+		<?php if ( $show_hero_caption ) : ?>
+			<div class="hero-inner container-wide">
+				<h1 class="display h-hero hero-title"><span class="hero-line"><span class="hero-line-in"><?php echo esc_html( blue_field( 'hero_heading' ) ); ?></span></span></h1>
+				<p class="hero-lead"><?php echo esc_html( blue_field( 'hero_lead' ) ); ?></p>
+				<div class="hero-ctas">
+					<a class="btn" href="<?php echo esc_url( $shop_url ); ?>"><?php echo esc_html( blue_field( 'hero_primary_cta' ) ); ?> <span class="arr"><?php echo esc_html( blue_text( '→', '←' ) ); ?></span></a>
+					<a class="btn btn-light" href="<?php echo esc_url( $finder_url ); ?>"><?php echo esc_html( blue_field( 'hero_secondary_cta' ) ); ?></a>
+				</div>
 			</div>
-		</div>
+		<?php endif; ?>
 		<div class="hero-cue" aria-hidden="true"><span class="hero-cue-line"></span><span><?php echo esc_html( blue_field( 'hero_scroll_label' ) ); ?></span></div>
 	</section>
 

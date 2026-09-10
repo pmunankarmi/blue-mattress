@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.7.23
+
+- Added a Homepage Content toggle for showing or hiding the hero banner caption.
+- Refined every WooCommerce My Account endpoint, including orders, downloads, addresses, account details, saved-card empty states and individual order details.
+- Added responsive account form grids, address cards, mobile order tables and dark-mode-compatible Select2 controls.
+
 ## 2.7.22
 
 - Added an editable homepage hero banner image.
