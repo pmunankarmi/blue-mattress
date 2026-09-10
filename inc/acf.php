@@ -244,8 +244,8 @@ add_action(
 					array( 'key' => 'field_blue_hero_primary_cta', 'label' => __( 'Primary button label', 'blue-mattress' ), 'name' => 'hero_primary_cta', 'type' => 'text', 'wrapper' => array( 'width' => 50 ) ),
 					array( 'key' => 'field_blue_hero_secondary_cta', 'label' => __( 'Secondary button label', 'blue-mattress' ), 'name' => 'hero_secondary_cta', 'type' => 'text', 'wrapper' => array( 'width' => 50 ) ),
 					array( 'key' => 'field_blue_hero_scroll_label', 'label' => __( 'Scroll label', 'blue-mattress' ), 'name' => 'hero_scroll_label', 'type' => 'text' ),
-					array( 'key' => 'field_blue_hero_video', 'label' => __( 'Hero video', 'blue-mattress' ), 'name' => 'hero_video', 'type' => 'file', 'return_format' => 'url', 'mime_types' => 'mp4,webm' ),
-					array( 'key' => 'field_blue_hero_poster', 'label' => __( 'Hero poster', 'blue-mattress' ), 'name' => 'hero_poster', 'type' => 'image', 'return_format' => 'array', 'preview_size' => 'medium' ),
+					array( 'key' => 'field_blue_hero_video', 'label' => __( 'Hero video (optional)', 'blue-mattress' ), 'name' => 'hero_video', 'type' => 'file', 'return_format' => 'url', 'mime_types' => 'mp4,webm', 'instructions' => __( 'When a video is selected it plays over the banner image. Leave this empty to display only the image.', 'blue-mattress' ) ),
+					array( 'key' => 'field_blue_hero_poster', 'label' => __( 'Hero banner image', 'blue-mattress' ), 'name' => 'hero_poster', 'type' => 'image', 'return_format' => 'array', 'preview_size' => 'medium', 'instructions' => __( 'Used as the homepage banner when the video is empty, and as the video poster while it loads.', 'blue-mattress' ) ),
 
 					array( 'key' => 'field_blue_home_tab_benefits', 'label' => __( 'Benefits', 'blue-mattress' ), 'name' => '', 'type' => 'tab' ),
 					array( 'key' => 'field_blue_home_benefits_heading', 'label' => __( 'Accessible section heading', 'blue-mattress' ), 'name' => 'home_benefits_heading', 'type' => 'text', 'instructions' => __( 'Visually hidden heading used by screen readers.', 'blue-mattress' ) ),

@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.7.22
+
+- Added an editable homepage hero banner image.
+- The hero video is now optional; when empty, the banner image is rendered instead.
+- The banner image also remains underneath a configured video as its loading and playback fallback.
+
 ## 2.7.21
 
 - Redesigned the WooCommerce order-received summary and order details.

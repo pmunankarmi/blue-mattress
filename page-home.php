@@ -9,8 +9,9 @@
 get_header();
 $shop_url   = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : blue_home_url( '/shop/' );
 $finder_url = blue_page_url( 'page-mattress-finder.php', '/mattress-finder/' );
-$hero_video = blue_image_url( blue_field( 'hero_video' ), BLUE_THEME_URI . '/assets/img/hero-sea.mp4' );
-$hero_image = blue_image_url( blue_field( 'hero_poster' ), BLUE_THEME_URI . '/assets/img/hero-sea.jpg' );
+$hero_video      = blue_image_url( blue_field( 'hero_video' ) );
+$hero_image      = blue_image_url( blue_field( 'hero_poster' ), BLUE_THEME_URI . '/assets/img/hero-sea.jpg' );
+$hero_video_type = $hero_video ? ( wp_check_filetype( $hero_video )['type'] ?: 'video/mp4' ) : '';
 $lifestyle_img = blue_image_url( blue_field( 'lifestyle_image' ), BLUE_THEME_URI . '/assets/img/lifestyle-sleep.jpg' );
 $home_stark_img = blue_image_url( blue_field( 'home_stark_image' ), BLUE_THEME_URI . '/assets/img/stark-factory.jpg' );
 $stark_url  = blue_page_url( 'page-stark.php', '/stark/' );
@@ -35,9 +36,12 @@ $home_stark_stats = is_array( $home_stark_stats ) ? $home_stark_stats : array();
 <main id="primary">
 	<section class="hero">
 		<div class="hero-bg">
-			<video class="hero-video" autoplay muted loop playsinline preload="metadata" poster="<?php echo esc_url( $hero_image ); ?>">
-				<source src="<?php echo esc_url( $hero_video ); ?>" type="video/mp4">
-			</video>
+			<img class="hero-image" src="<?php echo esc_url( $hero_image ); ?>" alt="" fetchpriority="high">
+			<?php if ( $hero_video ) : ?>
+				<video class="hero-video" autoplay muted loop playsinline preload="metadata" poster="<?php echo esc_url( $hero_image ); ?>">
+					<source src="<?php echo esc_url( $hero_video ); ?>" type="<?php echo esc_attr( $hero_video_type ); ?>">
+				</video>
+			<?php endif; ?>
 		</div>
 		<div class="hero-veil" aria-hidden="true"></div>
 		<div class="hero-inner container-wide">
