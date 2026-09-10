@@ -16,7 +16,6 @@ $privacy  = (string) blue_option( 'privacy_page', blue_home_url( '/privacy/' ) )
 $map      = (string) blue_option( 'contact_map_url' );
 $map_link = (string) blue_option( 'contact_map_link' );
 $footer_note = (string) blue_option( 'footer_note' );
-$newsletter_placeholder = (string) blue_option( 'newsletter_placeholder', blue_text( 'Email for sleep stories & offers', 'بريدك لقصص النوم والعروض' ) );
 $newsletter_button = (string) blue_option( 'newsletter_button', blue_text( 'Join', 'اشترك' ) );
 $footer_logo = blue_image_url( blue_option( 'footer_logo' ), BLUE_THEME_URI . '/assets/img/logo-white.png' );
 $social_links = blue_social_links();
@@ -44,7 +43,7 @@ $footer_terms = is_wp_error( $footer_terms ) ? array() : $footer_terms;
 					<input type="hidden" name="action" value="blue_newsletter_subscribe">
 					<?php wp_nonce_field( 'blue_newsletter_subscribe', 'blue_newsletter_nonce' ); ?>
 					<label class="sr-only" for="blue-newsletter-email"><?php echo esc_html( blue_text( 'Email address', 'البريد الإلكتروني' ) ); ?></label>
-					<input id="blue-newsletter-email" type="email" name="email" required autocomplete="email" placeholder="<?php echo esc_attr( $newsletter_placeholder ); ?>">
+					<input id="blue-newsletter-email" type="email" name="email" required autocomplete="email">
 					<button type="submit"><?php echo esc_html( $newsletter_button ); ?></button>
 				</form>
 				<?php if ( isset( $_GET['newsletter_status'] ) ) : ?><p class="footer-form-status" role="status"><?php echo esc_html( 'subscribed' === sanitize_key( wp_unslash( $_GET['newsletter_status'] ) ) ? blue_text( 'Thank you for subscribing.', 'شكرًا لاشتراكك.' ) : blue_text( 'Please enter a valid email address.', 'يرجى إدخال بريد إلكتروني صحيح.' ) ); ?></p><?php endif; ?>

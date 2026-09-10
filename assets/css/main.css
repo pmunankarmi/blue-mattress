@@ -283,7 +283,7 @@ body[data-header="overlay"] .site-header:not(.scrolled) .brand-logo--color { dis
 body[data-header="overlay"] .site-header:not(.scrolled) .brand-logo--white { display: block; }
 html[data-theme="dark"] .brand-logo--color { display: none; }
 html[data-theme="dark"] .brand-logo--white { display: block; }
-.footer-logo { display: block; width: 116px; max-width: 100%; height: auto; }
+.footer-logo { display: block; width: auto; max-width: min(100%, 160px); height: auto; max-height: 64px; object-fit: contain; }
 .brand-word { font-family: 'Poppins', 'Segoe UI', sans-serif; font-weight: 800; font-size: 2.3rem; letter-spacing: -.035em; color: var(--brand-steel); transition: font-size .35s ease; }
 .brand-word .b { color: var(--brand-navy); }
 .brand-word .reg { font-size: .42em; font-weight: 700; vertical-align: super; margin-left: 1px; color: var(--brand-steel); }

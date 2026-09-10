@@ -5,7 +5,69 @@ body:not(.blue-overlay-header) { padding-top: 0; }
 .brand-logo { width: 88px; max-width: none; height: auto; object-fit: contain; }
 body[data-header="overlay"] .site-header:not(.scrolled) .brand .brand-logo--color:only-child,
 html[data-theme="dark"] .brand .brand-logo--color:only-child { display: block; filter: brightness(0) invert(1); }
-.footer-logo { width: auto; height: 52px; object-fit: contain; }
+.footer-logo { width: auto; max-width: min(100%, 160px); height: auto; max-height: 64px; object-fit: contain; }
+
+/* WooCommerce feedback bars on shop, category and product pages. */
+body.woocommerce-page .woocommerce-notices-wrapper { width: 100%; }
+body.single-product .woocommerce-notices-wrapper {
+	width: min(var(--container), calc(100% - (2 * var(--gutter))));
+	margin: 22px auto 0;
+}
+body.woocommerce-page ul.woocommerce-error,
+body.woocommerce-page .woocommerce-info,
+body.woocommerce-page .woocommerce-message {
+	position: relative;
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	min-height: 64px;
+	margin: 0 0 28px;
+	padding-block: 16px;
+	padding-inline: 54px 20px;
+	border: 1px solid var(--line);
+	border-inline-start: 3px solid var(--royal);
+	border-radius: var(--r-md);
+	background: var(--paper);
+	color: var(--ink);
+	box-shadow: none;
+	font-size: var(--text-sm);
+	line-height: 1.5;
+}
+body.woocommerce-page ul.woocommerce-error { display: block; border-inline-start-color: var(--danger); }
+body.woocommerce-page .woocommerce-message { border-inline-start-color: #3f9b6a; }
+body.woocommerce-page ul.woocommerce-error::before,
+body.woocommerce-page .woocommerce-info::before,
+body.woocommerce-page .woocommerce-message::before {
+	top: 50%;
+	left: auto;
+	inset-inline-start: 20px;
+	transform: translateY(-50%);
+	color: var(--royal);
+}
+body.woocommerce-page ul.woocommerce-error::before { color: var(--danger); }
+body.woocommerce-page .woocommerce-message::before { color: #3f9b6a; }
+body.woocommerce-page .woocommerce-message .button,
+body.woocommerce-page .woocommerce-info .button {
+	float: none;
+	order: 2;
+	margin: 0 0 0 auto;
+	margin-inline-start: auto;
+	padding: 10px 18px;
+	border: 1px solid var(--line);
+	border-radius: var(--r-pill);
+	background: transparent;
+	color: var(--ink);
+	font-weight: 700;
+}
+[dir="rtl"] body.woocommerce-page .woocommerce-message .button,
+[dir="rtl"] body.woocommerce-page .woocommerce-info .button { margin-left: 0; }
+
+@media (max-width: 640px) {
+	body.woocommerce-page .woocommerce-message,
+	body.woocommerce-page .woocommerce-info { align-items: flex-start; flex-direction: column; }
+	body.woocommerce-page .woocommerce-message .button,
+	body.woocommerce-page .woocommerce-info .button { order: 0; margin-inline-start: 0; }
+}
 .blue-language-switcher {
   display: flex; align-items: center; min-height: 38px; padding: 0 13px;
   border: 1px solid currentColor; border-radius: 999px;

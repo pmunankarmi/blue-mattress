@@ -17,6 +17,10 @@ const BLUE_GITHUB_CACHE_KEY   = 'blue_mattress_github_release';
  * @return array<string, mixed>
  */
 function blue_github_latest_release(): array {
+	if ( is_admin() && isset( $_GET['force-check'] ) && current_user_can( 'update_themes' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Core update screen refresh.
+		delete_site_transient( BLUE_GITHUB_CACHE_KEY );
+	}
+
 	$cached = get_site_transient( BLUE_GITHUB_CACHE_KEY );
 	if ( false !== $cached ) {
 		return is_array( $cached ) ? $cached : array();
