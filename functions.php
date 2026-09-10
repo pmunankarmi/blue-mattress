@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'BLUE_THEME_VERSION', '2.7.24' );
+define( 'BLUE_THEME_VERSION', '2.7.25' );
 define( 'BLUE_THEME_DIR', get_template_directory() );
 define( 'BLUE_THEME_URI', get_template_directory_uri() );
 

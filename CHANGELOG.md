@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.7.25
+
+- Fixed the reversed desktop My Account columns.
+- The account navigation now stays in the narrow start-side column and account content uses the wide column.
+- Preserved the mirrored RTL layout and single-column mobile layout.
+
 ## 2.7.24
 
 - Added an optional mobile-specific homepage hero banner image.
