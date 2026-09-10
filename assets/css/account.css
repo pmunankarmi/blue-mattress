@@ -192,6 +192,21 @@ body.blue-account-user .woocommerce-MyAccount-content .button:hover,
 body.blue-account-user .woocommerce-MyAccount-content button.button:hover { border-color:var(--royal); background:var(--royal); color:#fff; transform:translateY(-1px); }
 body.blue-account-user .woocommerce-MyAccount-content form { margin:0; }
 body.blue-account-user .woocommerce-MyAccount-content .form-row { margin:0 0 16px; padding:0; }
+body.blue-account-user .woocommerce-address-fields {
+  padding:clamp(18px,2.5vw,26px); border:1px solid var(--line-soft); border-radius:var(--r-md); background:var(--canvas);
+}
+body.blue-account-user .woocommerce-address-fields__field-wrapper {
+  display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px 14px; margin-bottom:22px;
+}
+body.blue-account-user .woocommerce-address-fields__field-wrapper>.form-row {
+  float:none!important; width:100%!important; min-width:0; margin:0;
+}
+body.blue-account-user .woocommerce-address-fields__field-wrapper>.form-row-wide,
+body.blue-account-user .woocommerce-address-fields__field-wrapper>[id$="_company_field"],
+body.blue-account-user .woocommerce-address-fields__field-wrapper>[id$="_country_field"],
+body.blue-account-user .woocommerce-address-fields__field-wrapper>[id$="_address_1_field"],
+body.blue-account-user .woocommerce-address-fields__field-wrapper>[id$="_address_2_field"],
+body.blue-account-user .woocommerce-address-fields__field-wrapper>[id$="_email_field"] { grid-column:1/-1; }
 body.blue-account-user .woocommerce-MyAccount-content .form-row label { display:block; margin:0 0 6px; color:var(--ink-soft); font-size:.7rem; font-weight:700; letter-spacing:.04em; }
 body.blue-account-user .woocommerce-MyAccount-content input.input-text,
 body.blue-account-user .woocommerce-MyAccount-content textarea,
@@ -258,6 +273,8 @@ html[data-theme="dark"] body.blue-account-user input:-webkit-autofill:focus {
   .blue-account-quicklinks { grid-template-columns:1fr; }
   .blue-account-quicklinks a { min-height:92px; }
   body.blue-account-user .woocommerce-Addresses { grid-template-columns:1fr; }
+  body.blue-account-user .woocommerce-address-fields__field-wrapper { grid-template-columns:1fr; }
+  body.blue-account-user .woocommerce-address-fields__field-wrapper>.form-row { grid-column:1; }
   .blue-recent-order-list a { grid-template-columns:1fr auto; }
   .blue-recent-order-list a>strong:last-child { grid-column:1/-1; }
   body.blue-account-user table.shop_table_responsive tr { padding:14px; border-bottom:1px solid var(--line-soft); }

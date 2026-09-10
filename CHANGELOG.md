@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.7.20
+
+- Redesigned checkout billing and shipping addresses as responsive two-column forms.
+- Matched the My Account address editor to the same rounded field and card styling.
+
 ## 2.7.19
 
 - Constrained the dynamic footer logo with a responsive maximum height.

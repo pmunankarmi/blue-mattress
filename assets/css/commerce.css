@@ -182,7 +182,26 @@ body.woocommerce-checkout #ship-to-different-address-checkbox:checked {
 }
 body.woocommerce-checkout #ship-to-different-address-checkbox:focus-visible { outline:0; box-shadow:0 0 0 3px rgba(var(--royal-rgb),.2); }
 body.woocommerce-checkout .shipping_address { padding-top:4px; }
+body.woocommerce-checkout .woocommerce-billing-fields__field-wrapper,
+body.woocommerce-checkout .woocommerce-shipping-fields__field-wrapper {
+  display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:17px 14px;
+}
 body.woocommerce-checkout form .form-row { margin:0 0 17px; padding:0; }
+body.woocommerce-checkout .woocommerce-billing-fields__field-wrapper>.form-row,
+body.woocommerce-checkout .woocommerce-shipping-fields__field-wrapper>.form-row {
+  float:none!important; width:100%!important; margin:0; min-width:0;
+}
+body.woocommerce-checkout .woocommerce-billing-fields__field-wrapper>.form-row-wide,
+body.woocommerce-checkout .woocommerce-shipping-fields__field-wrapper>.form-row-wide,
+body.woocommerce-checkout #billing_company_field,
+body.woocommerce-checkout #billing_country_field,
+body.woocommerce-checkout #billing_address_1_field,
+body.woocommerce-checkout #billing_address_2_field,
+body.woocommerce-checkout #billing_email_field,
+body.woocommerce-checkout #shipping_company_field,
+body.woocommerce-checkout #shipping_country_field,
+body.woocommerce-checkout #shipping_address_1_field,
+body.woocommerce-checkout #shipping_address_2_field { grid-column:1/-1; }
 body.woocommerce-checkout form .form-row label { margin:0 0 7px; color:var(--ink-soft); font-size:.72rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
 body.woocommerce-checkout form .form-row input.input-text,
 body.woocommerce-checkout form .form-row textarea,
@@ -405,4 +424,8 @@ html[data-theme="dark"] body.blue-commerce-flow .wc-block-components-sidebar {
   body.woocommerce-cart .cart-collaterals .cross-sells ul.products { grid-template-columns:1fr; }
   body.woocommerce-checkout .form-row-first,
   body.woocommerce-checkout .form-row-last { float:none; width:100%; }
+  body.woocommerce-checkout .woocommerce-billing-fields__field-wrapper,
+  body.woocommerce-checkout .woocommerce-shipping-fields__field-wrapper { grid-template-columns:1fr; }
+  body.woocommerce-checkout .woocommerce-billing-fields__field-wrapper>.form-row,
+  body.woocommerce-checkout .woocommerce-shipping-fields__field-wrapper>.form-row { grid-column:1; }
 }
