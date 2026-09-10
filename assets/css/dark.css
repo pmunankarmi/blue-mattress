@@ -1,0 +1,177 @@
+/* ============================================================
+   BLUE — DARK THEME
+   Activated by <html data-theme="dark"> (set by the inline no-flash
+   script in <head>, toggled by the header sun/moon button).
+   Loads LAST so its overrides win by source order + specificity.
+   Strategy: remap the core :root tokens (covers ~90% of surfaces),
+   then patch the hardcoded light fills / dark-alpha washes / token
+   traps that the audit surfaced.
+   ============================================================ */
+
+html[data-theme="dark"] {
+  /* ---- surfaces (layered: canvas < navy < paper < navy-2) ---- */
+  --canvas:   #0C1119;   /* page background — darkest */
+  --paper:    #161F2E;   /* cards, modals, drawers, mega — elevated */
+  --navy:     #131D30;   /* "dark" feature sections / active fills */
+  --navy-2:   #1C2740;   /* higher elevation / hovers */
+
+  /* ---- text ---- */
+  --ink:      #E9EFF7;   /* primary text — near-white */
+  --ink-soft: #9DADC6;   /* muted / secondary text */
+
+  /* ---- accents (brightened so they read on dark) ---- */
+  --royal:      #5F84E8;
+  --royal-rgb:  95, 132, 232;
+  --royal-deep: #4E72D6;
+  --brand-navy:  #A9C1E8;   /* logo "b" */
+  --brand-steel: #CBDCEF;   /* logo "lue" */
+  --brass-ink: #D8B87A;     /* brass text on dark */
+  --brass:     #CBA974;
+  --star:      #E2B85C;
+  --sky:       #A9C8EE;
+  --powder:    #1E2C46;     /* pale-blue fills → dark-blue chips */
+  --powder-2:  #17223A;
+  --danger:    #E27766;
+
+  /* ---- hairlines (light-alpha instead of dark-alpha) ---- */
+  --line:      rgba(233, 240, 248, .15);
+  --line-soft: rgba(233, 240, 248, .08);
+
+  /* ---- shadows read as depth via darkness, not navy tint ---- */
+  --shadow-sm: 0 2px 10px rgba(0, 0, 0, .45);
+  --shadow-md: 0 16px 44px -14px rgba(0, 0, 0, .6);
+  --shadow-lg: 0 34px 80px -20px rgba(0, 0, 0, .72);
+
+  color-scheme: dark;
+}
+
+/* ============================================================
+   1 · CHROME — frosted bars must go dark (they hardcode ivory)
+   ============================================================ */
+html[data-theme="dark"] .site-header.scrolled,
+html[data-theme="dark"] .site-header.solid {
+  background: rgba(11, 16, 24, .82);
+  border-bottom-color: var(--line-soft);
+}
+html[data-theme="dark"] .fbar         { background: rgba(11, 16, 24, .90); }
+html[data-theme="dark"] .pd-stickybar { background: rgba(11, 16, 24, .94); }
+
+/* dark-alpha hover washes → light-alpha so they show on a dark header */
+html[data-theme="dark"] .nav-link:hover,
+html[data-theme="dark"] .icon-btn:hover { background: rgba(233, 240, 248, .09); }
+
+/* announcement bar / footer / toast: lift + edge so they don't merge with the page */
+html[data-theme="dark"] .site-footer { border-top: 1px solid var(--line); }
+html[data-theme="dark"] .toast { border: 1px solid var(--line); }
+
+/* selection */
+html[data-theme="dark"] ::selection { background: var(--royal); color: #fff; }
+
+/* ============================================================
+   2 · TOKEN TRAPS — elements that use --canvas/--ink as a LIGHT
+   colour ON dark surfaces (they must stay light, not flip)
+   ============================================================ */
+/* the lifestyle quote sits over a DARK image → keep it light in dark mode.
+   (The hero title is intentionally DARK in BOTH themes — the hero photo is
+   always bright — so it is deliberately NOT overridden here.) */
+html[data-theme="dark"] .lf-quote { color: #F2F5FA; }
+
+/* the primary LIGHT button lives on dark bands — keep it light, don't invert */
+html[data-theme="dark"] .btn-light        { background: #EAF0F8; color: #101826; }
+html[data-theme="dark"] .btn-light:hover  { background: #ffffff; color: #101826; }
+
+/* ============================================================
+   3 · OPAQUE WHITE FILLS → elevated dark surfaces
+   ============================================================ */
+html[data-theme="dark"] .pcard-quick            { background: rgba(18, 25, 38, .92); }
+html[data-theme="dark"] .pcard-wish {
+  background: rgba(18,25,38,.92); color:#e9eff7;
+  box-shadow:var(--shadow-sm),inset 0 0 0 1px rgba(233,239,247,.22);
+}
+html[data-theme="dark"] .pcard-wish:hover {
+  color:#fff; box-shadow:var(--shadow-sm),inset 0 0 0 1px rgba(233,239,247,.45);
+}
+html[data-theme="dark"] .pcard-wish.is-wished {
+  background:var(--navy-2); color:#fff;
+  box-shadow:var(--shadow-sm),inset 0 0 0 1px rgba(233,239,247,.45);
+}
+html[data-theme="dark"] .pd-wish { color:var(--ink); }
+html[data-theme="dark"] .pd-wish:hover,
+html[data-theme="dark"] .pd-wish.is-wished { background:var(--navy-2); border-color:rgba(233,239,247,.45); color:#fff; }
+html[data-theme="dark"] .skip-link:focus        { background: var(--paper); color: var(--ink); }
+html[data-theme="dark"] .pd-cut {
+  background: var(--paper);
+  box-shadow: 0 30px 60px -28px rgba(0, 0, 0, .8);
+  border: 1px solid var(--line-soft);
+}
+html[data-theme="dark"] .co-trust-item          { background: rgba(233, 240, 248, .05); }
+html[data-theme="dark"] .auth-field input:focus { background: rgba(233, 240, 248, .05); }
+
+/* pale-blue "match" highlights on the sticky compare header */
+html[data-theme="dark"] .cmp-head.is-match { background: rgba(95, 132, 232, .18); }
+html[data-theme="dark"] .cmp-head.col-best { background: rgba(95, 132, 232, .28); }
+
+/* ============================================================
+   4 · SELECTED / ACTIVE controls — navy fill blends on dark cards,
+   so promote the active state to the royal accent (pops + intuitive)
+   ============================================================ */
+html[data-theme="dark"] .fbar-pill.is-on,
+html[data-theme="dark"] .seg-btn.is-on,
+html[data-theme="dark"] .chip-btn[aria-pressed="true"],
+html[data-theme="dark"] .acc-navlink.active {
+  background: var(--royal);
+  border-color: var(--royal);
+  color: #fff;
+}
+/* non-interactive navy chips + navy CTA tiles + navy summary: add an edge */
+html[data-theme="dark"] .chip,
+html[data-theme="dark"] .pd-tile-info,
+html[data-theme="dark"] .co-summary { border: 1px solid var(--line); }
+
+/* ============================================================
+   5 · DARK-ALPHA DETAILS → light-alpha (dividers, faint fills, icons)
+   ============================================================ */
+html[data-theme="dark"] .stars .muted   { color: rgba(233, 240, 248, .26); }
+html[data-theme="dark"] .pd-crumb-sep    { color: rgba(233, 240, 248, .32); }
+html[data-theme="dark"] .an-active {
+  background: rgba(233, 240, 248, .06);
+  border-color: rgba(233, 240, 248, .18);
+}
+html[data-theme="dark"] .an-list li  { border-bottom-color: rgba(233, 240, 248, .12); }
+html[data-theme="dark"] .craft-stats { border-top-color: rgba(233, 240, 248, .16); }
+
+/* feelzone pale-blue halo would become a bright fog → subtle royal glow */
+html[data-theme="dark"] .feelzone {
+  background: radial-gradient(760px 360px at 50% 0%, rgba(95, 132, 232, .10), transparent 72%);
+}
+
+/* shop <select> chevron is a baked dark-navy SVG → repaint it light */
+html[data-theme="dark"] .fbar .field-lite {
+  background: var(--paper) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239DADC6' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 15px center / 10px auto;
+}
+html[data-theme="dark"][dir="rtl"] .fbar .field-lite,
+[dir="rtl"] html[data-theme="dark"] .fbar .field-lite { background-position: left 15px center; }
+
+/* ============================================================
+   6 · ERRORS / DESTRUCTIVE — brighten muted brick-red for dark
+   ============================================================ */
+html[data-theme="dark"] .auth-err {
+  color: #EE8B79;
+  background: rgba(226, 119, 102, .12);
+}
+html[data-theme="dark"] .account-menu #amSignout { color: #EE8B79; }
+html[data-theme="dark"] .acc-addr-x:hover {
+  color: #EE8B79;
+  background: rgba(226, 119, 102, .16);
+}
+
+/* deepen the modal scrim so it still separates over an already-dark page */
+html[data-theme="dark"] .auth-overlay { background: rgba(0, 0, 0, .62); }
+
+/* ============================================================
+   7 · brass hairlines that thin out on dark — nudge them up
+   ============================================================ */
+html[data-theme="dark"] .ct-demo-tag,
+html[data-theme="dark"] .ct-ref,
+html[data-theme="dark"] .co-demo-tag,
+html[data-theme="dark"] .co-order-no { border-color: rgba(203, 169, 116, .5); }

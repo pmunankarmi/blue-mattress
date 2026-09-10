@@ -1,0 +1,33 @@
+name: Build WordPress theme release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out theme
+        uses: actions/checkout@v4
+
+      - name: Build installable theme ZIP
+        run: |
+          mkdir -p release/blue-mattress
+          rsync -a \
+            --exclude='.git*' \
+            --exclude='.github' \
+            --exclude='release' \
+            --exclude='*.zip' \
+            ./ release/blue-mattress/
+          cd release
+          zip -qr ../blue-mattress.zip blue-mattress
+
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "${GITHUB_REF_NAME}" blue-mattress.zip --generate-notes --title "Blue Mattress ${GITHUB_REF_NAME}"
