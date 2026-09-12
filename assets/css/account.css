@@ -225,8 +225,10 @@ body.blue-account-user .woocommerce-MyAccount-content input:focus,
 body.blue-account-user .woocommerce-MyAccount-content textarea:focus { border-color:var(--royal); box-shadow:0 0 0 3px rgba(var(--royal-rgb),.1); }
 body.blue-account-user .woocommerce-MyAccount-content fieldset { margin:25px 0 18px; padding:20px; border:1px solid var(--line-soft); border-radius:var(--r-md); }
 body.blue-account-user .woocommerce-MyAccount-content legend { padding:0 8px; color:var(--ink); font-weight:700; }
-body.blue-account-user .woocommerce-Address { float:none; width:auto; padding:20px; border:1px solid var(--line-soft); border-radius:var(--r-md); background:var(--canvas); }
-body.blue-account-user .woocommerce-Addresses { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+body.blue-account-user .woocommerce-Address { float:none; width:100%!important; min-width:0; margin:0!important; padding:20px; border:1px solid var(--line-soft); border-radius:var(--r-md); background:var(--canvas); }
+body.blue-account-user .woocommerce-Addresses { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); align-items:stretch; gap:16px; }
+body.blue-account-user .woocommerce-Addresses::before,
+body.blue-account-user .woocommerce-Addresses::after { display:none!important; content:none!important; }
 body.blue-account-user .woocommerce-Address-title { display:flex; align-items:center; justify-content:space-between; gap:12px; }
 body.blue-account-user .woocommerce-Address-title h2 { float:none; margin:0!important; font-size:1.05rem!important; }
 body.blue-account-user .woocommerce-Address-title .edit { float:none; font-size:.7rem; font-weight:700; }

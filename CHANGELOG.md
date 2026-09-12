@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.7.28
+
+- Fixed WooCommerce clearfix pseudo-elements occupying cells in the My Account address grid.
+- Billing and Shipping addresses now render as an aligned, equal-width row on desktop and stack cleanly on mobile.
+
 ## 2.7.27
 
 - Removed WooCommerce's purple dismissible Store Notice overlay after its frontend hooks are registered.
