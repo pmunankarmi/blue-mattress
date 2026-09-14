@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
 
 const BLUE_GITHUB_REPOSITORY = 'pmunankarmi/blue-mattress';
 const BLUE_GITHUB_RELEASE_ZIP = 'blue-mattress.zip';
-const BLUE_GITHUB_CACHE_KEY   = 'blue_mattress_github_release_v2';
+const BLUE_GITHUB_CACHE_KEY   = 'blue_mattress_github_release_v3';
 
 /**
  * Build release metadata from the public repository when the GitHub API is
@@ -122,7 +122,7 @@ function blue_github_update_details( string $stylesheet ): array {
 		'theme'        => $stylesheet,
 		'version'      => $latest_version,
 		'new_version'  => $latest_version,
-		'url'          => esc_url_raw( (string) ( $release['html_url'] ?? '' ) ),
+		'url'          => add_query_arg( 'action', 'blue_theme_release_details', admin_url( 'admin-ajax.php' ) ),
 		'package'      => $package,
 		'requires'     => '6.4',
 		'requires_php' => '8.0',
@@ -146,6 +146,125 @@ function blue_github_update_uri_response( $update, array $theme_data, string $th
 	return $details ?: $update;
 }
 add_filter( 'update_themes_github.com', 'blue_github_update_uri_response', 10, 3 );
+
+/**
+ * Inject the GitHub response whenever WordPress reads its theme update cache.
+ *
+ * This remains functional when the host cannot reach WordPress.org, because
+ * core otherwise exits before running custom Update URI providers.
+ *
+ * @param mixed $transient Stored WordPress theme update data.
+ * @return object
+ */
+function blue_github_read_update_transient( $transient ): object {
+	static $injecting = false;
+	if ( $injecting ) {
+		return is_object( $transient ) ? $transient : new stdClass();
+	}
+
+	$injecting = true;
+	if ( ! is_object( $transient ) ) {
+		$transient = new stdClass();
+	}
+	$transient->checked   = isset( $transient->checked ) && is_array( $transient->checked ) ? $transient->checked : array();
+	$transient->response  = isset( $transient->response ) && is_array( $transient->response ) ? $transient->response : array();
+	$transient->no_update = isset( $transient->no_update ) && is_array( $transient->no_update ) ? $transient->no_update : array();
+
+	$stylesheet      = get_template();
+	$current_version = (string) wp_get_theme( $stylesheet )->get( 'Version' );
+	$details         = blue_github_update_details( $stylesheet );
+	$latest_version  = (string) ( $details['new_version'] ?? '' );
+	$transient->checked[ $stylesheet ] = $current_version;
+
+	if ( $latest_version && version_compare( $latest_version, $current_version, '>' ) ) {
+		$transient->response[ $stylesheet ] = $details;
+		unset( $transient->no_update[ $stylesheet ] );
+	} elseif ( $details ) {
+		$transient->no_update[ $stylesheet ] = $details;
+		unset( $transient->response[ $stylesheet ] );
+	}
+
+	$injecting = false;
+	return $transient;
+}
+add_filter( 'site_transient_update_themes', 'blue_github_read_update_transient', 20 );
+
+/** Format the latest GitHub release notes for WordPress admin screens. */
+function blue_github_release_notes_html( array $release ): string {
+	$notes = trim( str_replace( '**', '', (string) ( $release['body'] ?? '' ) ) );
+	if ( ! $notes ) {
+		$notes = __( 'Maintenance, compatibility and design improvements for the Blue Mattress theme.', 'blue-mattress' );
+	}
+	return wpautop( make_clickable( esc_html( $notes ) ) );
+}
+
+/** Render the iframe-safe page used by WordPress's View version details link. */
+function blue_github_release_details_page(): void {
+	if ( ! current_user_can( 'update_themes' ) ) {
+		wp_die( esc_html__( 'You are not allowed to view theme updates.', 'blue-mattress' ), '', array( 'response' => 403 ) );
+	}
+
+	$release         = blue_github_latest_release();
+	$theme           = wp_get_theme( get_template() );
+	$latest_version  = ltrim( (string) ( $release['tag_name'] ?? $theme->get( 'Version' ) ), 'vV' );
+	$published_at    = (string) ( $release['published_at'] ?? '' );
+	$published_label = $published_at ? wp_date( get_option( 'date_format' ), strtotime( $published_at ) ) : '';
+	$release_url     = esc_url( (string) ( $release['html_url'] ?? 'https://github.com/' . BLUE_GITHUB_REPOSITORY . '/releases' ) );
+	?>
+	<!doctype html>
+	<html <?php language_attributes(); ?>>
+	<head>
+		<meta charset="<?php bloginfo( 'charset' ); ?>">
+		<meta name="viewport" content="width=device-width,initial-scale=1">
+		<title><?php echo esc_html( sprintf( __( '%s version %s', 'blue-mattress' ), $theme->get( 'Name' ), $latest_version ) ); ?></title>
+		<style>
+			body{margin:0;padding:36px;background:#f6f7f7;color:#1d2327;font:15px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.blue-release{max-width:760px;margin:auto;padding:32px;background:#fff;border:1px solid #dcdcde;border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,.07)}h1{margin:0 0 6px;font-size:28px}.meta{margin:0 0 26px;color:#646970}.notes{padding:20px 0;border-block:1px solid #dcdcde}.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}.button{display:inline-block;padding:9px 16px;border-radius:999px;background:#2271b1;color:#fff;text-decoration:none;font-weight:600}.button.secondary{border:1px solid #2271b1;background:#fff;color:#2271b1}
+		</style>
+	</head>
+	<body>
+		<main class="blue-release">
+			<h1><?php echo esc_html( $theme->get( 'Name' ) ); ?></h1>
+			<p class="meta"><?php echo esc_html( sprintf( __( 'Version %s', 'blue-mattress' ), $latest_version ) ); ?><?php echo $published_label ? ' · ' . esc_html( $published_label ) : ''; ?></p>
+			<h2><?php esc_html_e( 'Release details', 'blue-mattress' ); ?></h2>
+			<div class="notes"><?php echo wp_kses_post( blue_github_release_notes_html( $release ) ); ?></div>
+			<p><?php echo esc_html( sprintf( __( 'Requires WordPress %1$s or newer and PHP %2$s or newer.', 'blue-mattress' ), '6.4', '8.0' ) ); ?></p>
+			<div class="actions"><a class="button" href="<?php echo $release_url; ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'View on GitHub', 'blue-mattress' ); ?></a><a class="button secondary" href="https://github.com/<?php echo esc_attr( BLUE_GITHUB_REPOSITORY ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Theme repository', 'blue-mattress' ); ?></a></div>
+		</main>
+	</body>
+	</html>
+	<?php
+	exit;
+}
+add_action( 'wp_ajax_blue_theme_release_details', 'blue_github_release_details_page' );
+
+/** Supply Blue Mattress metadata to WordPress's standard theme details API. */
+function blue_github_theme_information( $result, string $action, $args ) {
+	$args = is_object( $args ) ? $args : (object) $args;
+	if ( 'theme_information' !== $action || empty( $args->slug ) || ! in_array( $args->slug, array( 'blue-mattress', get_template(), get_stylesheet() ), true ) ) {
+		return $result;
+	}
+
+	$release        = blue_github_latest_release();
+	$theme          = wp_get_theme( get_template() );
+	$latest_version = ltrim( (string) ( $release['tag_name'] ?? $theme->get( 'Version' ) ), 'vV' );
+
+	return (object) array(
+		'name'          => $theme->get( 'Name' ),
+		'slug'          => get_template(),
+		'version'       => $latest_version,
+		'author'        => $theme->get( 'Author' ),
+		'homepage'      => 'https://github.com/' . BLUE_GITHUB_REPOSITORY,
+		'requires'      => '6.4',
+		'requires_php'  => '8.0',
+		'last_updated'  => (string) ( $release['published_at'] ?? '' ),
+		'download_link' => blue_github_release_package( $release ),
+		'sections'      => array(
+			'description' => wpautop( esc_html( $theme->get( 'Description' ) ) ),
+			'changelog'   => blue_github_release_notes_html( $release ),
+		),
+	);
+}
+add_filter( 'themes_api', 'blue_github_theme_information', 20, 3 );
 
 add_filter(
 	'pre_set_site_transient_update_themes',

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.7.30
+
+- Made GitHub theme updates appear even when the host's WordPress.org theme check fails before custom providers run.
+- Added an authenticated, iframe-safe WordPress page for the View version details link.
+- Added Blue Mattress metadata support for WordPress's standard theme information API.
+- Reset the release cache schema so the repaired updater starts with fresh GitHub metadata.
+
 ## 2.7.29
 
 - Added optional ACF image uploads for homepage benefit and social icons.
