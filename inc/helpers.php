@@ -103,6 +103,21 @@ function blue_image_url( mixed $image, string $fallback = '' ): string {
 	return $fallback;
 }
 
+/** Return decorative image markup for an optional ACF icon image. */
+function blue_icon_image_html( mixed $image, string $class ): string {
+	$url = blue_image_url( $image );
+	if ( ! $url ) {
+		return '';
+	}
+
+	$classes = array_filter( array_map( 'sanitize_html_class', preg_split( '/\s+/', trim( $class ) ) ?: array() ) );
+	return sprintf(
+		'<img class="%1$s" src="%2$s" alt="" aria-hidden="true" loading="lazy" decoding="async">',
+		esc_attr( implode( ' ', $classes ) ),
+		esc_url( $url )
+	);
+}
+
 /**
  * Return the editable cutaway animation for a mattress.
  *

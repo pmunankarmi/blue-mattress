@@ -20,12 +20,14 @@ $newsletter_button = (string) blue_option( 'newsletter_button', blue_text( 'Join
 $footer_logo = blue_image_url( blue_option( 'footer_logo' ), BLUE_THEME_URI . '/assets/img/logo-white.png' );
 $social_links = blue_social_links();
 $whatsapp_url = (string) blue_option( 'whatsapp_url' );
-if ( ! $whatsapp_url ) {
-	foreach ( $social_links as $social ) {
-		if ( 'whatsapp' === blue_social_icon_key( $social ) ) {
+$whatsapp_icon_image = '';
+foreach ( $social_links as $social ) {
+	if ( 'whatsapp' === blue_social_icon_key( $social ) ) {
+		$whatsapp_icon_image = blue_icon_image_html( $social['icon_image'] ?? '', 'wa-icon-image' );
+		if ( ! $whatsapp_url ) {
 			$whatsapp_url = (string) ( $social['url'] ?? '' );
-			break;
 		}
+		break;
 	}
 }
 $footer_terms = taxonomy_exists( 'product_cat' ) ? get_terms( array( 'taxonomy' => 'product_cat', 'hide_empty' => true, 'number' => 5 ) ) : array();
@@ -49,8 +51,8 @@ $footer_terms = is_wp_error( $footer_terms ) ? array() : $footer_terms;
 				<?php if ( isset( $_GET['newsletter_status'] ) ) : ?><p class="footer-form-status" role="status"><?php echo esc_html( 'subscribed' === sanitize_key( wp_unslash( $_GET['newsletter_status'] ) ) ? blue_text( 'Thank you for subscribing.', 'شكرًا لاشتراكك.' ) : blue_text( 'Please enter a valid email address.', 'يرجى إدخال بريد إلكتروني صحيح.' ) ); ?></p><?php endif; ?>
 				<div class="social-row">
 					<?php foreach ( $social_links as $social ) : ?>
-						<?php $social_icon = blue_social_icon_key( $social ); ?>
-						<a class="social-ic social-<?php echo esc_attr( $social_icon ); ?>" href="<?php echo esc_url( $social['url'] ?? '' ); ?>" target="_blank" rel="noopener noreferrer" aria-label="<?php echo esc_attr( $social['label'] ?? '' ); ?>"><?php echo blue_social_icon_svg( $social_icon ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Fixed theme SVG. ?></a>
+						<?php $social_icon = blue_social_icon_key( $social ); $social_icon_markup = blue_icon_image_html( $social['icon_image'] ?? '', 'social-icon-image' ) ?: blue_social_icon_svg( $social_icon ); ?>
+						<a class="social-ic social-<?php echo esc_attr( $social_icon ); ?>" href="<?php echo esc_url( $social['url'] ?? '' ); ?>" target="_blank" rel="noopener noreferrer" aria-label="<?php echo esc_attr( $social['label'] ?? '' ); ?>"><?php echo $social_icon_markup; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped image or fixed theme SVG. ?></a>
 					<?php endforeach; ?>
 				</div>
 			</div>
@@ -90,7 +92,7 @@ $footer_terms = is_wp_error( $footer_terms ) ? array() : $footer_terms;
 </footer>
 <?php if ( $whatsapp_url ) : ?>
 	<a class="wa-fab" href="<?php echo esc_url( $whatsapp_url ); ?>" target="_blank" rel="noopener noreferrer" aria-label="<?php echo esc_attr( blue_text( 'Chat with us on WhatsApp', 'تحدث معنا عبر واتساب' ) ); ?>">
-		<span class="wa-pulse" aria-hidden="true"></span><?php echo blue_social_icon_svg( 'whatsapp' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Fixed theme SVG. ?>
+		<span class="wa-pulse" aria-hidden="true"></span><?php echo $whatsapp_icon_image ?: blue_social_icon_svg( 'whatsapp' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped image or fixed theme SVG. ?>
 	</a>
 <?php endif; ?>
 <?php wp_footer(); ?>

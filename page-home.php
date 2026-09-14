@@ -72,8 +72,10 @@ $home_stark_stats = is_array( $home_stark_stats ) ? $home_stark_stats : array();
 		<div class="container">
 			<div class="vp-card" data-reveal>
 				<?php foreach ( $benefits as $benefit ) :
+					$benefit_icon = blue_icon_image_html( $benefit['icon_image'] ?? '', 'vp-icon-image' );
+					$benefit_icon = $benefit_icon ?: blue_benefit_icon_svg( sanitize_key( (string) ( $benefit['icon'] ?? 'trial' ) ) );
 					?>
-					<div class="vp-item"><?php echo blue_benefit_icon_svg( sanitize_key( (string) ( $benefit['icon'] ?? 'trial' ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Fixed theme SVG. ?><h3><?php echo esc_html( $benefit['title'] ?? '' ); ?></h3><p><?php echo esc_html( $benefit['description'] ?? '' ); ?></p></div>
+					<div class="vp-item"><?php echo $benefit_icon; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped image or fixed theme SVG. ?><h3><?php echo esc_html( $benefit['title'] ?? '' ); ?></h3><p><?php echo esc_html( $benefit['description'] ?? '' ); ?></p></div>
 				<?php endforeach; ?>
 			</div>
 		</div>

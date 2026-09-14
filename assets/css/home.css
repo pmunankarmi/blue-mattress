@@ -110,6 +110,7 @@
 }
 .vp-item + .vp-item { border-left: 1px solid var(--line-soft); }
 .vp-item svg { width: 27px; height: 27px; color: var(--royal); margin-bottom: 4px; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
+.vp-item .vp-icon-image { display:block; width:27px; height:27px; margin-bottom:4px; object-fit:contain; }
 .vp-item h3 { font-family: var(--font-display); font-size: 1.12rem; font-weight: 600; }
 .vp-item p { font-size: var(--text-sm); color: var(--ink-soft); line-height: 1.55; }
 

@@ -7,6 +7,53 @@
 
 defined( 'ABSPATH' ) || exit;
 
+/** Add a live preview beneath each preset icon dropdown in the ACF editor. */
+add_action(
+	'acf/input/admin_footer',
+	function (): void {
+		$presets = array();
+		foreach ( array( 'trial', 'delivery', 'warranty', 'payments' ) as $icon ) {
+			$presets[ $icon ] = blue_benefit_icon_svg( $icon );
+		}
+		foreach ( array( 'instagram', 'facebook', 'x', 'youtube', 'tiktok', 'snapchat', 'linkedin', 'whatsapp' ) as $icon ) {
+			$presets[ $icon ] = blue_social_icon_svg( $icon );
+		}
+		?>
+		<style>
+			.blue-icon-preset-preview{display:inline-grid;place-items:center;width:48px;height:48px;margin-top:10px;border:1px solid #d5d9dd;border-radius:10px;background:#fff;color:#355faa}
+			.blue-icon-preset-preview svg{display:block;width:25px;height:25px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+		</style>
+		<script>
+		(function(){
+			'use strict';
+			const presets=<?php echo wp_json_encode( $presets, JSON_HEX_TAG | JSON_HEX_AMP ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- JSON encoded fixed SVG markup. ?>;
+			const selector='.blue-icon-select-field';
+			function sync(field){
+				if(!field){return;}
+				const select=field.querySelector('select');
+				const input=field.querySelector('.acf-input');
+				if(!select||!input){return;}
+				let preview=field.querySelector('.blue-icon-preset-preview');
+				if(!preview){preview=document.createElement('span');preview.className='blue-icon-preset-preview';preview.setAttribute('aria-hidden','true');input.appendChild(preview);}
+				preview.innerHTML=presets[select.value]||'';
+			}
+			function syncAll(root){
+				if(!root){return;}
+				if(root.matches&&root.matches(selector)){sync(root);}
+				if(root.querySelectorAll){root.querySelectorAll(selector).forEach(sync);}
+			}
+			document.addEventListener('change',function(event){
+				if(event.target.matches(selector+' select')){sync(event.target.closest(selector));}
+			});
+			syncAll(document);
+			document.addEventListener('DOMContentLoaded',function(){syncAll(document);});
+			if(window.acf&&window.jQuery){window.acf.addAction('append',function(element){syncAll(element&&element[0]?element[0]:element);});}
+		})();
+		</script>
+		<?php
+	}
+);
+
 add_action(
 	'acf/init',
 	function (): void {
@@ -221,9 +268,10 @@ add_action(
 						'layout'       => 'table',
 						'button_label' => __( 'Add social network', 'blue-mattress' ),
 						'sub_fields'   => array(
-							array( 'key' => 'field_blue_social_label', 'label' => __( 'Label', 'blue-mattress' ), 'name' => 'label', 'type' => 'text', 'required' => 1 ),
-							array( 'key' => 'field_blue_social_url', 'label' => __( 'URL', 'blue-mattress' ), 'name' => 'url', 'type' => 'url', 'required' => 1 ),
-							array( 'key' => 'field_blue_social_icon', 'label' => __( 'Icon', 'blue-mattress' ), 'name' => 'icon', 'type' => 'select', 'choices' => array( 'instagram' => 'Instagram', 'facebook' => 'Facebook', 'x' => 'X / Twitter', 'youtube' => 'YouTube', 'tiktok' => 'TikTok', 'snapchat' => 'Snapchat', 'linkedin' => 'LinkedIn', 'whatsapp' => 'WhatsApp' ), 'default_value' => 'instagram' ),
+							array( 'key' => 'field_blue_social_label', 'label' => __( 'Label', 'blue-mattress' ), 'name' => 'label', 'type' => 'text', 'required' => 1, 'wrapper' => array( 'width' => 20 ) ),
+							array( 'key' => 'field_blue_social_url', 'label' => __( 'URL', 'blue-mattress' ), 'name' => 'url', 'type' => 'url', 'required' => 1, 'wrapper' => array( 'width' => 30 ) ),
+							array( 'key' => 'field_blue_social_icon', 'label' => __( 'Preset icon (fallback)', 'blue-mattress' ), 'name' => 'icon', 'type' => 'select', 'choices' => array( 'instagram' => 'Instagram', 'facebook' => 'Facebook', 'x' => 'X / Twitter', 'youtube' => 'YouTube', 'tiktok' => 'TikTok', 'snapchat' => 'Snapchat', 'linkedin' => 'LinkedIn', 'whatsapp' => 'WhatsApp' ), 'default_value' => 'instagram', 'wrapper' => array( 'width' => 20, 'class' => 'blue-icon-select-field' ), 'instructions' => __( 'Used when no custom image is selected.', 'blue-mattress' ) ),
+							array( 'key' => 'field_blue_social_icon_image', 'label' => __( 'Custom icon image', 'blue-mattress' ), 'name' => 'icon_image', 'type' => 'image', 'return_format' => 'array', 'preview_size' => 'thumbnail', 'mime_types' => 'jpg,jpeg,png,webp,svg', 'wrapper' => array( 'width' => 30 ), 'instructions' => __( 'Optional. Replaces the preset icon and displays an image preview here.', 'blue-mattress' ) ),
 						),
 					),
 				),
@@ -257,8 +305,9 @@ add_action(
 						'layout'       => 'block',
 						'button_label' => __( 'Add benefit', 'blue-mattress' ),
 						'sub_fields'   => array(
-							array( 'key' => 'field_blue_home_benefit_icon', 'label' => __( 'Icon', 'blue-mattress' ), 'name' => 'icon', 'type' => 'select', 'choices' => array( 'trial' => __( 'Night trial', 'blue-mattress' ), 'delivery' => __( 'Delivery', 'blue-mattress' ), 'warranty' => __( 'Warranty', 'blue-mattress' ), 'payments' => __( 'Split payments', 'blue-mattress' ) ), 'wrapper' => array( 'width' => 25 ) ),
-							array( 'key' => 'field_blue_home_benefit_title', 'label' => __( 'Title', 'blue-mattress' ), 'name' => 'title', 'type' => 'text', 'required' => 1 ),
+							array( 'key' => 'field_blue_home_benefit_icon', 'label' => __( 'Preset icon (fallback)', 'blue-mattress' ), 'name' => 'icon', 'type' => 'select', 'choices' => array( 'trial' => __( 'Night trial', 'blue-mattress' ), 'delivery' => __( 'Delivery', 'blue-mattress' ), 'warranty' => __( 'Warranty', 'blue-mattress' ), 'payments' => __( 'Split payments', 'blue-mattress' ) ), 'wrapper' => array( 'width' => 25, 'class' => 'blue-icon-select-field' ), 'instructions' => __( 'Used when no custom image is selected.', 'blue-mattress' ) ),
+							array( 'key' => 'field_blue_home_benefit_icon_image', 'label' => __( 'Custom icon image', 'blue-mattress' ), 'name' => 'icon_image', 'type' => 'image', 'return_format' => 'array', 'preview_size' => 'thumbnail', 'mime_types' => 'jpg,jpeg,png,webp,svg', 'wrapper' => array( 'width' => 25 ), 'instructions' => __( 'Optional. Replaces the preset icon and displays an image preview here.', 'blue-mattress' ) ),
+							array( 'key' => 'field_blue_home_benefit_title', 'label' => __( 'Title', 'blue-mattress' ), 'name' => 'title', 'type' => 'text', 'required' => 1, 'wrapper' => array( 'width' => 50 ) ),
 							array( 'key' => 'field_blue_home_benefit_description', 'label' => __( 'Description', 'blue-mattress' ), 'name' => 'description', 'type' => 'textarea', 'rows' => 2 ),
 						),
 					),

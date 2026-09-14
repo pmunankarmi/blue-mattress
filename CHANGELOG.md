@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.7.29
+
+- Added optional ACF image uploads for homepage benefit and social icons.
+- Existing preset icon dropdowns remain the automatic fallback when no image is selected.
+- Added preset previews in the ACF editor and native uploaded-image previews.
+- Applied custom social icons consistently in the footer, contact page and floating WhatsApp button.
+
 ## 2.7.28
 
 - Fixed WooCommerce clearfix pseudo-elements occupying cells in the My Account address grid.
