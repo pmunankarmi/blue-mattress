@@ -149,6 +149,16 @@
 		});
 	};
 
+	const currentPriceMarkup = (priceHtml) => {
+		if (!priceHtml) return '';
+		const holder = document.createElement('span');
+		holder.innerHTML = priceHtml;
+		const saleAmount = holder.querySelector('ins .woocommerce-Price-amount');
+		const amounts = holder.querySelectorAll('.woocommerce-Price-amount');
+		const currentAmount = saleAmount || amounts[amounts.length - 1];
+		return currentAmount ? currentAmount.outerHTML : priceHtml;
+	};
+
   const syncVariationPrice = () => {
     if (!window.jQuery) return;
     window.jQuery('.blue-product-detail .variations_form').each(function () {
@@ -161,7 +171,7 @@
 
       form.on('found_variation', (_event, variation) => {
         if (price && variation.price_html) price.innerHTML = variation.price_html;
-        if (button && variation.price_html) button.innerHTML = `${button.dataset.baseLabel} — ${variation.price_html}`;
+        if (button && variation.price_html) button.innerHTML = `${button.dataset.baseLabel} — ${currentPriceMarkup(variation.price_html)}`;
       });
       form.on('reset_data hide_variation', () => {
         if (price && price.dataset.originalPrice) price.innerHTML = price.dataset.originalPrice;
@@ -173,7 +183,7 @@
       const button = form.querySelector('.single_add_to_cart_button');
       const price = form.closest('.summary')?.querySelector(':scope > p.price');
       if (button && price && !button.dataset.priceAdded) {
-        button.textContent = `${button.textContent.trim()} — ${price.textContent.trim()}`;
+		button.innerHTML = `${button.textContent.trim()} — ${currentPriceMarkup(price.innerHTML)}`;
         button.dataset.priceAdded = 'true';
       }
     });

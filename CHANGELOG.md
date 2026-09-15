@@ -4,6 +4,7 @@
 
 - Fixed the WooCommerce empty-cart icon glyph overlapping the message text.
 - Added a responsive, centered empty-cart panel with a consistent theme icon and tighter return-button spacing.
+- Made the product add-to-cart button show only the selected variation's payable price instead of repeating the crossed-out regular price.
 
 ## 2.7.30
 
