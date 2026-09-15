@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.7.31
+
+- Fixed the WooCommerce empty-cart icon glyph overlapping the message text.
+- Added a responsive, centered empty-cart panel with a consistent theme icon and tighter return-button spacing.
+
 ## 2.7.30
 
 - Made GitHub theme updates appear even when the host's WordPress.org theme check fails before custom providers run.
