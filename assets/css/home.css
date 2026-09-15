@@ -25,7 +25,7 @@
    can't play. */
 .hero-bg {
   position: absolute; inset: 0; z-index: 0;
-  background: var(--navy) url(../img/hero-sea.jpg?v=20260711S) center/cover no-repeat;
+  background: var(--navy);
 }
 .hero-picture {
   position: absolute; inset: 0; z-index: 0;

@@ -7,12 +7,13 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'BLUE_THEME_VERSION', '2.7.41' );
+define( 'BLUE_THEME_VERSION', '2.8.0' );
 define( 'BLUE_THEME_DIR', get_template_directory() );
 define( 'BLUE_THEME_URI', get_template_directory_uri() );
 
 require_once BLUE_THEME_DIR . '/inc/bilingual.php';
 require_once BLUE_THEME_DIR . '/inc/helpers.php';
+require_once BLUE_THEME_DIR . '/inc/media-assets.php';
 require_once BLUE_THEME_DIR . '/inc/setup.php';
 require_once BLUE_THEME_DIR . '/inc/acf.php';
 require_once BLUE_THEME_DIR . '/inc/woocommerce.php';

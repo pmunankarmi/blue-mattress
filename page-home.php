@@ -10,15 +10,15 @@ get_header();
 $shop_url   = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : blue_home_url( '/shop/' );
 $finder_url = blue_page_url( 'page-mattress-finder.php', '/mattress-finder/' );
 $hero_video      = blue_image_url( blue_field( 'hero_video' ) );
-$hero_image      = blue_image_url( blue_field( 'hero_poster' ), BLUE_THEME_URI . '/assets/img/hero-sea.jpg' );
+$hero_image      = blue_image_url( blue_field( 'hero_poster' ), blue_media_asset_url( 'hero-sea.jpg' ) );
 $hero_mobile_image = blue_image_url( blue_field( 'hero_mobile_poster' ) );
 $hero_video_type = $hero_video ? ( wp_check_filetype( $hero_video )['type'] ?: 'video/mp4' ) : '';
 $show_hero_caption = true;
 if ( function_exists( 'get_field' ) && metadata_exists( 'post', get_queried_object_id(), 'hero_show_caption' ) ) {
 	$show_hero_caption = (bool) get_field( 'hero_show_caption' );
 }
-$lifestyle_img = blue_image_url( blue_field( 'lifestyle_image' ), BLUE_THEME_URI . '/assets/img/lifestyle-sleep.jpg' );
-$home_stark_img = blue_image_url( blue_field( 'home_stark_image' ), BLUE_THEME_URI . '/assets/img/stark-factory.jpg' );
+$lifestyle_img = blue_image_url( blue_field( 'lifestyle_image' ), blue_media_asset_url( 'lifestyle-sleep.jpg' ) );
+$home_stark_img = blue_image_url( blue_field( 'home_stark_image' ), blue_media_asset_url( 'stark-factory.jpg' ) );
 $stark_url  = blue_page_url( 'page-stark.php', '/stark/' );
 $home_products   = function_exists( 'blue_home_products' ) ? blue_home_products( 8 ) : array();
 $home_categories = function_exists( 'blue_home_product_categories' ) ? blue_home_product_categories( 6 ) : array();

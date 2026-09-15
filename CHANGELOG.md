@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.8.0
+
+- Added a resumable Theme Media migration that imports all bundled images and videos into the WordPress Media Library.
+- Resolved logos, payment badges, page fallbacks and mattress cutaway videos from Media Library attachment IDs after migration.
+- Removed the CSS-level hero image dependency so page media remains fully dynamic.
+
 ## 2.7.41
 
 - Kept Arabic Paymob gateway, place-order and terms labels localized after WooCommerce AJAX refreshes.

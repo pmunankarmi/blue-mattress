@@ -10,9 +10,9 @@ get_header();
 $shop_url   = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : blue_home_url( '/shop/' );
 $finder_url = blue_page_url( 'page-mattress-finder.php', '/mattress-finder/' );
 $stark_url  = blue_page_url( 'page-stark.php', '/stark/' );
-$hero       = blue_image_url( blue_field( 'story_hero_image' ), BLUE_THEME_URI . '/assets/img/hero-dawn.jpg' );
-$origin     = blue_image_url( blue_field( 'story_origin_image' ), BLUE_THEME_URI . '/assets/img/craft.jpg' );
-$craft      = blue_image_url( blue_field( 'story_craft_image' ), BLUE_THEME_URI . '/assets/img/stark-craft.jpg' );
+$hero       = blue_image_url( blue_field( 'story_hero_image' ), blue_media_asset_url( 'hero-dawn.jpg' ) );
+$origin     = blue_image_url( blue_field( 'story_origin_image' ), blue_media_asset_url( 'craft.jpg' ) );
+$craft      = blue_image_url( blue_field( 'story_craft_image' ), blue_media_asset_url( 'stark-craft.jpg' ) );
 $values     = blue_field(
 	'story_values',
 	array(

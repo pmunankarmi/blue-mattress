@@ -151,7 +151,7 @@ function blue_site_logo( string $class = 'brand-logo' ): string {
 		}
 	}
 
-	return sprintf( '<img class="%1$s" src="%2$s" width="438" height="250" alt="%3$s">', esc_attr( $class ), esc_url( BLUE_THEME_URI . '/assets/img/logo-color.png' ), esc_attr( get_bloginfo( 'name' ) ) );
+	return sprintf( '<img class="%1$s" src="%2$s" width="438" height="250" alt="%3$s">', esc_attr( $class ), esc_url( blue_media_asset_url( 'logo-color.png' ) ), esc_attr( get_bloginfo( 'name' ) ) );
 }
 
 add_action(

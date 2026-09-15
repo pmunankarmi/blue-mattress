@@ -18,7 +18,7 @@ $map      = (string) blue_option( 'contact_map_url' );
 $map_link = (string) blue_option( 'contact_map_link' );
 $footer_note = (string) blue_option( 'footer_note' );
 $newsletter_button = (string) blue_option( 'newsletter_button', blue_text( 'Join', 'اشترك' ) );
-$footer_logo = blue_image_url( blue_option( 'footer_logo' ), BLUE_THEME_URI . '/assets/img/logo-white.png' );
+$footer_logo = blue_image_url( blue_option( 'footer_logo' ), blue_media_asset_url( 'logo-white.png' ) );
 $social_links = blue_social_links();
 $whatsapp_url = (string) blue_option( 'whatsapp_url' );
 $whatsapp_icon_image = '';
@@ -75,14 +75,14 @@ $footer_terms = is_wp_error( $footer_terms ) ? array() : $footer_terms;
 			</div>
 			</div>
 		<div class="footer-legal">
-			<?php if ( $cr ) : ?><div class="legal-item"><img class="legal-cr" src="<?php echo esc_url( BLUE_THEME_URI . '/assets/img/cr-badge.png' ); ?>" width="64" height="64" alt=""><div class="legal-txt"><span><?php echo esc_html( blue_text( 'Commercial Register', 'السجل التجاري' ) ); ?></span><b dir="ltr"><?php echo esc_html( $cr ); ?></b></div></div><?php endif; ?>
+			<?php if ( $cr ) : ?><div class="legal-item"><img class="legal-cr" src="<?php echo esc_url( blue_media_asset_url( 'cr-badge.png' ) ); ?>" width="64" height="64" alt=""><div class="legal-txt"><span><?php echo esc_html( blue_text( 'Commercial Register', 'السجل التجاري' ) ); ?></span><b dir="ltr"><?php echo esc_html( $cr ); ?></b></div></div><?php endif; ?>
 			<?php if ( $vat ) : ?><div class="legal-item"><div class="legal-txt"><span><?php echo esc_html( blue_text( 'VAT Account Number', 'الرقم الضريبي' ) ); ?></span><b dir="ltr"><?php echo esc_html( $vat ); ?></b></div></div><?php endif; ?>
 			<div class="pay-icons" aria-label="<?php echo esc_attr( blue_text( 'Payment methods', 'طرق الدفع' ) ); ?>">
-				<img src="<?php echo esc_url( BLUE_THEME_URI . '/assets/img/pay-mada_mini.png' ); ?>" alt="mada">
-				<img src="<?php echo esc_url( BLUE_THEME_URI . '/assets/img/pay-credit_card_mini.png' ); ?>" alt="Visa / Mastercard">
-				<img src="<?php echo esc_url( BLUE_THEME_URI . '/assets/img/pay-apple_pay_mini.png' ); ?>" alt="Apple Pay">
-				<img class="pay-tabby" src="<?php echo esc_url( BLUE_THEME_URI . '/assets/img/pay-tabby-badge.svg' ); ?>" alt="Tabby">
-				<img class="pay-tamara" src="<?php echo esc_url( BLUE_THEME_URI . '/assets/img/pay-tamara-badge.svg' ); ?>" alt="Tamara">
+				<img src="<?php echo esc_url( blue_media_asset_url( 'pay-mada_mini.png' ) ); ?>" alt="mada">
+				<img src="<?php echo esc_url( blue_media_asset_url( 'pay-credit_card_mini.png' ) ); ?>" alt="Visa / Mastercard">
+				<img src="<?php echo esc_url( blue_media_asset_url( 'pay-apple_pay_mini.png' ) ); ?>" alt="Apple Pay">
+				<img class="pay-tabby" src="<?php echo esc_url( blue_media_asset_url( 'pay-tabby-badge.svg' ) ); ?>" alt="Tabby">
+				<img class="pay-tamara" src="<?php echo esc_url( blue_media_asset_url( 'pay-tamara-badge.svg' ) ); ?>" alt="Tamara">
 			</div>
 		</div>
 		<div class="footer-bottom">

@@ -18,10 +18,10 @@ $milestones = blue_field( 'stark_milestones', array(
 	array( 'label' => blue_text( 'Growth', 'النمو' ), 'description' => blue_text( 'The company expanded into mattresses, furniture and the wood industry.', 'توسعت الشركة في صناعة المراتب والأثاث والصناعات الخشبية.' ) ),
 	array( 'label' => 'STARK', 'description' => blue_text( 'One identity uniting knowledge, manufacturing scale and inherited craftsmanship.', 'هوية واحدة تجمع المعرفة وحجم التصنيع والحرفية المتوارثة.' ) ),
 ) );
-$factory_image = blue_image_url( blue_field( 'stark_factory_image' ), BLUE_THEME_URI . '/assets/img/stark-factory.jpg' );
-$craft_image = blue_image_url( blue_field( 'stark_craft_image' ), BLUE_THEME_URI . '/assets/img/stark-craft.jpg' );
-$wood_image = blue_image_url( blue_field( 'stark_wood_image' ), BLUE_THEME_URI . '/assets/img/stark-wood.jpg' );
-$bed_image = blue_image_url( blue_field( 'stark_bed_image' ), BLUE_THEME_URI . '/assets/img/stark-bed.jpg' );
+$factory_image = blue_image_url( blue_field( 'stark_factory_image' ), blue_media_asset_url( 'stark-factory.jpg' ) );
+$craft_image = blue_image_url( blue_field( 'stark_craft_image' ), blue_media_asset_url( 'stark-craft.jpg' ) );
+$wood_image = blue_image_url( blue_field( 'stark_wood_image' ), blue_media_asset_url( 'stark-wood.jpg' ) );
+$bed_image = blue_image_url( blue_field( 'stark_bed_image' ), blue_media_asset_url( 'stark-bed.jpg' ) );
 ?>
 <main id="primary" class="stark-page">
 	<section class="sk-hero"><div class="container"><p class="eyebrow"><?php echo esc_html( blue_text( 'The mother company', 'الشركة الأم' ) ); ?></p><h1 class="display sk-name">STARK</h1><p class="sk-tag display"><?php echo esc_html( blue_field( 'stark_tagline', blue_text( 'Built on Trust. Guided by Knowledge.', 'بُنيت على الثقة. تقودها المعرفة.' ) ) ); ?></p><p class="sk-expand"><?php echo esc_html( blue_field( 'stark_expansion', blue_text( 'Strategic Trust for Advanced & Reliable Knowledge', 'الثقة الاستراتيجية للمعرفة المتقدمة والموثوقة' ) ) ); ?></p></div></section>

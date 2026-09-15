@@ -154,8 +154,7 @@ function blue_product_cutaway_video( WC_Product|int|null $product = null ): stri
 	foreach ( $aliases as $asset => $needles ) {
 		foreach ( $needles as $needle ) {
 			if ( str_contains( $identity, $needle ) ) {
-				$file = BLUE_THEME_DIR . '/assets/img/' . $asset . '-cut.mp4';
-				return file_exists( $file ) ? BLUE_THEME_URI . '/assets/img/' . $asset . '-cut.mp4' : '';
+				return function_exists( 'blue_media_asset_url' ) ? blue_media_asset_url( $asset . '-cut.mp4' ) : '';
 			}
 		}
 	}
