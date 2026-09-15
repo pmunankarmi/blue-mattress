@@ -169,6 +169,36 @@
 	});
     document.addEventListener('keydown', (event) => { if (event.key === 'Escape') { setSearch(false); setMenu(false); } });
 
+    const localizeArabicCommerce = () => {
+      if (!AR()) return;
+      const placeOrder = document.getElementById('place_order');
+      if (placeOrder) {
+        placeOrder.textContent = t('placeOrder');
+        placeOrder.value = t('placeOrder');
+        placeOrder.dataset.value = t('placeOrder');
+      }
+      const gatewayLabel = document.querySelector('.payment_method_paymob-pixel > label');
+      if (gatewayLabel) {
+        const labelText = Array.from(gatewayLabel.childNodes).find((node) => node.nodeType === Node.TEXT_NODE);
+        if (labelText && labelText.nodeValue.trim() !== t('cardPayment')) labelText.nodeValue = `${t('cardPayment')} `;
+      }
+      const terms = document.querySelector('.woocommerce-terms-and-conditions-checkbox-text');
+      if (terms && terms.dataset.blueLocalized !== 'true') {
+        terms.innerHTML = `${esc(t('termsLead'))} <a href="${esc(cfg.termsUrl || '/ar/terms-conditions/')}" class="woocommerce-terms-and-conditions-link" target="_blank">${esc(t('termsLink'))}</a>`;
+        terms.dataset.blueLocalized = 'true';
+      }
+      document.querySelectorAll('.woocommerce-MyAccount-content p').forEach((paragraph) => {
+        if (paragraph.textContent.trim() === 'No saved cards.') paragraph.textContent = t('noSavedCards');
+      });
+    };
+    localizeArabicCommerce();
+    if (window.jQuery) {
+      window.jQuery(document.body).on('updated_checkout', () => {
+        localizeArabicCommerce();
+        window.setTimeout(localizeArabicCommerce, 300);
+      });
+    }
+
     if ('IntersectionObserver' in window) {
       const observer = new IntersectionObserver((entries) => entries.forEach((entry) => {
         if (entry.isIntersecting) { entry.target.classList.add('in'); observer.unobserve(entry.target); }

@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.7.41
+
+- Kept Arabic Paymob gateway, place-order and terms labels localized after WooCommerce AJAX refreshes.
+- Localized the empty Paymob Saved Cards message while leaving the secure provider iframe untouched.
+
 ## 2.7.40
 
 - Added clean Arabic routing for Paymob's Saved Cards account endpoint.

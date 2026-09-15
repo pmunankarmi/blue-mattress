@@ -415,6 +415,7 @@ function blue_frontend_data(): array {
 		'finderUrl'    => blue_page_url( 'page-mattress-finder.php', '/mattress-finder/' ),
 		'starkUrl'     => blue_page_url( 'page-stark.php', '/stark/' ),
 		'storyUrl'     => blue_page_url( 'page-our-story.php', '/our-story/' ),
+		'termsUrl'     => function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'terms' ) : blue_home_url( '/terms-conditions/' ),
 		'language'     => blue_language(),
 		'isArabic'     => blue_is_arabic(),
 		'products'     => $products,

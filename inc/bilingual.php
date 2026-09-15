@@ -118,6 +118,11 @@ function blue_js_strings(): array {
 		'searchNone' => blue_text( 'No products found.', 'لا توجد نتائج.' ),
 		'decreaseQty'=> blue_text( 'Decrease quantity', 'تقليل الكمية' ),
 		'increaseQty'=> blue_text( 'Increase quantity', 'زيادة الكمية' ),
+		'placeOrder' => blue_text( 'Place order', 'تأكيد الطلب' ),
+		'cardPayment'=> blue_text( 'Debit/Credit Card Payment', 'الدفع ببطاقة الخصم/الائتمان' ),
+		'termsLead'  => blue_text( 'I have read and agree to the website', 'لقد قرأت ووافقت على' ),
+		'termsLink'  => blue_text( 'terms and conditions', 'شروط وأحكام الموقع' ),
+		'noSavedCards' => blue_text( 'No saved cards.', 'لا توجد بطاقات محفوظة.' ),
 	);
 }
 
