@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.7.40
+
+- Added clean Arabic routing for Paymob's Saved Cards account endpoint.
+- Localized the Paymob account label, gateway title, checkout button and terms agreement, including its translated terms link.
+
 ## 2.7.39
 
 - Redirected legacy Arabic page slugs, including WooCommerce endpoints, to their clean canonical URLs.

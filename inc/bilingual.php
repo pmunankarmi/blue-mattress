@@ -360,9 +360,10 @@ add_action(
 					'payment-methods'            => 'woocommerce_myaccount_payment_methods_endpoint',
 					'lost-password'              => 'woocommerce_myaccount_lost_password_endpoint',
 					'customer-logout'            => 'woocommerce_logout_endpoint',
+					'saved-cards'                => '',
 				);
 				foreach ( $account_endpoints as $query_var => $option_name ) {
-					$endpoint = trim( (string) get_option( $option_name, $query_var ), '/' );
+					$endpoint = trim( (string) ( $option_name ? get_option( $option_name, $query_var ) : $query_var ), '/' );
 					if ( ! $endpoint ) {
 						continue;
 					}
@@ -981,7 +982,7 @@ add_filter(
 		if ( ! blue_is_arabic() || ( is_admin() && ! wp_doing_ajax() && empty( $GLOBALS['blue_language_override'] ) ) ) {
 			return $translation;
 		}
-		if ( ! in_array( $domain, array( 'woocommerce', 'blue-mattress' ), true ) ) {
+		if ( ! in_array( $domain, array( 'woocommerce', 'blue-mattress' ), true ) && ! str_contains( $domain, 'paymob' ) ) {
 			return $translation;
 		}
 		$catalog = blue_translation_catalog();
@@ -989,6 +990,37 @@ add_filter(
 	},
 	20,
 	3
+);
+
+/** Localize checkout controls supplied dynamically by WooCommerce and Paymob. */
+add_filter(
+	'woocommerce_order_button_text',
+	function ( string $text ): string {
+		return blue_is_arabic() ? blue_text( 'Place order', 'تأكيد الطلب' ) : $text;
+	},
+	30
+);
+add_filter(
+	'woocommerce_gateway_title',
+	function ( string $title, string $gateway_id ): string {
+		return blue_is_arabic() && str_contains( $gateway_id, 'paymob' ) ? blue_text( 'Debit/Credit Card Payment', 'الدفع ببطاقة الخصم/الائتمان' ) : $title;
+	},
+	30,
+	2
+);
+add_filter(
+	'woocommerce_get_terms_and_conditions_checkbox_text',
+	function ( string $text ): string {
+		if ( ! blue_is_arabic() ) {
+			return $text;
+		}
+		$url = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'terms' ) : blue_home_url( '/terms-conditions/' );
+		return sprintf(
+			'لقد قرأت ووافقت على <a href="%1$s" class="woocommerce-terms-and-conditions-link" target="_blank">شروط وأحكام الموقع</a>',
+			esc_url( $url )
+		);
+	},
+	30
 );
 
 /** Guarantee Arabic messages for WooCommerce's dynamic cart/variation scripts. */
