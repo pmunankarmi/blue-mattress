@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.7.36
+
+- Squared the embedded Paymob card frame's bottom corners so it joins the cardholder-name row cleanly.
+- Added the missing right-edge border to the card number, expiry and CVV frame.
+- Added a rate-limited automatic update refresh during normal WordPress admin use, so new GitHub releases appear without pressing **Check again**.
+
 ## 2.7.35
 
 - Reliably removed Paymob's payment-method label and Card selector even when its SDK renders duplicate Card choices.

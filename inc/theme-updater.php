@@ -10,6 +10,7 @@ defined( 'ABSPATH' ) || exit;
 const BLUE_GITHUB_REPOSITORY = 'pmunankarmi/blue-mattress';
 const BLUE_GITHUB_RELEASE_ZIP = 'blue-mattress.zip';
 const BLUE_GITHUB_CACHE_KEY   = 'blue_mattress_github_release_v3';
+const BLUE_GITHUB_ADMIN_CHECK_KEY = 'blue_mattress_github_admin_check_v1';
 
 /**
  * Build release metadata from the public repository when the GitHub API is
@@ -188,6 +189,36 @@ function blue_github_read_update_transient( $transient ): object {
 	return $transient;
 }
 add_filter( 'site_transient_update_themes', 'blue_github_read_update_transient', 20 );
+
+/**
+ * Refresh GitHub release metadata during normal admin use.
+ *
+ * WordPress otherwise refreshes theme updates on a long interval, which can
+ * leave a newly published release hidden until an administrator presses
+ * "Check again". Limit this refresh to once every 15 minutes per site.
+ */
+function blue_github_maybe_refresh_admin_updates(): void {
+	if (
+		! current_user_can( 'update_themes' ) ||
+		wp_doing_ajax() ||
+		isset( $_GET['force-check'] ) || // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Core's manual update refresh handles this request.
+		get_site_transient( BLUE_GITHUB_ADMIN_CHECK_KEY )
+	) {
+		return;
+	}
+
+	set_site_transient( BLUE_GITHUB_ADMIN_CHECK_KEY, time(), 15 * MINUTE_IN_SECONDS );
+	delete_site_transient( BLUE_GITHUB_CACHE_KEY );
+
+	$updates = get_site_transient( 'update_themes' );
+	if ( ! is_object( $updates ) ) {
+		$updates = new stdClass();
+	}
+
+	$updates->last_checked = time();
+	set_site_transient( 'update_themes', $updates );
+}
+add_action( 'admin_init', 'blue_github_maybe_refresh_admin_updates', 20 );
 
 /** Format the latest GitHub release notes for WordPress admin screens. */
 function blue_github_release_notes_html( array $release ): string {

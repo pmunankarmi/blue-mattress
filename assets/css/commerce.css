@@ -268,7 +268,8 @@ body.woocommerce-checkout #paymob-elements {
 body.woocommerce-checkout #paymob-elements>div { width:100%!important; max-width:100%!important; box-sizing:border-box!important; }
 body.woocommerce-checkout #paymob-elements iframe {
   display:block; width:100%!important; max-width:100%!important; min-height:176px; border:0!important;
-  border-radius:var(--r-sm); background:#172234; clip-path:inset(0 round var(--r-sm));
+  border-right:1px solid #3d485a!important; border-radius:var(--r-sm) var(--r-sm) 0 0;
+  box-sizing:border-box; background:#172234; clip-path:inset(0 round var(--r-sm) var(--r-sm) 0 0);
 }
 body.woocommerce-checkout #paymob-elements button,
 body.woocommerce-checkout #paymob-elements [role="button"] {

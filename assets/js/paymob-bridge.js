@@ -119,9 +119,11 @@
 
       root.querySelectorAll('iframe').forEach((frame) => {
         frame.style.setProperty('border', '0', 'important');
-        frame.style.setProperty('border-radius', '10px', 'important');
+        frame.style.setProperty('border-right', '1px solid #3d485a', 'important');
+        frame.style.setProperty('border-radius', '10px 10px 0 0', 'important');
+        frame.style.setProperty('box-sizing', 'border-box', 'important');
         frame.style.setProperty('background-color', '#172234', 'important');
-        frame.style.setProperty('clip-path', 'inset(0 round 10px)', 'important');
+        frame.style.setProperty('clip-path', 'inset(0 round 10px 10px 0 0)', 'important');
       });
 
       if (!observedRoots.has(root)) {
