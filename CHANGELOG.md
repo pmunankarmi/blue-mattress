@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.7.39
+
+- Redirected legacy Arabic page slugs, including WooCommerce endpoints, to their clean canonical URLs.
+
 ## 2.7.38
 
 - Fixed the Arabic footer terms link so it resolves to the translated WooCommerce terms page.

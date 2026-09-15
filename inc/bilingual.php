@@ -289,6 +289,51 @@ function blue_arabic_clean_page_link( string $url, int $post_id ): string {
 }
 add_filter( 'page_link', 'blue_arabic_clean_page_link', 12, 2 );
 
+/** Redirect legacy Arabic record slugs (such as /ar/shop-ar/) to clean aliases. */
+add_action(
+	'template_redirect',
+	function (): void {
+		if ( is_admin() || wp_doing_ajax() || is_preview() || ! is_page() || ! blue_is_arabic() ) {
+			return;
+		}
+
+		$page_id = (int) get_queried_object_id();
+		$clean_uri = array_search( $page_id, blue_arabic_clean_page_aliases(), true );
+		if ( false === $clean_uri ) {
+			return;
+		}
+
+		$internal_uri = trim( (string) get_page_uri( $page_id ), '/' );
+		if ( ! $internal_uri || $internal_uri === $clean_uri ) {
+			return;
+		}
+
+		$request_path = trim( (string) wp_parse_url( wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ), PHP_URL_PATH ), '/' );
+		$arabic_home  = trim( (string) wp_parse_url( blue_language_home_url( 'ar' ), PHP_URL_PATH ), '/' );
+		$legacy_path  = trim( $arabic_home . '/' . $internal_uri, '/' );
+		if ( $request_path !== $legacy_path && ! str_starts_with( $request_path, $legacy_path . '/' ) ) {
+			return;
+		}
+
+		$suffix = ltrim( substr( $request_path, strlen( $legacy_path ) ), '/' );
+		$target = trailingslashit( blue_language_home_url( 'ar' ) ) . trailingslashit( (string) $clean_uri );
+		if ( $suffix ) {
+			$target .= trailingslashit( $suffix );
+		}
+		if ( ! empty( $_GET ) ) {
+			$query = wp_unslash( $_GET );
+			unset( $query['lang'], $query['blue_lang'] );
+			if ( $query ) {
+				$target = add_query_arg( $query, $target );
+			}
+		}
+
+		wp_safe_redirect( $target, 301, 'Blue Mattress' );
+		exit;
+	},
+	1
+);
+
 /** Route clean Arabic aliases to their existing Polylang translation records. */
 add_action(
 	'init',
