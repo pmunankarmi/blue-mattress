@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.7.35
+
+- Reliably removed Paymob's payment-method label and Card selector even when its SDK renders duplicate Card choices.
+- Added 20px inline padding around the complete Card Information field group to match the checkout reference.
+
 ## 2.7.34
 
 - Removed Paymob's redundant payment-method selector when Card is the only available embedded method.

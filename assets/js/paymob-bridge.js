@@ -68,8 +68,10 @@
           const label = (choice.textContent || '').trim();
           return choice.tagName === 'DIV' && label && label.length <= 40 && Boolean(choice.querySelector('img, svg'));
         });
+        const choiceLabels = choices.map((choice) => (choice.textContent || '').trim().replace(/\s+/g, ' ').toLocaleLowerCase());
+        const uniqueLabels = new Set(choiceLabels);
 
-        if (choices.length === 1 && /^(card|بطاقة|البطاقة)$/i.test((choices[0].textContent || '').trim())) {
+        if (choices.length && 1 === uniqueLabels.size && /^(card|بطاقة|البطاقة)$/i.test(choiceLabels[0])) {
           row.dataset.bluePaymobSingleCard = 'true';
           row.setAttribute('aria-hidden', 'true');
           row.style.setProperty('display', 'none', 'important');
@@ -103,6 +105,16 @@
             label.style.setProperty('display', 'none', 'important');
           }
         });
+
+        const cardInformationLabel = Array.from(root.querySelectorAll('p')).find((label) =>
+          /^(card information|معلومات البطاقة)$/i.test((label.textContent || '').trim())
+        );
+        const cardInformation = cardInformationLabel?.parentElement?.parentElement;
+        if (cardInformation) {
+          cardInformation.dataset.bluePaymobCardInformation = 'true';
+          cardInformation.style.setProperty('box-sizing', 'border-box', 'important');
+          cardInformation.style.setProperty('padding-inline', '20px', 'important');
+        }
       }
 
       root.querySelectorAll('iframe').forEach((frame) => {
