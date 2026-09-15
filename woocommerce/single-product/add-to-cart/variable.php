@@ -76,7 +76,11 @@ do_action( 'woocommerce_before_add_to_cart_form' );
 										$option_description = '';
 									}
 								}
-								$price_html = wc_price( wc_get_price_to_display( $variation_product ) );
+								$regular_price = $variation_product->get_regular_price();
+								$display_price = '' !== $regular_price
+									? wc_get_price_to_display( $variation_product, array( 'price' => (float) $regular_price ) )
+									: wc_get_price_to_display( $variation_product );
+								$price_html = wc_price( $display_price );
 							}
 							$is_selected = (string) $selected === $option_slug || ( ! $selected && 0 === $option_index );
 							?>

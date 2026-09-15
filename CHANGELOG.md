@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.7.33
+
+- Changed product size-option cards to display each variation's regular price instead of its discounted price.
+- Kept the selected discounted price in the main price area and add-to-cart button.
+
 ## 2.7.32
 
 - Restyled the single-product sale badge as the compact navy pill used by the reference design.
