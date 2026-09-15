@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.7.34
+
+- Removed Paymob's redundant payment-method selector when Card is the only available embedded method.
+- Clipped the embedded card-details frame to remove the white top-corner artifact.
+
 ## 2.7.33
 
 - Changed product size-option cards to display each variation's regular price instead of its discounted price.

@@ -62,11 +62,20 @@
       .filter(Boolean);
 
     roots.forEach((root) => {
+      let singleCardSelectorHidden = false;
       Array.from(root.querySelectorAll('div')).forEach((row) => {
         const choices = Array.from(row.children).filter((choice) => {
           const label = (choice.textContent || '').trim();
-          return choice.tagName === 'DIV' && label && label.length <= 40 && Boolean(choice.querySelector('img'));
+          return choice.tagName === 'DIV' && label && label.length <= 40 && Boolean(choice.querySelector('img, svg'));
         });
+
+        if (choices.length === 1 && /^(card|بطاقة|البطاقة)$/i.test((choices[0].textContent || '').trim())) {
+          row.dataset.bluePaymobSingleCard = 'true';
+          row.setAttribute('aria-hidden', 'true');
+          row.style.setProperty('display', 'none', 'important');
+          singleCardSelectorHidden = true;
+          return;
+        }
 
         if (choices.length < 2) return;
 
@@ -84,6 +93,23 @@
 
           seen.add(label);
         });
+      });
+
+      if (singleCardSelectorHidden) {
+        Array.from(root.querySelectorAll('div, p, span, label')).forEach((label) => {
+          const text = (label.textContent || '').trim().replace(/\s+/g, ' ').toLocaleLowerCase();
+          if ('payment method' === text || 'طريقة الدفع' === text) {
+            label.setAttribute('aria-hidden', 'true');
+            label.style.setProperty('display', 'none', 'important');
+          }
+        });
+      }
+
+      root.querySelectorAll('iframe').forEach((frame) => {
+        frame.style.setProperty('border', '0', 'important');
+        frame.style.setProperty('border-radius', '10px', 'important');
+        frame.style.setProperty('background-color', '#172234', 'important');
+        frame.style.setProperty('clip-path', 'inset(0 round 10px)', 'important');
       });
 
       if (!observedRoots.has(root)) {
