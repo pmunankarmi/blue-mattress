@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.8.1
+
+- Removed 60 MB of presentation images and videos from the installable theme package.
+- Kept a resumable Media Library migration backed by the immutable `v2.8.0` archive, so every WordPress site can import the assets independently.
+- Added safe pinned-archive fallbacks and an administrator reminder until all 65 assets are stored in WordPress uploads.
+
 ## 2.8.0
 
 - Added a resumable Theme Media migration that imports all bundled images and videos into the WordPress Media Library.
