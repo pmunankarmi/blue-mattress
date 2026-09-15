@@ -425,6 +425,14 @@ add_action(
 	}
 );
 
+/** Match the reference sale-pill label on WooCommerce product galleries. */
+add_filter(
+	'woocommerce_sale_flash',
+	function (): string {
+		return '<span class="onsale">' . esc_html( blue_text( 'Sale', 'تخفيض' ) ) . '</span>';
+	}
+);
+
 /** Reference heart control beside the primary add-to-cart button. */
 add_action(
 	'woocommerce_after_add_to_cart_button',

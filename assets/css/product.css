@@ -285,7 +285,15 @@
 .blue-product-detail .pd-ti-n { font-size:2.8rem; line-height:1; color:#fff; }
 .blue-product-detail .pd-ti-t { color:#9eacc4; font-size:.65rem; font-weight:700; letter-spacing:.17em; text-transform:uppercase; }
 .blue-product-detail .pd-ti-cta { margin-top:10px; color:#9fb7ff; font-size:.72rem; font-weight:700; }
-.blue-product-detail .onsale { top:16px; left:16px; right:auto; z-index:4; background:#e9eff8; color:#0b111b; }
+body.single-product .blue-product-detail .pd-gallery > span.onsale {
+  top:16px!important; left:16px!important; right:auto!important; inset-inline-start:16px!important; z-index:4;
+  display:inline-flex; align-items:center; justify-content:center; width:auto; min-width:0; height:34px; min-height:0;
+  margin:0; padding:0 15px; border-radius:var(--r-pill); background:#132036; color:#fff;
+  font:700 .66rem/1 var(--font-body); letter-spacing:.1em; text-align:center; text-transform:uppercase;
+}
+[dir="rtl"] body.single-product .blue-product-detail .pd-gallery > span.onsale {
+  left:auto!important; right:16px!important;
+}
 
 .blue-product-detail .summary.pd-buy { float:none!important; width:auto!important; margin:0!important; color:#e9eff8; }
 .blue-product-detail .pd-kind { color:#8da9ff; margin:0; }

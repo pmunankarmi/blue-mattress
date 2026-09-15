@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.7.32
+
+- Restyled the single-product sale badge as the compact navy pill used by the reference design.
+- Moved the sale badge fully inside the main image, added RTL-safe positioning and removed WooCommerce's exclamation mark.
+
 ## 2.7.31
 
 - Fixed the WooCommerce empty-cart icon glyph overlapping the message text.
