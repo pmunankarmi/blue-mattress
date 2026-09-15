@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.7.38
+
+- Fixed the Arabic footer terms link so it resolves to the translated WooCommerce terms page.
+- Contained decorative cart and checkout glows within their cards to remove RTL horizontal overflow.
+
 ## 2.7.37
 
 - Made translated WooCommerce core pages resolve as Shop, Cart, Checkout and My Account so their Arabic layouts load the correct theme templates and styles.

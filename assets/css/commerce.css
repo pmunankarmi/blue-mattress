@@ -93,7 +93,7 @@ body.woocommerce-cart table.shop_table td.actions .coupon .input-text {
 }
 body.woocommerce-cart .cart-collaterals { display:contents; width:auto; }
 body.woocommerce-cart .cart-collaterals .cart_totals {
-	grid-column:2; grid-row:1; float:none; width:100%; position:static; top:auto;
+	grid-column:2; grid-row:1; float:none; width:100%; position:relative; top:auto;
 	padding:clamp(24px,3vw,34px); overflow:hidden; border:1px solid rgba(233,239,248,.12);
 	border-radius:var(--r-lg); background:var(--navy); color:#e9eff8; box-shadow:var(--shadow-md);
 }
@@ -230,7 +230,7 @@ body.woocommerce-checkout form .form-row input:focus,
 body.woocommerce-checkout form .form-row textarea:focus { border-color:var(--royal); box-shadow:0 0 0 3px rgba(var(--royal-rgb),.1); }
 body.woocommerce-checkout form .form-row.woocommerce-invalid input.input-text { border-color:var(--danger); }
 body.woocommerce-checkout #order_review {
-  position:static; top:auto; align-self:start; padding:clamp(22px,3vw,32px); overflow:visible;
+  position:relative; top:auto; align-self:start; padding:clamp(22px,3vw,32px); overflow:hidden;
   border:1px solid rgba(233,239,248,.12); border-radius:var(--r-lg); background:var(--navy); color:#e9eff8;
   box-shadow:var(--shadow-md);
 }
