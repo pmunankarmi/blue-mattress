@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.7.37
+
+- Made translated WooCommerce core pages resolve as Shop, Cart, Checkout and My Account so their Arabic layouts load the correct theme templates and styles.
+- Added clean canonical Arabic routes for every Polylang page translation without exposing internal `-ar` or localized database slugs.
+- Added clean Arabic Shop pagination plus Checkout and My Account endpoint routes.
+- Removed off-screen skip-link and contact honeypot positioning that caused extreme horizontal overflow on RTL pages.
+
 ## 2.7.36
 
 - Squared the embedded Paymob card frame's bottom corners so it joins the cardholder-name row cleanly.

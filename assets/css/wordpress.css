@@ -101,7 +101,10 @@ body[data-header="overlay"] .site-header .blue-language-switcher,
 .blue-post-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 2rem; }
 .blue-card { padding: 1rem; background: #fff; }
 .blue-card img { aspect-ratio: 4/3; object-fit: cover; }
-.blue-honeypot { position: absolute !important; left: -10000px !important; width: 1px; height: 1px; overflow: hidden; }
+.blue-honeypot {
+  position:absolute!important; inset-inline-start:0!important; width:1px; height:1px; padding:0; margin:0;
+  overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap; border:0; pointer-events:none;
+}
 .blue-company-field { display: none; }
 .blue-company-field.is-visible { display: block; }
 .blue-form-alert { margin-bottom: 1.25rem; padding: .9rem 1rem; border-inline-start: 4px solid #ad2e2e; background: #fff0f0; color: #7e1919; }

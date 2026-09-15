@@ -210,6 +210,127 @@ function blue_language_home_url( string $language ): string {
 	return 'ar' === $language ? trailingslashit( $home ) . 'ar/' : trailingslashit( $home );
 }
 
+/**
+ * Let WooCommerce recognize translated core pages on the storefront.
+ *
+ * Polylang Free does not include the WooCommerce integration that normally
+ * swaps these IDs. Without this bridge, translated Shop and Checkout records
+ * are rendered as empty or unstyled ordinary pages.
+ */
+function blue_woocommerce_page_id_for_language( $page_id ): int {
+	$page_id = (int) $page_id;
+	if ( $page_id < 1 || ! function_exists( 'pll_get_post' ) || ( is_admin() && ! wp_doing_ajax() ) ) {
+		return $page_id;
+	}
+
+	$translated_id = (int) pll_get_post( $page_id, blue_language() );
+	return $translated_id > 0 ? $translated_id : $page_id;
+}
+foreach ( array( 'shop', 'cart', 'checkout', 'myaccount', 'terms' ) as $blue_wc_page ) {
+	add_filter( 'woocommerce_get_' . $blue_wc_page . '_page_id', 'blue_woocommerce_page_id_for_language', 20 );
+}
+
+/**
+ * Return clean Arabic aliases for every translated page.
+ *
+ * The installed Polylang Free edition cannot store duplicate page slugs, so
+ * the Arabic records retain their internal slugs while visitors receive the
+ * canonical English counterpart beneath /ar/.
+ *
+ * @return array<string, int> English page URI => Arabic page ID.
+ */
+function blue_arabic_clean_page_aliases(): array {
+	static $aliases = null;
+	if ( null !== $aliases ) {
+		return $aliases;
+	}
+
+	$aliases = array();
+	if ( ! function_exists( 'pll_get_post' ) || ! function_exists( 'pll_get_post_language' ) ) {
+		return $aliases;
+	}
+
+	$front_page_id = (int) get_option( 'page_on_front' );
+	$front_page_id = (int) ( pll_get_post( $front_page_id, 'en' ) ?: $front_page_id );
+	$source_ids    = get_posts(
+		array(
+			'post_type'      => 'page',
+			'post_status'    => 'publish',
+			'posts_per_page' => -1,
+			'fields'         => 'ids',
+			'lang'           => 'en',
+			'suppress_filters' => false,
+		)
+	);
+
+	foreach ( array_unique( array_filter( $source_ids ) ) as $source_id ) {
+		$source_id = (int) $source_id;
+		if ( $source_id === $front_page_id || 'en' !== pll_get_post_language( $source_id, 'slug' ) ) {
+			continue;
+		}
+		$arabic_id = (int) pll_get_post( $source_id, 'ar' );
+		$uri       = trim( (string) get_page_uri( $source_id ), '/' );
+		if ( $arabic_id > 0 && $uri ) {
+			$aliases[ $uri ] = $arabic_id;
+		}
+	}
+
+	return $aliases;
+}
+
+/** Use the clean /ar/{english-slug}/ URL when linking to an Arabic page. */
+function blue_arabic_clean_page_link( string $url, int $post_id ): string {
+	foreach ( blue_arabic_clean_page_aliases() as $uri => $arabic_id ) {
+		if ( $arabic_id === $post_id ) {
+			return trailingslashit( blue_language_home_url( 'ar' ) ) . trailingslashit( $uri );
+		}
+	}
+	return $url;
+}
+add_filter( 'page_link', 'blue_arabic_clean_page_link', 12, 2 );
+
+/** Route clean Arabic aliases to their existing Polylang translation records. */
+add_action(
+	'init',
+	function (): void {
+		foreach ( blue_arabic_clean_page_aliases() as $uri => $arabic_id ) {
+			$pattern = preg_quote( $uri, '#' );
+			add_rewrite_rule( '^ar/' . $pattern . '/?$', 'index.php?page_id=' . $arabic_id . '&lang=ar', 'top' );
+
+			if ( $arabic_id === (int) pll_get_post( (int) get_option( 'woocommerce_shop_page_id' ), 'ar' ) ) {
+				add_rewrite_rule( '^ar/' . $pattern . '/page/([0-9]{1,})/?$', 'index.php?page_id=' . $arabic_id . '&lang=ar&paged=$matches[1]', 'top' );
+			}
+			if ( $arabic_id === (int) pll_get_post( (int) get_option( 'woocommerce_checkout_page_id' ), 'ar' ) ) {
+				add_rewrite_rule( '^ar/' . $pattern . '/order-pay/([0-9]+)/?$', 'index.php?page_id=' . $arabic_id . '&lang=ar&order-pay=$matches[1]', 'top' );
+				add_rewrite_rule( '^ar/' . $pattern . '/order-received/([0-9]+)/?$', 'index.php?page_id=' . $arabic_id . '&lang=ar&order-received=$matches[1]', 'top' );
+			}
+
+			if ( $arabic_id === (int) pll_get_post( (int) get_option( 'woocommerce_myaccount_page_id' ), 'ar' ) ) {
+				$account_endpoints = array(
+					'orders'                     => 'woocommerce_myaccount_orders_endpoint',
+					'view-order'                 => 'woocommerce_myaccount_view_order_endpoint',
+					'downloads'                  => 'woocommerce_myaccount_downloads_endpoint',
+					'edit-account'               => 'woocommerce_myaccount_edit_account_endpoint',
+					'edit-address'               => 'woocommerce_myaccount_edit_address_endpoint',
+					'payment-methods'            => 'woocommerce_myaccount_payment_methods_endpoint',
+					'lost-password'              => 'woocommerce_myaccount_lost_password_endpoint',
+					'customer-logout'            => 'woocommerce_logout_endpoint',
+				);
+				foreach ( $account_endpoints as $query_var => $option_name ) {
+					$endpoint = trim( (string) get_option( $option_name, $query_var ), '/' );
+					if ( ! $endpoint ) {
+						continue;
+					}
+					$endpoint_pattern = preg_quote( $endpoint, '#' );
+					add_rewrite_rule( '^ar/' . $pattern . '/' . $endpoint_pattern . '/?$', 'index.php?page_id=' . $arabic_id . '&lang=ar&' . $query_var . '=1', 'top' );
+					add_rewrite_rule( '^ar/' . $pattern . '/' . $endpoint_pattern . '/([^/]+)/?$', 'index.php?page_id=' . $arabic_id . '&lang=ar&' . $query_var . '=$matches[1]', 'top' );
+				}
+			}
+		}
+	},
+	20
+);
+
 /** Convert a same-site URL between the shared English and Arabic routes. */
 function blue_url_for_language( string $url, string $language ): string {
 	$language = 'ar' === $language ? 'ar' : 'en';
@@ -280,12 +401,12 @@ function blue_current_url_for_language( string $language, string $fallback = '' 
 		$target_uri = trim( (string) get_page_uri( $target_id ), '/' );
 
 		if ( $target_uri ) {
-			$url = trailingslashit( blue_language_home_url( $language ) ) . trailingslashit( $target_uri );
+			$url = get_permalink( $target_id );
+			$url = $url ? trailingslashit( $url ) : trailingslashit( blue_language_home_url( $language ) ) . trailingslashit( $target_uri );
 
 			// Retain WooCommerce account endpoints such as /orders/ or /edit-account/.
-			$current_uri  = trim( (string) get_page_uri( $page_id ), '/' );
-			$current_home = (string) ( wp_parse_url( blue_language_home_url( blue_language() ), PHP_URL_PATH ) ?: '/' );
-			$current_base = '/' . trim( trailingslashit( $current_home ) . $current_uri, '/' ) . '/';
+			$current_permalink = get_permalink( $page_id );
+			$current_base      = trailingslashit( (string) ( wp_parse_url( (string) $current_permalink, PHP_URL_PATH ) ?: '/' ) );
 			$request_path = (string) ( wp_parse_url( (string) ( $_SERVER['REQUEST_URI'] ?? '' ), PHP_URL_PATH ) ?: '/' );
 			if ( str_starts_with( trailingslashit( $request_path ), $current_base ) ) {
 				$endpoint = trim( substr( trailingslashit( $request_path ), strlen( $current_base ) ), '/' );
