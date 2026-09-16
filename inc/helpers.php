@@ -36,13 +36,14 @@ function blue_field( string $name, mixed $default = '', int|false $post_id = fal
 
 /** Resolve a translated page template URL. */
 function blue_page_url( string $template, string $fallback = '/' ): string {
+	$language = blue_language();
 	$args = array(
 			'post_type'      => 'page',
 			'post_status'    => 'publish',
 			'posts_per_page' => 1,
 			'meta_key'       => '_wp_page_template',
 			'meta_value'     => $template,
-			'lang'           => blue_language(),
+			'lang'           => $language,
 		);
 	$pages = get_posts( $args );
 	if ( ! $pages ) {
@@ -51,10 +52,55 @@ function blue_page_url( string $template, string $fallback = '/' ): string {
 	}
 
 	if ( $pages ) {
-		return get_permalink( $pages[0] );
+		$page_id = (int) $pages[0]->ID;
+		if ( function_exists( 'pll_get_post' ) ) {
+			$translated_id = (int) pll_get_post( $page_id, $language );
+			if ( $translated_id > 0 ) {
+				$page_id = $translated_id;
+			}
+		}
+
+		$url = get_permalink( $page_id );
+		if ( $url ) {
+			return blue_url_for_language( $url, $language );
+		}
 	}
 
 	return blue_home_url( $fallback );
+}
+
+/** Resolve a menu URL to the current-language page without rewriting external links. */
+function blue_navigation_url( string $url, ?WP_Post $menu_item = null ): string {
+	$language = blue_language();
+
+	if ( $menu_item && 'post_type' === $menu_item->type && function_exists( 'pll_get_post' ) ) {
+		$translated_id = (int) pll_get_post( (int) $menu_item->object_id, $language );
+		if ( $translated_id > 0 ) {
+			$translated_url = get_permalink( $translated_id );
+			if ( $translated_url ) {
+				return blue_url_for_language( $translated_url, $language );
+			}
+		}
+	}
+
+	$url = trim( $url );
+	if ( ! $url || str_starts_with( $url, '#' ) || str_starts_with( $url, '?' ) ) {
+		return $url;
+	}
+
+	$parts  = wp_parse_url( $url );
+	$scheme = strtolower( (string) ( is_array( $parts ) ? ( $parts['scheme'] ?? '' ) : '' ) );
+	if ( $scheme && ! in_array( $scheme, array( 'http', 'https' ), true ) ) {
+		return $url;
+	}
+
+	$host      = strtolower( (string) ( is_array( $parts ) ? ( $parts['host'] ?? '' ) : '' ) );
+	$home_host = strtolower( (string) wp_parse_url( home_url( '/' ), PHP_URL_HOST ) );
+	if ( $host && $home_host && $host !== $home_host ) {
+		return $url;
+	}
+
+	return blue_url_for_language( $url, $language );
 }
 
 /** Build the language switcher from Polylang without failing when it is inactive. */

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.8.3
+
+- Added separate WordPress menus for English and Arabic and assigned them to Polylang's language-specific Primary locations.
+- Localized configured primary and footer menu links to the active Polylang page translation.
+- Prevented Arabic page-template navigation fallbacks from linking back to English pages.
+- Preserved external, anchor, query-only, email, and telephone menu links unchanged.
+
 ## 2.8.2
 
 - Added a soft dark gradient behind the homepage navigation for reliable contrast over bright banner images and video.

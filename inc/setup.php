@@ -7,6 +7,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
+const BLUE_PRIMARY_MENUS_SCHEMA_VERSION = '1';
+
 add_action(
 	'after_setup_theme',
 	function (): void {
@@ -34,6 +36,11 @@ add_action(
 add_filter(
 	'nav_menu_link_attributes',
 	function ( array $atts, WP_Post $menu_item, stdClass $args ): array {
+		if ( ! in_array( (string) ( $args->theme_location ?? '' ), array( 'primary', 'footer' ), true ) ) {
+			return $atts;
+		}
+
+		$atts['href'] = blue_navigation_url( (string) ( $atts['href'] ?? $menu_item->url ), $menu_item );
 		if ( 'primary' !== ( $args->theme_location ?? '' ) ) {
 			return $atts;
 		}
@@ -41,7 +48,7 @@ add_filter(
 		$classes = preg_split( '/\s+/', (string) ( $atts['class'] ?? '' ), -1, PREG_SPLIT_NO_EMPTY ) ?: array();
 		$classes[] = 'nav-link';
 		$shop_url  = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : '';
-		$item_url  = untrailingslashit( (string) $menu_item->url );
+		$item_url  = untrailingslashit( (string) $atts['href'] );
 		if ( $shop_url && untrailingslashit( $shop_url ) === $item_url ) {
 			$classes[] = 'nav-store';
 		}
@@ -531,6 +538,130 @@ add_action(
 			blue_ensure_core_pages();
 		}
 	}
+);
+
+/** Find a core page in a specific language for the generated WordPress menus. */
+function blue_primary_menu_page_id( string $template, string $language ): int {
+	$pages = get_posts(
+		array(
+			'post_type'        => 'page',
+			'post_status'      => 'publish',
+			'posts_per_page'   => 1,
+			'fields'           => 'ids',
+			'meta_key'         => '_wp_page_template',
+			'meta_value'       => $template,
+			'lang'             => 'en',
+			'suppress_filters' => false,
+		)
+	);
+	if ( ! $pages ) {
+		return 0;
+	}
+
+	$page_id = (int) $pages[0];
+	if ( function_exists( 'pll_get_post' ) ) {
+		$page_id = (int) ( pll_get_post( $page_id, $language ) ?: $page_id );
+	}
+	return $page_id;
+}
+
+/** Create one standard WordPress primary menu and populate it when empty. */
+function blue_ensure_primary_menu( string $name, string $language ): int {
+	$menu = wp_get_nav_menu_object( $name );
+	if ( ! $menu || is_wp_error( $menu ) ) {
+		$menu_id = wp_create_nav_menu( $name );
+		if ( is_wp_error( $menu_id ) ) {
+			return 0;
+		}
+	} else {
+		$menu_id = (int) $menu->term_id;
+	}
+
+	$existing_items = wp_get_nav_menu_items( $menu_id, array( 'post_status' => 'any' ) );
+	if ( is_array( $existing_items ) && $existing_items ) {
+		return $menu_id;
+	}
+
+	$shop_id = function_exists( 'wc_get_page_id' ) ? (int) wc_get_page_id( 'shop' ) : (int) get_option( 'woocommerce_shop_page_id' );
+	if ( $shop_id > 0 && function_exists( 'pll_get_post' ) ) {
+		$shop_id = (int) ( pll_get_post( $shop_id, $language ) ?: $shop_id );
+	}
+
+	$labels = 'ar' === $language
+		? array(
+			'shop'    => 'المتجر الإلكتروني',
+			'finder'  => 'مرشد المراتب',
+			'story'   => 'قصتنا',
+			'stark'   => 'ستارك',
+			'contact' => 'تواصل معنا',
+		)
+		: array(
+			'shop'    => 'Online Store',
+			'finder'  => 'Mattress Finder',
+			'story'   => 'Our Story',
+			'stark'   => 'STARK',
+			'contact' => 'Contact',
+		);
+
+	$items = array(
+		array( $labels['shop'], $shop_id ),
+		array( $labels['finder'], blue_primary_menu_page_id( 'page-mattress-finder.php', $language ) ),
+		array( $labels['story'], blue_primary_menu_page_id( 'page-our-story.php', $language ) ),
+		array( $labels['stark'], blue_primary_menu_page_id( 'page-stark.php', $language ) ),
+		array( $labels['contact'], blue_primary_menu_page_id( 'page-contact.php', $language ) ),
+	);
+
+	$position = 1;
+	foreach ( $items as list( $label, $page_id ) ) {
+		if ( $page_id < 1 ) {
+			continue;
+		}
+		wp_update_nav_menu_item(
+			$menu_id,
+			0,
+			array(
+				'menu-item-title'     => $label,
+				'menu-item-object'    => 'page',
+				'menu-item-object-id' => $page_id,
+				'menu-item-type'      => 'post_type',
+				'menu-item-position'  => $position++,
+				'menu-item-status'    => 'publish',
+			)
+		);
+	}
+
+	return $menu_id;
+}
+
+/** Create and assign separate English and Arabic menus to Polylang locations. */
+function blue_ensure_language_primary_menus(): void {
+	$english_menu = blue_ensure_primary_menu( 'Blue Primary — English', 'en' );
+	$arabic_menu  = blue_ensure_primary_menu( 'Blue Primary — العربية', 'ar' );
+	if ( ! $english_menu || ! $arabic_menu ) {
+		return;
+	}
+
+	$locations                  = (array) get_theme_mod( 'nav_menu_locations', array() );
+	$locations['primary']       = $english_menu;
+	$locations['primary___en']  = $english_menu;
+	$locations['primary___ar']  = $arabic_menu;
+	set_theme_mod( 'nav_menu_locations', $locations );
+	update_option( 'blue_primary_menus_version', BLUE_PRIMARY_MENUS_SCHEMA_VERSION, false );
+}
+function blue_maybe_ensure_language_primary_menus(): void {
+	if ( BLUE_PRIMARY_MENUS_SCHEMA_VERSION !== get_option( 'blue_primary_menus_version' ) ) {
+		blue_ensure_language_primary_menus();
+	}
+}
+add_action( 'after_switch_theme', 'blue_maybe_ensure_language_primary_menus', 40 );
+add_action(
+	'admin_init',
+	function (): void {
+		if ( current_user_can( 'edit_theme_options' ) ) {
+			blue_maybe_ensure_language_primary_menus();
+		}
+	},
+	40
 );
 
 add_action(
