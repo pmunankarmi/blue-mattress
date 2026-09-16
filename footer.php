@@ -59,13 +59,27 @@ $footer_terms = is_wp_error( $footer_terms ) ? array() : $footer_terms;
 			</div>
 			<div class="fcol">
 				<h4><?php echo esc_html( blue_text( 'Shop', 'تسوّق' ) ); ?></h4>
-				<ul>
-					<li><a href="<?php echo esc_url( $shop_url ); ?>"><?php echo esc_html( blue_text( 'Online store', 'المتجر الإلكتروني' ) ); ?></a></li>
-					<?php foreach ( $footer_terms as $term ) : ?>
-						<li><a href="<?php echo esc_url( get_term_link( $term ) ); ?>"><?php echo esc_html( blue_product_term_name( $term ) ); ?></a></li>
-					<?php endforeach; ?>
-					<li><a href="<?php echo esc_url( add_query_arg( 'on_sale', '1', $shop_url ) ); ?>"><?php echo esc_html( blue_option( 'footer_sale_label', blue_text( 'Sale', 'التخفيضات' ) ) ); ?></a></li>
-				</ul>
+				<?php if ( has_nav_menu( 'footer' ) ) : ?>
+					<?php
+					wp_nav_menu(
+						array(
+							'theme_location' => 'footer',
+							'container'      => false,
+							'menu_class'     => 'footer-menu',
+							'fallback_cb'    => false,
+							'depth'          => 1,
+						)
+					);
+					?>
+				<?php else : ?>
+					<ul class="footer-menu">
+						<li><a href="<?php echo esc_url( $shop_url ); ?>"><?php echo esc_html( blue_text( 'Online store', 'المتجر الإلكتروني' ) ); ?></a></li>
+						<?php foreach ( $footer_terms as $term ) : ?>
+							<li><a href="<?php echo esc_url( get_term_link( $term ) ); ?>"><?php echo esc_html( blue_product_term_name( $term ) ); ?></a></li>
+						<?php endforeach; ?>
+						<li><a href="<?php echo esc_url( add_query_arg( 'on_sale', '1', $shop_url ) ); ?>"><?php echo esc_html( blue_option( 'footer_sale_label', blue_text( 'Sale', 'التخفيضات' ) ) ); ?></a></li>
+					</ul>
+				<?php endif; ?>
 			</div>
 			<div class="fmap footer-contact">
 				<h4><?php echo esc_html( blue_text( 'Find us', 'موقعنا' ) ); ?></h4>

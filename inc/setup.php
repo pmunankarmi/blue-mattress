@@ -8,6 +8,7 @@
 defined( 'ABSPATH' ) || exit;
 
 const BLUE_PRIMARY_MENUS_SCHEMA_VERSION = '2';
+const BLUE_FOOTER_MENUS_SCHEMA_VERSION  = '1';
 
 add_action(
 	'after_setup_theme',
@@ -659,11 +660,101 @@ function blue_maybe_ensure_language_primary_menus(): void {
 	}
 }
 add_action( 'after_switch_theme', 'blue_maybe_ensure_language_primary_menus', 40 );
+
+/** Create one editable shop-focused WordPress footer menu. */
+function blue_ensure_footer_menu( string $name, string $language ): int {
+	$menu = wp_get_nav_menu_object( $name );
+	if ( ! $menu || is_wp_error( $menu ) ) {
+		$menu_id = wp_create_nav_menu( $name );
+		if ( is_wp_error( $menu_id ) ) {
+			return 0;
+		}
+	} else {
+		$menu_id = (int) $menu->term_id;
+	}
+
+	$existing_items = wp_get_nav_menu_items( $menu_id, array( 'post_status' => 'any' ) );
+	if ( is_array( $existing_items ) && $existing_items ) {
+		return $menu_id;
+	}
+
+	$position = 1;
+	$shop_id  = function_exists( 'wc_get_page_id' ) ? (int) wc_get_page_id( 'shop' ) : (int) get_option( 'woocommerce_shop_page_id' );
+	if ( $shop_id > 0 && function_exists( 'pll_get_post' ) ) {
+		$shop_id = (int) ( pll_get_post( $shop_id, $language ) ?: $shop_id );
+	}
+	if ( $shop_id > 0 ) {
+		wp_update_nav_menu_item(
+			$menu_id,
+			0,
+			array(
+				'menu-item-title'     => 'ar' === $language ? 'المتجر الإلكتروني' : 'Online Store',
+				'menu-item-object'    => 'page',
+				'menu-item-object-id' => $shop_id,
+				'menu-item-type'      => 'post_type',
+				'menu-item-position'  => $position++,
+				'menu-item-status'    => 'publish',
+			)
+		);
+	}
+
+	$terms = taxonomy_exists( 'product_cat' )
+		? get_terms( array( 'taxonomy' => 'product_cat', 'hide_empty' => true, 'number' => 5 ) )
+		: array();
+	foreach ( is_wp_error( $terms ) ? array() : $terms as $term ) {
+		if ( ! $term instanceof WP_Term ) {
+			continue;
+		}
+		$label = $term->name;
+		if ( 'ar' === $language ) {
+			$label = blue_product_term_arabic_value( $term, 'name' ) ?: $label;
+		} elseif ( 'mattress' === $term->slug ) {
+			$label = 'Mattresses';
+		}
+		wp_update_nav_menu_item(
+			$menu_id,
+			0,
+			array(
+				'menu-item-title'     => $label,
+				'menu-item-object'    => 'product_cat',
+				'menu-item-object-id' => $term->term_id,
+				'menu-item-type'      => 'taxonomy',
+				'menu-item-position'  => $position++,
+				'menu-item-status'    => 'publish',
+			)
+		);
+	}
+
+	return $menu_id;
+}
+
+/** Create and assign separate English and Arabic footer menus. */
+function blue_ensure_language_footer_menus(): void {
+	$english_menu = blue_ensure_footer_menu( 'Blue Footer — English', 'en' );
+	$arabic_menu  = blue_ensure_footer_menu( 'Blue Footer — العربية', 'ar' );
+	if ( ! $english_menu || ! $arabic_menu ) {
+		return;
+	}
+
+	$locations                 = (array) get_theme_mod( 'nav_menu_locations', array() );
+	$locations['footer']       = $arabic_menu;
+	$locations['footer___en']  = $english_menu;
+	$locations['footer___ar']  = $arabic_menu;
+	set_theme_mod( 'nav_menu_locations', $locations );
+	update_option( 'blue_footer_menus_version', BLUE_FOOTER_MENUS_SCHEMA_VERSION, false );
+}
+function blue_maybe_ensure_language_footer_menus(): void {
+	if ( BLUE_FOOTER_MENUS_SCHEMA_VERSION !== get_option( 'blue_footer_menus_version' ) ) {
+		blue_ensure_language_footer_menus();
+	}
+}
+add_action( 'after_switch_theme', 'blue_maybe_ensure_language_footer_menus', 45 );
 add_action(
 	'admin_init',
 	function (): void {
 		if ( current_user_can( 'edit_theme_options' ) ) {
 			blue_maybe_ensure_language_primary_menus();
+			blue_maybe_ensure_language_footer_menus();
 		}
 	},
 	40

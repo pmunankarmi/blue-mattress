@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.8.5
+
+- Added separate editable WordPress footer menus for English and Arabic.
+- Assigned each menu to Polylang's language-specific Footer location, with Arabic as the base location.
+- Replaced the hardcoded footer shop list with the assigned WordPress menu while retaining a safe dynamic fallback.
+
 ## 2.8.4
 
 - Made Arabic the unprefixed default language and moved English routes beneath `/en/`.
