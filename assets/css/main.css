@@ -233,6 +233,21 @@ html[lang="ar"] .display { line-height: 1.35; font-weight: 700; }
   transition: background .35s, box-shadow .35s, border-color .35s;
   border-bottom: 1px solid transparent;
 }
+/* Keep overlay navigation legible over bright hero artwork. The shade extends
+   below the header and fades to transparent so there is no visible hard edge. */
+body[data-header="overlay"] .site-header:not(.scrolled)::before {
+  content: "";
+  position: absolute; inset: 0 0 auto;
+  height: calc(100% + clamp(44px, 6vw, 88px));
+  background: linear-gradient(
+    180deg,
+    rgba(5, 12, 24, .86) 0%,
+    rgba(5, 12, 24, .62) 38%,
+    rgba(5, 12, 24, .28) 68%,
+    rgba(5, 12, 24, 0) 100%
+  );
+  pointer-events: none;
+}
 .site-header.scrolled, .site-header.solid {
   background: rgba(247, 244, 238, .88);
   backdrop-filter: blur(14px);
@@ -240,6 +255,7 @@ html[lang="ar"] .display { line-height: 1.35; font-weight: 700; }
   border-bottom-color: var(--line-soft);
 }
 .nav-row {
+  position: relative; z-index: 1;
   display: flex; align-items: center; justify-content: space-between; gap: 24px;
   height: var(--header-h);
   max-width: var(--container-wide); margin-inline: auto; padding-inline: var(--gutter);

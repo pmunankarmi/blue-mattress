@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.8.2
+
+- Added a soft dark gradient behind the homepage navigation for reliable contrast over bright banner images and video.
+- Extended the navigation shade below the header with a transparent fade, removing the visible lower edge.
+
 ## 2.8.1
 
 - Removed 60 MB of presentation images and videos from the installable theme package.
