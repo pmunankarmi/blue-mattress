@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.8.6
+
+- Restored the mobile cart flow so the editable cart table appears before totals and recommendations.
+- Kept notices first, totals second and cross-sells last at every responsive breakpoint without sticky overlap.
+- Increased the mobile quantity field tap target and stacked coupon controls for reliable editing on narrow screens.
+- Contained root-level horizontal overflow, including the logged-in WordPress mobile toolbar view.
+
 ## 2.8.5
 
 - Added separate editable WordPress footer menus for English and Arabic.
