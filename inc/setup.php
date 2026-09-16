@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-const BLUE_PRIMARY_MENUS_SCHEMA_VERSION = '1';
+const BLUE_PRIMARY_MENUS_SCHEMA_VERSION = '2';
 
 add_action(
 	'after_setup_theme',
@@ -467,7 +467,7 @@ function blue_ensure_core_pages(): void {
 			'stark'           => array( 'title' => 'STARK', 'title_ar' => 'ستارك', 'template' => 'page-stark.php' ),
 			'contact'         => array( 'title' => 'Contact', 'title_ar' => 'تواصل معنا', 'template' => 'page-contact.php' ),
 		);
-		$default_ids = array();
+		$english_ids = array();
 		foreach ( $pages as $slug => $page ) {
 			$existing = get_page_by_path( $slug, OBJECT, 'page' );
 			$page_id  = $existing instanceof WP_Post ? $existing->ID : wp_insert_post(
@@ -481,30 +481,26 @@ function blue_ensure_core_pages(): void {
 				true
 			);
 			if ( ! is_wp_error( $page_id ) && $page_id ) {
-				$default_ids[ $slug ] = (int) $page_id;
+				$english_ids[ $slug ] = (int) $page_id;
 				update_post_meta( (int) $page_id, '_wp_page_template', $page['template'] );
-				if ( function_exists( 'pll_set_post_language' ) && function_exists( 'pll_default_language' ) && function_exists( 'pll_get_post_language' ) && ! pll_get_post_language( (int) $page_id ) ) {
-					$default_language = pll_default_language( 'slug' );
-					if ( $default_language ) {
-						pll_set_post_language( (int) $page_id, $default_language );
-					}
+				if ( function_exists( 'pll_set_post_language' ) && function_exists( 'pll_get_post_language' ) && ! pll_get_post_language( (int) $page_id ) ) {
+					pll_set_post_language( (int) $page_id, 'en' );
 				}
 			}
 		}
 
-		if ( function_exists( 'pll_languages_list' ) && function_exists( 'pll_default_language' ) && function_exists( 'pll_set_post_language' ) && function_exists( 'pll_save_post_translations' ) ) {
-			$default_language = pll_default_language( 'slug' );
+		if ( function_exists( 'pll_languages_list' ) && function_exists( 'pll_set_post_language' ) && function_exists( 'pll_save_post_translations' ) ) {
 			$languages        = pll_languages_list( array( 'fields' => 'slug' ) );
 			foreach ( is_array( $languages ) ? $languages : array() as $language ) {
-				if ( ! $language || $language === $default_language ) {
+				if ( ! $language || 'en' === $language ) {
 					continue;
 				}
 				foreach ( $pages as $slug => $page ) {
-					$default_id = $default_ids[ $slug ] ?? 0;
-					if ( ! $default_id ) {
+					$english_id = $english_ids[ $slug ] ?? 0;
+					if ( ! $english_id ) {
 						continue;
 					}
-					$translated_id = function_exists( 'pll_get_post' ) ? (int) pll_get_post( $default_id, $language ) : 0;
+					$translated_id = function_exists( 'pll_get_post' ) ? (int) pll_get_post( $english_id, $language ) : 0;
 					if ( ! $translated_id ) {
 						$translated = get_page_by_path( $slug . '-' . $language, OBJECT, 'page' );
 						$translated_id = $translated instanceof WP_Post ? $translated->ID : (int) wp_insert_post(
@@ -520,8 +516,8 @@ function blue_ensure_core_pages(): void {
 					if ( $translated_id ) {
 						update_post_meta( $translated_id, '_wp_page_template', $page['template'] );
 						pll_set_post_language( $translated_id, $language );
-						$translations = function_exists( 'pll_get_post_translations' ) ? pll_get_post_translations( $default_id ) : array( $default_language => $default_id );
-						$translations[ $default_language ] = $default_id;
+						$translations = function_exists( 'pll_get_post_translations' ) ? pll_get_post_translations( $english_id ) : array( 'en' => $english_id );
+						$translations['en'] = $english_id;
 						$translations[ $language ] = $translated_id;
 						pll_save_post_translations( $translations );
 					}
@@ -546,19 +542,28 @@ function blue_primary_menu_page_id( string $template, string $language ): int {
 		array(
 			'post_type'        => 'page',
 			'post_status'      => 'publish',
-			'posts_per_page'   => 1,
+			'posts_per_page'   => -1,
 			'fields'           => 'ids',
 			'meta_key'         => '_wp_page_template',
 			'meta_value'       => $template,
-			'lang'             => 'en',
-			'suppress_filters' => false,
+			'suppress_filters' => true,
 		)
 	);
 	if ( ! $pages ) {
 		return 0;
 	}
 
-	$page_id = (int) $pages[0];
+	$page_id = 0;
+	foreach ( $pages as $candidate_id ) {
+		$candidate_id = (int) $candidate_id;
+		if ( ! function_exists( 'pll_get_post_language' ) || 'en' === pll_get_post_language( $candidate_id, 'slug' ) ) {
+			$page_id = $candidate_id;
+			break;
+		}
+	}
+	if ( $page_id < 1 ) {
+		return 0;
+	}
 	if ( function_exists( 'pll_get_post' ) ) {
 		$page_id = (int) ( pll_get_post( $page_id, $language ) ?: $page_id );
 	}
@@ -642,7 +647,7 @@ function blue_ensure_language_primary_menus(): void {
 	}
 
 	$locations                  = (array) get_theme_mod( 'nav_menu_locations', array() );
-	$locations['primary']       = $english_menu;
+	$locations['primary']       = $arabic_menu;
 	$locations['primary___en']  = $english_menu;
 	$locations['primary___ar']  = $arabic_menu;
 	set_theme_mod( 'nav_menu_locations', $locations );

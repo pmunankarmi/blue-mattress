@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.8.4
+
+- Made Arabic the unprefixed default language and moved English routes beneath `/en/`.
+- Removed the internal `-ar` suffix from public Arabic page and menu URLs, so Arabic uses `/our-story/` and English uses `/en/our-story/`.
+- Kept permanent redirects from legacy `/ar/` and `-ar` URLs to their new canonical equivalents.
+- Made translated-page discovery independent of the active Polylang frontend language and added a one-time permalink refresh.
+
 ## 2.8.3
 
 - Added separate WordPress menus for English and Arabic and assigned them to Polylang's language-specific Primary locations.

@@ -2,7 +2,8 @@
 /**
  * Native bilingual storefront support for a shared WooCommerce catalog.
  *
- * Polylang Free remains responsible for page languages and /ar/ routing. This
+ * Polylang Free remains responsible for page languages and directory routing.
+ * Arabic is the unprefixed default and English is served beneath /en/. This
  * layer deliberately keeps products, variations and product taxonomies shared,
  * then renders their language-specific ACF values on the server.
  *
@@ -36,13 +37,16 @@ function blue_set_language_override( ?string $language ): void {
 	$GLOBALS['blue_language_override'] = in_array( $language, array( 'en', 'ar' ), true ) ? $language : null;
 }
 
-/** Detect a language prefix when Polylang is unavailable. */
+/** Detect an explicit language prefix in the request path. */
 function blue_request_path_language(): ?string {
 	$request_path = wp_parse_url( (string) ( $_SERVER['REQUEST_URI'] ?? '' ), PHP_URL_PATH );
 	$home_path    = wp_parse_url( (string) get_option( 'home', '' ), PHP_URL_PATH );
 	$relative     = '/' . ltrim( (string) $request_path, '/' );
 	if ( $home_path && '/' !== $home_path && str_starts_with( $relative, trailingslashit( $home_path ) ) ) {
 		$relative = '/' . ltrim( substr( $relative, strlen( untrailingslashit( $home_path ) ) ), '/' );
+	}
+	if ( preg_match( '#^/en(?:/|$)#i', $relative ) ) {
+		return 'en';
 	}
 	return preg_match( '#^/ar(?:/|$)#i', $relative ) ? 'ar' : null;
 }
@@ -71,7 +75,7 @@ function blue_language(): string {
 		}
 	}
 	if ( ! is_admin() && ! wp_doing_ajax() && ! isset( $_GET['wc-ajax'] ) && ! ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		return 'en';
+		return 'ar';
 	}
 
 	if ( function_exists( 'WC' ) && WC() && WC()->session ) {
@@ -148,12 +152,12 @@ add_filter(
 	20
 );
 
-/** Use Arabic locale for the native /ar/ fallback when Polylang is inactive. */
+/** Use Arabic locale on unprefixed storefront URLs when Polylang is inactive. */
 add_filter(
 	'locale',
 	function ( string $locale ): string {
-		if ( ! is_admin() && ! function_exists( 'pll_current_language' ) && 'ar' === blue_request_path_language() ) {
-			return 'ar';
+		if ( ! is_admin() && ! function_exists( 'pll_current_language' ) ) {
+			return 'en' === blue_request_path_language() ? 'en_US' : 'ar';
 		}
 		return $locale;
 	}
@@ -168,11 +172,12 @@ function blue_is_shared_woocommerce_rewrite( string $query ): bool {
 }
 
 /**
- * Add Arabic copies of rewrite rules.
+ * Add English-prefixed copies of shared WooCommerce rewrite rules.
  *
  * Products and product taxonomies are intentionally excluded from Polylang so
  * one WooCommerce record can serve both languages. Polylang therefore does not
- * create /ar/ rules for those objects; the theme must always provide them.
+ * create language rules for those objects; the theme must provide /en/ while
+ * the unprefixed WordPress rule serves default Arabic.
  * Without Polylang, all WordPress rules are copied for the native fallback.
  */
 add_filter( 'query_vars', function ( array $vars ): array { $vars[] = 'blue_lang'; return $vars; } );
@@ -180,21 +185,21 @@ add_filter(
 	'rewrite_rules_array',
 	function ( array $rules ): array {
 		$polylang_active = function_exists( 'pll_current_language' );
-		$arabic          = $polylang_active ? array() : array( 'ar/?$' => 'index.php?blue_lang=ar' );
+		$localized       = $polylang_active ? array() : array( 'en/?$' => 'index.php?blue_lang=en' );
 		foreach ( $rules as $regex => $query ) {
-			if ( str_starts_with( ltrim( $regex, '^' ), 'ar/' ) ) {
+			if ( preg_match( '#^(?:en|ar)/#', ltrim( $regex, '^' ) ) ) {
 				continue;
 			}
 			if ( $polylang_active && ! blue_is_shared_woocommerce_rewrite( $query ) ) {
 				continue;
 			}
-			$suffix = ( str_contains( $query, '?' ) ? '&' : '?' ) . 'blue_lang=ar';
+			$suffix = ( str_contains( $query, '?' ) ? '&' : '?' ) . 'blue_lang=en';
 			if ( $polylang_active && ! preg_match( '/[?&]lang=/', $query ) ) {
-				$suffix .= '&lang=ar';
+				$suffix .= '&lang=en';
 			}
-			$arabic[ 'ar/' . ltrim( $regex, '^' ) ] = $query . $suffix;
+			$localized[ 'en/' . ltrim( $regex, '^' ) ] = $query . $suffix;
 		}
-		return $arabic + $rules;
+		return $localized + $rules;
 	},
 	999
 );
@@ -212,8 +217,35 @@ function blue_language_home_url( string $language ): string {
 	if ( ! $home ) {
 		$home = site_url( '/' );
 	}
-	return 'ar' === $language ? trailingslashit( $home ) . 'ar/' : trailingslashit( $home );
+	return 'en' === $language ? trailingslashit( $home ) . 'en/' : trailingslashit( $home );
 }
+
+/** Configure Polylang once: Arabic at root, English under /en/. */
+function blue_ensure_arabic_default_url_strategy(): void {
+	if ( '1' === get_option( 'blue_arabic_default_url_schema' ) ) {
+		return;
+	}
+	$languages = function_exists( 'pll_languages_list' ) ? pll_languages_list( array( 'fields' => 'slug' ) ) : array();
+	$options   = get_option( 'polylang' );
+	if ( ! is_array( $languages ) || ! in_array( 'ar', $languages, true ) || ! in_array( 'en', $languages, true ) || ! is_array( $options ) ) {
+		return;
+	}
+
+	$options['default_lang']  = 'ar';
+	$options['browser']       = 0;
+	$options['force_lang']    = 1;
+	$options['hide_default']  = 1;
+	$options['rewrite']       = 1;
+	$options['redirect_lang'] = 1;
+	update_option( 'polylang', $options );
+	update_option( 'blue_arabic_default_url_schema', '1', false );
+	delete_option( 'blue_arabic_page_alias_schema' );
+	$GLOBALS['blue_url_strategy_changed'] = true;
+
+	// Regenerate on the next request, when Polylang has loaded the new options.
+	delete_option( 'rewrite_rules' );
+}
+add_action( 'admin_init', 'blue_ensure_arabic_default_url_strategy', 1 );
 
 /**
  * Let WooCommerce recognize translated core pages on the storefront.
@@ -240,7 +272,7 @@ foreach ( array( 'shop', 'cart', 'checkout', 'myaccount', 'terms' ) as $blue_wc_
  *
  * The installed Polylang Free edition cannot store duplicate page slugs, so
  * the Arabic records retain their internal slugs while visitors receive the
- * canonical English counterpart beneath /ar/.
+ * same unprefixed canonical slug as the English page record.
  *
  * @return array<string, int> English page URI => Arabic page ID.
  */
@@ -263,8 +295,7 @@ function blue_arabic_clean_page_aliases(): array {
 			'post_status'    => 'publish',
 			'posts_per_page' => -1,
 			'fields'         => 'ids',
-			'lang'           => 'en',
-			'suppress_filters' => false,
+			'suppress_filters' => true,
 		)
 	);
 
@@ -283,7 +314,7 @@ function blue_arabic_clean_page_aliases(): array {
 	return $aliases;
 }
 
-/** Use the clean /ar/{english-slug}/ URL when linking to an Arabic page. */
+/** Use the clean unprefixed English slug when linking to an Arabic page. */
 function blue_arabic_clean_page_link( string $url, int $post_id ): string {
 	foreach ( blue_arabic_clean_page_aliases() as $uri => $arabic_id ) {
 		if ( $arabic_id === $post_id ) {
@@ -294,29 +325,41 @@ function blue_arabic_clean_page_link( string $url, int $post_id ): string {
 }
 add_filter( 'page_link', 'blue_arabic_clean_page_link', 12, 2 );
 
-/** Redirect legacy Arabic record slugs (such as /ar/shop-ar/) to clean aliases. */
+/** Redirect legacy Arabic record slugs to clean unprefixed aliases. */
 add_action(
 	'template_redirect',
 	function (): void {
-		if ( is_admin() || wp_doing_ajax() || is_preview() || ! is_page() || ! blue_is_arabic() ) {
-			return;
-		}
-
-		$page_id = (int) get_queried_object_id();
-		$clean_uri = array_search( $page_id, blue_arabic_clean_page_aliases(), true );
-		if ( false === $clean_uri ) {
-			return;
-		}
-
-		$internal_uri = trim( (string) get_page_uri( $page_id ), '/' );
-		if ( ! $internal_uri || $internal_uri === $clean_uri ) {
+		if ( is_admin() || wp_doing_ajax() || is_preview() || ! blue_is_arabic() ) {
 			return;
 		}
 
 		$request_path = trim( (string) wp_parse_url( wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ), PHP_URL_PATH ), '/' );
 		$arabic_home  = trim( (string) wp_parse_url( blue_language_home_url( 'ar' ), PHP_URL_PATH ), '/' );
-		$legacy_path  = trim( $arabic_home . '/' . $internal_uri, '/' );
-		if ( $request_path !== $legacy_path && ! str_starts_with( $request_path, $legacy_path . '/' ) ) {
+		$clean_uri   = '';
+		$legacy_path = '';
+		foreach ( blue_arabic_clean_page_aliases() as $candidate_uri => $arabic_id ) {
+			$internal_uri = trim( (string) get_page_uri( $arabic_id ), '/' );
+			if ( ! $internal_uri || $internal_uri === $candidate_uri ) {
+				continue;
+			}
+			$legacy_paths = array_unique(
+				array_filter(
+					array(
+						trim( $arabic_home . '/' . $internal_uri, '/' ),
+						trim( 'ar/' . $internal_uri, '/' ),
+						trim( 'ar/' . $candidate_uri, '/' ),
+					)
+				)
+			);
+			foreach ( $legacy_paths as $candidate_path ) {
+				if ( $request_path === $candidate_path || str_starts_with( $request_path, $candidate_path . '/' ) ) {
+					$clean_uri   = (string) $candidate_uri;
+					$legacy_path = $candidate_path;
+					break 2;
+				}
+			}
+		}
+		if ( ! $legacy_path || ! $clean_uri ) {
 			return;
 		}
 
@@ -343,16 +386,23 @@ add_action(
 add_action(
 	'init',
 	function (): void {
+		$site_path   = trim( (string) wp_parse_url( (string) get_option( 'home' ), PHP_URL_PATH ), '/' );
+		$arabic_path = trim( (string) wp_parse_url( blue_language_home_url( 'ar' ), PHP_URL_PATH ), '/' );
+		if ( $site_path && ( $arabic_path === $site_path || str_starts_with( $arabic_path, $site_path . '/' ) ) ) {
+			$arabic_path = ltrim( substr( $arabic_path, strlen( $site_path ) ), '/' );
+		}
+		$prefix = $arabic_path ? preg_quote( $arabic_path, '#' ) . '/' : '';
+
 		foreach ( blue_arabic_clean_page_aliases() as $uri => $arabic_id ) {
 			$pattern = preg_quote( $uri, '#' );
-			add_rewrite_rule( '^ar/' . $pattern . '/?$', 'index.php?page_id=' . $arabic_id . '&lang=ar', 'top' );
+			add_rewrite_rule( '^' . $prefix . $pattern . '/?$', 'index.php?page_id=' . $arabic_id . '&lang=ar', 'top' );
 
 			if ( $arabic_id === (int) pll_get_post( (int) get_option( 'woocommerce_shop_page_id' ), 'ar' ) ) {
-				add_rewrite_rule( '^ar/' . $pattern . '/page/([0-9]{1,})/?$', 'index.php?page_id=' . $arabic_id . '&lang=ar&paged=$matches[1]', 'top' );
+				add_rewrite_rule( '^' . $prefix . $pattern . '/page/([0-9]{1,})/?$', 'index.php?page_id=' . $arabic_id . '&lang=ar&paged=$matches[1]', 'top' );
 			}
 			if ( $arabic_id === (int) pll_get_post( (int) get_option( 'woocommerce_checkout_page_id' ), 'ar' ) ) {
-				add_rewrite_rule( '^ar/' . $pattern . '/order-pay/([0-9]+)/?$', 'index.php?page_id=' . $arabic_id . '&lang=ar&order-pay=$matches[1]', 'top' );
-				add_rewrite_rule( '^ar/' . $pattern . '/order-received/([0-9]+)/?$', 'index.php?page_id=' . $arabic_id . '&lang=ar&order-received=$matches[1]', 'top' );
+				add_rewrite_rule( '^' . $prefix . $pattern . '/order-pay/([0-9]+)/?$', 'index.php?page_id=' . $arabic_id . '&lang=ar&order-pay=$matches[1]', 'top' );
+				add_rewrite_rule( '^' . $prefix . $pattern . '/order-received/([0-9]+)/?$', 'index.php?page_id=' . $arabic_id . '&lang=ar&order-received=$matches[1]', 'top' );
 			}
 
 			if ( $arabic_id === (int) pll_get_post( (int) get_option( 'woocommerce_myaccount_page_id' ), 'ar' ) ) {
@@ -373,13 +423,32 @@ add_action(
 						continue;
 					}
 					$endpoint_pattern = preg_quote( $endpoint, '#' );
-					add_rewrite_rule( '^ar/' . $pattern . '/' . $endpoint_pattern . '/?$', 'index.php?page_id=' . $arabic_id . '&lang=ar&' . $query_var . '=1', 'top' );
-					add_rewrite_rule( '^ar/' . $pattern . '/' . $endpoint_pattern . '/([^/]+)/?$', 'index.php?page_id=' . $arabic_id . '&lang=ar&' . $query_var . '=$matches[1]', 'top' );
+					add_rewrite_rule( '^' . $prefix . $pattern . '/' . $endpoint_pattern . '/?$', 'index.php?page_id=' . $arabic_id . '&lang=ar&' . $query_var . '=1', 'top' );
+					add_rewrite_rule( '^' . $prefix . $pattern . '/' . $endpoint_pattern . '/([^/]+)/?$', 'index.php?page_id=' . $arabic_id . '&lang=ar&' . $query_var . '=$matches[1]', 'top' );
 				}
 			}
 		}
 	},
 	20
+);
+
+/** Refresh clean Arabic route rules once after the alias implementation changes. */
+function blue_maybe_flush_arabic_page_aliases(): void {
+	if ( ! empty( $GLOBALS['blue_url_strategy_changed'] ) || '2' === get_option( 'blue_arabic_page_alias_schema' ) ) {
+		return;
+	}
+	flush_rewrite_rules( false );
+	update_option( 'blue_arabic_page_alias_schema', '2', false );
+}
+add_action( 'after_switch_theme', 'blue_maybe_flush_arabic_page_aliases', 90 );
+add_action(
+	'admin_init',
+	function (): void {
+		if ( current_user_can( 'manage_options' ) ) {
+			blue_maybe_flush_arabic_page_aliases();
+		}
+	},
+	90
 );
 
 /** Convert a same-site URL between the shared English and Arabic routes. */
@@ -427,7 +496,7 @@ function blue_home_url( string $path = '/' ): string {
  * because the theme deliberately shares the catalogue while cart, checkout
  * and account pages use translated page records with different slugs. Build
  * page destinations from the translated page URI instead of only swapping an
- * /ar/ prefix.
+ * language-directory prefix.
  */
 function blue_current_url_for_language( string $language, string $fallback = '' ): string {
 	$language = 'ar' === $language ? 'ar' : 'en';
@@ -1126,8 +1195,8 @@ function blue_ensure_woocommerce_page_translations(): void {
 		}
 		$source_language = function_exists( 'pll_get_post_language' ) ? pll_get_post_language( $source_id, 'slug' ) : '';
 		if ( ! $source_language ) {
-			$source_language = function_exists( 'pll_default_language' ) ? pll_default_language( 'slug' ) : 'en';
-			pll_set_post_language( $source_id, $source_language ?: 'en' );
+			$source_language = 'en';
+			pll_set_post_language( $source_id, 'en' );
 		}
 		$arabic_id = (int) pll_get_post( $source_id, 'ar' );
 		if ( ! $arabic_id ) {
