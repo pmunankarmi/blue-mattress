@@ -7,8 +7,36 @@
   let waitCycles = 0;
   const observedRoots = new WeakSet();
 
+  const getTheme = () => {
+    const dark = document.documentElement.dataset.theme === 'dark';
+
+    return dark ? {
+      mode: 'dark',
+      container: '#111A29',
+      field: '#172234',
+      border: '#3D485A',
+      label: '#A8B5CA',
+      text: '#EEF3FB',
+      placeholder: '#8E9BB0',
+      disabled: '#536075',
+      error: '#E16363'
+    } : {
+      mode: 'light',
+      container: '#FFFFFF',
+      field: '#F8FAFD',
+      border: '#CBD3DF',
+      label: '#5F6F86',
+      text: '#0E1F38',
+      placeholder: '#7A879A',
+      disabled: '#AEB8C7',
+      error: '#C74949'
+    };
+  };
+
   const applyTheme = () => {
     if (!window.pxl_object || typeof window.pxl_object !== 'object') return;
+
+    const theme = getTheme();
 
     window.pxl_object.customize = Object.assign({}, window.pxl_object.customize || {}, {
       font_family: 'Poppins',
@@ -18,18 +46,18 @@
       font_weight_label: '600',
       font_weight_input_fields: '400',
       font_weight_payment_button: '700',
-      color_container: '#111A29',
-      color_border_input_fields: '#3D485A',
+      color_container: theme.container,
+      color_border_input_fields: theme.border,
       color_border_payment_button: '#6686EC',
       radius_border: '10',
-      color_disabled: '#536075',
-      color_error: '#E16363',
+      color_disabled: theme.disabled,
+      color_error: theme.error,
       color_primary: '#6686EC',
-      color_input_fields: '#172234',
-      text_color_for_label: '#A8B5CA',
+      color_input_fields: theme.field,
+      text_color_for_label: theme.label,
       text_color_for_payment_button: '#07101F',
-      text_color_for_input_fields: '#EEF3FB',
-      color_for_text_placeholder: '#8E9BB0',
+      text_color_for_input_fields: theme.text,
+      color_for_text_placeholder: theme.placeholder,
       width_of_container: '100',
       // Paymob uses this setting as the actual field height (and derives the
       // two-row secure card iframe from it), not as CSS padding.
@@ -37,6 +65,51 @@
       vertical_spacing_between_components: '14',
       container_padding: '0'
     });
+  };
+
+  const applyShadowTheme = (root) => {
+    const theme = getTheme();
+    const rootContainer = Array.from(root.children).find((child) => child.tagName !== 'STYLE');
+
+    if (rootContainer) {
+      rootContainer.dataset.bluePaymobRoot = 'true';
+      rootContainer.style.setProperty('background-color', theme.container, 'important');
+      rootContainer.style.setProperty('color', theme.text, 'important');
+      rootContainer.style.setProperty('color-scheme', theme.mode, 'important');
+    }
+
+    let themeStyle = root.querySelector('style[data-blue-paymob-theme]');
+    if (!themeStyle) {
+      themeStyle = document.createElement('style');
+      themeStyle.dataset.bluePaymobTheme = 'true';
+      root.appendChild(themeStyle);
+    }
+
+    const rules = `
+      [data-blue-paymob-root="true"],
+      [data-blue-paymob-card-information="true"] {
+        background-color: ${theme.container} !important;
+        color: ${theme.text} !important;
+        color-scheme: ${theme.mode} !important;
+      }
+      [data-blue-paymob-root="true"] p,
+      [data-blue-paymob-root="true"] label,
+      [data-blue-paymob-card-information="true"] span {
+        color: ${theme.label} !important;
+      }
+      [data-blue-paymob-root="true"] input#name {
+        border-color: ${theme.border} !important;
+        background-color: ${theme.field} !important;
+        color: ${theme.text} !important;
+        -webkit-text-fill-color: ${theme.text} !important;
+      }
+      [data-blue-paymob-root="true"] input#name::placeholder {
+        color: ${theme.placeholder} !important;
+        opacity: 1 !important;
+      }
+    `;
+
+    if (themeStyle.textContent !== rules) themeStyle.textContent = rules;
   };
 
   const hasCardForm = (container) => {
@@ -62,6 +135,7 @@
       .filter(Boolean);
 
     roots.forEach((root) => {
+      applyShadowTheme(root);
       let singleCardSelectorHidden = false;
       Array.from(root.querySelectorAll('div')).forEach((row) => {
         const choices = Array.from(row.children).filter((choice) => {
@@ -118,11 +192,12 @@
       }
 
       root.querySelectorAll('iframe').forEach((frame) => {
+        const theme = getTheme();
         frame.style.setProperty('border', '0', 'important');
-        frame.style.setProperty('border-right', '1px solid #3d485a', 'important');
+        frame.style.setProperty('border-right', `1px solid ${theme.border}`, 'important');
         frame.style.setProperty('border-radius', '10px 10px 0 0', 'important');
         frame.style.setProperty('box-sizing', 'border-box', 'important');
-        frame.style.setProperty('background-color', '#172234', 'important');
+        frame.style.setProperty('background-color', theme.field, 'important');
         frame.style.setProperty('clip-path', 'inset(0 round 10px 10px 0 0)', 'important');
       });
 
@@ -174,10 +249,23 @@
     }
   };
 
+  // Set the palette as soon as Paymob's localized settings are available so
+  // the secure iframe is created with the correct theme on its first render.
+  applyTheme();
+
   $(document.body).on('updated_checkout payment_method_selected', function () {
     refreshes = 0;
     waitCycles = 0;
     schedule(150);
+  });
+
+  new MutationObserver(function (mutations) {
+    if (!mutations.some((mutation) => mutation.attributeName === 'data-theme')) return;
+    applyTheme();
+    dedupePaymentMethods(document.querySelector(checkoutSelector));
+  }).observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['data-theme']
   });
 
   if (document.readyState === 'loading') {

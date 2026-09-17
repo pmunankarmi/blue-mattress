@@ -231,6 +231,15 @@ add_action(
 					array( 'key' => 'field_blue_terms_page', 'label' => __( 'Terms page', 'blue-mattress' ), 'name' => 'terms_page', 'type' => 'page_link', 'post_type' => array( 'page' ), 'allow_null' => 1 ),
 					array( 'key' => 'field_blue_privacy_page', 'label' => __( 'Privacy page', 'blue-mattress' ), 'name' => 'privacy_page', 'type' => 'page_link', 'post_type' => array( 'page' ), 'allow_null' => 1 ),
 
+					array( 'key' => 'field_blue_tab_checkout_address', 'label' => __( 'Checkout address', 'blue-mattress' ), 'name' => '', 'type' => 'tab' ),
+					array(
+						'key'          => 'field_blue_google_maps_api_key',
+						'label'        => __( 'Google Maps browser API key', 'blue-mattress' ),
+						'name'         => 'google_maps_api_key',
+						'type'         => 'text',
+						'instructions' => __( 'Enables Saudi Short Address lookup on Cart and Checkout. Enable Maps JavaScript API, Places API (New), and Geocoding API, then restrict this browser key to blue-mattress.com and bluemattress.primedigital.dev.', 'blue-mattress' ),
+					),
+
 					array( 'key' => 'field_blue_tab_contact', 'label' => __( 'Contact details', 'blue-mattress' ), 'name' => '', 'type' => 'tab' ),
 					array( 'key' => 'field_blue_contact_phone', 'label' => __( 'Phone', 'blue-mattress' ), 'name' => 'contact_phone', 'type' => 'text' ),
 					array( 'key' => 'field_blue_whatsapp_url', 'label' => __( 'WhatsApp chat URL', 'blue-mattress' ), 'name' => 'whatsapp_url', 'type' => 'url', 'instructions' => __( 'Example: https://wa.me/966500000000', 'blue-mattress' ) ),

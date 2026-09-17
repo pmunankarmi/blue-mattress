@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.8.18
+
+- Made the Paymob card-information panel, labels and cardholder field follow the active light or dark storefront theme.
+- Sent theme-aware colors to Paymob's secure card fields while preserving the existing gateway and checkout behavior.
+- Matched Paymob field borders, placeholders and loading state to the surrounding WooCommerce form.
+- Added Saudi Short Address lookup to the Cart shipping calculator and Checkout billing/shipping forms.
+- Used Google Maps to expand codes such as `JEZC7519` into WooCommerce's standard street, city, region, postcode and country fields, while retaining the short code in Address Line 2.
+- Added a browser-key setting under Theme Options → Checkout address and carried Cart lookups forward into Checkout.
+
 ## 2.8.17
 
 - Made the checkout order review and cart totals cards follow the selected light or dark theme.

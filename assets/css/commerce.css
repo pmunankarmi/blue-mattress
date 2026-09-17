@@ -190,6 +190,34 @@ body.woocommerce-cart .woocommerce-shipping-calculator button[name="calc_shippin
   width:100%; min-height:48px; margin:2px 0 0; border-color:#6686ec!important;
   background:#6686ec!important; color:#07101f!important; text-align:center;
 }
+.blue-short-address { width:100%; min-width:0; box-sizing:border-box; }
+body.woocommerce-checkout .blue-short-address { grid-column:1/-1; }
+.blue-short-address__controls { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:10px; align-items:stretch; }
+.blue-short-address__controls .blue-short-address__input {
+  width:100%!important; min-width:0; min-height:50px; margin:0!important; padding:12px 14px!important;
+  border:1px solid var(--line)!important; border-radius:var(--r-sm)!important;
+  background:var(--paper)!important; color:var(--ink)!important; -webkit-text-fill-color:var(--ink); font:inherit;
+  text-transform:uppercase; letter-spacing:.08em; box-sizing:border-box;
+}
+.blue-short-address__controls .blue-short-address__input:focus {
+  border-color:var(--royal)!important; outline:0; box-shadow:0 0 0 3px rgba(var(--royal-rgb),.12)!important;
+}
+.blue-short-address__controls .blue-short-address__button {
+  min-width:145px; min-height:50px; margin:0!important; padding:12px 18px!important;
+  border-color:var(--royal)!important; border-radius:var(--r-sm)!important;
+  background:var(--royal)!important; color:#07101f!important; white-space:nowrap;
+}
+.blue-short-address__controls .blue-short-address__button:disabled { opacity:.65!important; cursor:wait; }
+.blue-short-address__hint { display:block; margin:7px 0 0; color:var(--ink-soft); font-size:.7rem; line-height:1.5; }
+.blue-short-address__status { min-height:0; margin-top:7px; color:var(--ink-soft); font-size:.76rem; line-height:1.5; }
+.blue-short-address__status:empty { display:none; }
+.blue-short-address__status.is-success a { display:inline-flex; align-items:flex-start; gap:7px; color:var(--royal); font-weight:600; }
+.blue-short-address__status.is-success a::before { content:'⌖'; flex:0 0 auto; font-size:1rem; line-height:1.2; }
+.blue-short-address__status.is-error { color:var(--danger); }
+body.woocommerce-cart .blue-short-address { margin:0 0 4px; }
+body.woocommerce-cart .blue-short-address>label {
+  display:block; margin:0 0 7px; color:var(--ink-soft); font-size:.69rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+}
 body.woocommerce-cart button[name="update_cart"]:disabled,
 body.woocommerce-cart button[name="update_cart"].disabled {
   appearance:none!important; border-color:#a8b3c5!important; background:#cbd3df!important;
@@ -325,13 +353,13 @@ body.woocommerce-checkout #payment .payment_method_paymob-pixel>label {
 body.woocommerce-checkout #payment #paymob-logo { width:auto; max-width:82px; max-height:28px; margin:0; object-fit:contain; }
 body.woocommerce-checkout #paymob-elements {
   position:relative; width:100%; min-width:0; min-height:176px; overflow:visible!important;
-  border:0; border-radius:var(--r-sm); color:#eef3fb; color-scheme:dark;
+  border:0; border-radius:var(--r-sm); color:var(--ink); color-scheme:light;
 }
 body.woocommerce-checkout #paymob-elements>div { width:100%!important; max-width:100%!important; box-sizing:border-box!important; }
 body.woocommerce-checkout #paymob-elements iframe {
   display:block; width:100%!important; max-width:100%!important; min-height:176px; border:0!important;
-  border-right:1px solid #3d485a!important; border-radius:var(--r-sm) var(--r-sm) 0 0;
-  box-sizing:border-box; background:#172234; clip-path:inset(0 round var(--r-sm) var(--r-sm) 0 0);
+  border-right:1px solid var(--line)!important; border-radius:var(--r-sm) var(--r-sm) 0 0;
+  box-sizing:border-box; background:var(--paper); clip-path:inset(0 round var(--r-sm) var(--r-sm) 0 0);
 }
 body.woocommerce-checkout #paymob-elements button,
 body.woocommerce-checkout #paymob-elements [role="button"] {
@@ -343,8 +371,8 @@ body.woocommerce-checkout #paymob-elements button:hover,
 body.woocommerce-checkout #paymob-elements [role="button"]:hover { border-color:#8da9ff!important; background:#8da9ff!important; }
 body.woocommerce-checkout #paymob-elements.blue-paymob-loading::before {
   content:'Loading secure card form…'; position:absolute; inset:0; display:grid; place-items:center;
-  min-height:176px; padding:24px; border:1px solid rgba(233,239,248,.18); border-radius:var(--r-sm);
-  background:#172234; color:#a8b5ca; font-size:.78rem; text-align:center;
+  min-height:176px; padding:24px; border:1px solid var(--line); border-radius:var(--r-sm);
+  background:var(--paper); color:var(--ink-soft); font-size:.78rem; text-align:center;
 }
 html[lang^="ar"] body.woocommerce-checkout #paymob-elements.blue-paymob-loading::before { content:'جارٍ تحميل نموذج البطاقة الآمن…'; }
 body.woocommerce-checkout #paymob-elements.blue-paymob-ready::before { display:none; }
@@ -464,6 +492,13 @@ html[data-theme="dark"] body.blue-commerce-flow {
   background:#0b111b; color:#eef3fb;
 }
 html[data-theme="dark"] body.blue-commerce-flow .blue-content { background:#0b111b; }
+html[data-theme="dark"] body.woocommerce-checkout #paymob-elements { color:#eef3fb; color-scheme:dark; }
+html[data-theme="dark"] body.woocommerce-checkout #paymob-elements iframe {
+  border-right-color:#3d485a!important; background:#172234;
+}
+html[data-theme="dark"] body.woocommerce-checkout #paymob-elements.blue-paymob-loading::before {
+  border-color:rgba(233,239,248,.18); background:#172234; color:#a8b5ca;
+}
 html[data-theme="dark"] body.woocommerce-cart .cart-collaterals .cart_totals::before {
   background:radial-gradient(closest-side,rgba(var(--royal-rgb),.36),transparent);
 }
@@ -551,6 +586,8 @@ html[data-theme="dark"] body.blue-commerce-flow .wc-block-components-sidebar {
 }
 
 @media(max-width:700px){
+  .blue-short-address__controls { grid-template-columns:1fr; }
+  .blue-short-address__controls .blue-short-address__button { width:100%; }
   /* Negative inline offsets on these decorative glows make mobile WebKit
      widen the RTL layout viewport before overflow clipping is applied. */
   body.woocommerce-cart .cart-collaterals .cart_totals::before,

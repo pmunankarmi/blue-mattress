@@ -199,6 +199,39 @@ add_action(
 		}
 		if ( class_exists( 'WooCommerce' ) && ( is_cart() || is_checkout() ) ) {
 			wp_enqueue_style( 'blue-commerce-flow', BLUE_THEME_URI . '/assets/css/commerce.css', array( 'blue-main', 'blue-wp' ), BLUE_THEME_VERSION );
+			$google_maps_api_key = defined( 'BLUE_GOOGLE_MAPS_API_KEY' )
+				? sanitize_text_field( (string) constant( 'BLUE_GOOGLE_MAPS_API_KEY' ) )
+				: sanitize_text_field( (string) blue_option( 'google_maps_api_key', '' ) );
+			if ( $google_maps_api_key && ! is_order_received_page() ) {
+				wp_enqueue_script( 'blue-address-lookup', BLUE_THEME_URI . '/assets/js/address-lookup.js', array( 'jquery' ), BLUE_THEME_VERSION, true );
+				wp_localize_script(
+					'blue-address-lookup',
+					'BlueAddressLookup',
+					array(
+						'apiKey'   => $google_maps_api_key,
+						'language' => blue_is_arabic() ? 'ar' : 'en',
+						'strings'  => blue_is_arabic()
+							? array(
+								'label'       => 'العنوان المختصر السعودي',
+								'placeholder' => 'JEZC7519',
+								'button'      => 'العثور على العنوان',
+								'hint'        => 'أدخل 4 أحرف و4 أرقام من العنوان الوطني السعودي.',
+								'invalid'     => 'أدخل عنوانًا مختصرًا صحيحًا: 4 أحرف متبوعة بـ 4 أرقام.',
+								'loading'     => 'جارٍ العثور على عنوانك…',
+								'notFound'    => 'تعذر العثور على هذا العنوان المختصر. تحقق من الرمز وحاول مرة أخرى.',
+							)
+							: array(
+								'label'       => 'Saudi Short Address',
+								'placeholder' => 'JEZC7519',
+								'button'      => 'Find address',
+								'hint'        => 'Enter 4 letters and 4 numbers from your Saudi National Address.',
+								'invalid'     => 'Enter a valid Short Address: 4 letters followed by 4 numbers.',
+								'loading'     => 'Finding your address…',
+								'notFound'    => 'We could not find that Short Address. Check the code and try again.',
+							),
+					)
+				);
+			}
 			if ( is_checkout() && ! is_order_received_page() ) {
 				wp_enqueue_script( 'blue-paymob-bridge', BLUE_THEME_URI . '/assets/js/paymob-bridge.js', array( 'jquery' ), BLUE_THEME_VERSION, true );
 			}
