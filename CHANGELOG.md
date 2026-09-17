@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.8.13
+
+- Added a polished responsive Blue Mattress layout to every WooCommerce HTML email while retaining WooCommerce's dynamic email content.
+- Styled email headers, order tables, totals, addresses, buttons, body copy and footers consistently in English and Arabic.
+- Reused the Media/Theme Options logo dynamically, falling back to the theme's lightweight white brand asset.
+
 ## 2.8.12
 
 - Restored products on English Mattress, Pillows, Toppers and Bedding category archives.
