@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.8.10
+
+- Collapsed the rendered width of clipped screen-reader labels while keeping their accessible text available to assistive technology.
+- Removed the last iOS RTL scroll range caused by hidden WooCommerce product and quantity descriptions.
+
 ## 2.8.9
 
 - Prevented clipped accessibility text from creating a hidden 120px RTL scroll range in iOS Safari.

@@ -673,6 +673,10 @@ html[lang="ar"] .pcard-name, html[lang="ar"] .co-line-name, html[lang="ar"] .cmp
   clip: rect(0, 0, 0, 0) !important;
   clip-path: inset(50%) !important;
   white-space: nowrap !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+  letter-spacing: 0 !important;
+  word-spacing: 0 !important;
   border: 0 !important;
   transform: none !important;
 }
@@ -685,6 +689,10 @@ html[lang="ar"] .pcard-name, html[lang="ar"] .co-line-name, html[lang="ar"] .cmp
   clip: auto;
   clip-path: none;
   white-space: normal;
+  font-size: inherit;
+  line-height: normal;
+  letter-spacing: normal;
+  word-spacing: normal;
   z-index: 999;
   background: #fff;
   padding: 10px 16px;
