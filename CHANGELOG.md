@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.8.23
+
+- Extracted Saudi National Short Address codes returned by Google for selected map locations.
+- Updated the Short Address field immediately when customers choose a map point or search result.
+- Saved the detected code with the Cart address so the same code and location continue into Checkout.
+
 ## 2.8.22
 
 - Removed `JEZC7519` from the Saudi Short Address field placeholder in English and Arabic.

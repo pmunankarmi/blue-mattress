@@ -52,6 +52,14 @@
 
   const normalizeCode = (value) => value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
 
+  const findShortCode = (...values) => {
+    for (const value of values.flat(Infinity)) {
+      const match = String(value || '').match(/(?:^|[^A-Z0-9])([A-Z]{4}[\s-]*[0-9]{4})(?=$|[^A-Z0-9])/i);
+      if (match) return normalizeCode(match[1]);
+    }
+    return '';
+  };
+
   const componentValue = (components, type, short = false) => {
     const component = (components || []).find((item) => (item.types || []).includes(type));
     if (!component) return '';
@@ -62,6 +70,14 @@
 
   const parseResult = (result, code) => {
     const components = result.addressComponents || result.address_components || [];
+    const formattedAddress = result.formattedAddress || result.formatted_address || '';
+    const componentText = components.flatMap((component) => [
+      component.longText,
+      component.long_name,
+      component.shortText,
+      component.short_name
+    ]);
+    const detectedCode = findShortCode(code, formattedAddress, componentText);
     const streetParts = [
       componentValue(components, 'street_number'),
       componentValue(components, 'route'),
@@ -74,9 +90,9 @@
     const lng = typeof location?.lng === 'function' ? location.lng() : location?.lng;
 
     return {
-      code,
-      formattedAddress: result.formattedAddress || result.formatted_address || street,
-      address1: street || result.formattedAddress || result.formatted_address || code,
+      code: detectedCode,
+      formattedAddress: formattedAddress || street,
+      address1: street || formattedAddress || detectedCode,
       city: componentValue(components, 'locality')
         || componentValue(components, 'postal_town')
         || componentValue(components, 'administrative_area_level_2')
@@ -198,7 +214,7 @@
     status.appendChild(link);
   };
 
-  const createMapPicker = async (canvas, status, scope, getShortCode, searchInput, searchButton) => {
+  const createMapPicker = async (canvas, status, scope, getShortCode, setShortCode, searchInput, searchButton) => {
     await loadMaps();
     const { Map } = await window.google.maps.importLibrary('maps');
     const map = new Map(canvas, {
@@ -243,6 +259,7 @@
         const normalized = normalizeCode(query);
         const shortCode = /^[A-Z]{4}[0-9]{4}$/.test(normalized) ? normalized : '';
         const address = await searchGoogleAddress(query, shortCode);
+        setShortCode(address.code || '');
         fillWooAddress(address, scope);
         showAddress(address);
         renderResult(status, address);
@@ -273,7 +290,8 @@
       try {
         const address = await reverseGeocode(location);
         const shortCode = normalizeCode(getShortCode?.() || '');
-        if (/^[A-Z]{4}[0-9]{4}$/.test(shortCode)) address.code = shortCode;
+        if (!address.code && /^[A-Z]{4}[0-9]{4}$/.test(shortCode)) address.code = shortCode;
+        setShortCode(address.code || '');
         fillWooAddress(address, scope);
         showAddress(address, Math.max(map.getZoom() || 17, 16));
         renderResult(status, address);
@@ -422,6 +440,7 @@
         status,
         scope,
         () => input.value,
+        (value) => { input.value = value; },
         mapSearchInput,
         mapSearchButton
       ).then((controller) => {
