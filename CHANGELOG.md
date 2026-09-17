@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.8.22
+
+- Removed `JEZC7519` from the Saudi Short Address field placeholder in English and Arabic.
+- Kept the field empty until the customer enters a code or an address is carried forward from Cart.
+
 ## 2.8.21
 
 - Made the address explicitly selected on Cart replace older saved billing and shipping values when Checkout opens.

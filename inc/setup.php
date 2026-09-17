@@ -213,7 +213,7 @@ add_action(
 						'strings'  => blue_is_arabic()
 							? array(
 								'label'       => 'العنوان المختصر السعودي',
-								'placeholder' => 'JEZC7519',
+								'placeholder' => '',
 								'button'      => 'العثور على العنوان',
 								'hint'        => 'أدخل 4 أحرف و4 أرقام من العنوان الوطني السعودي.',
 								'invalid'     => 'أدخل عنوانًا مختصرًا صحيحًا: 4 أحرف متبوعة بـ 4 أرقام.',
@@ -233,7 +233,7 @@ add_action(
 							)
 							: array(
 								'label'       => 'Saudi Short Address',
-								'placeholder' => 'JEZC7519',
+								'placeholder' => '',
 								'button'      => 'Find address',
 								'hint'        => 'Enter 4 letters and 4 numbers from your Saudi National Address.',
 								'invalid'     => 'Enter a valid Short Address: 4 letters followed by 4 numbers.',

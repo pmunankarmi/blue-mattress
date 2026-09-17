@@ -320,7 +320,7 @@
     // Allow pasted codes that contain spaces or a hyphen; the input handler
     // removes separators and keeps the canonical eight characters.
     input.maxLength = 12;
-    input.placeholder = text('placeholder', 'JEZC7519');
+    input.placeholder = text('placeholder', '');
     input.setAttribute('aria-describedby', `${id}-hint ${id}-status`);
 
     const button = document.createElement('button');
