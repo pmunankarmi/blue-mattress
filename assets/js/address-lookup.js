@@ -150,14 +150,15 @@
     dispatchChange(field);
   };
 
-  const appendShortCode = (selector, code) => {
+  const syncShortCode = (selector, code) => {
     const field = document.querySelector(selector);
-    if (!field || !code) return;
-    const existing = field.value.trim();
-    if (!existing.toUpperCase().includes(code)) {
-      field.value = existing ? `${existing} · ${code}` : code;
-      dispatchChange(field);
-    }
+    if (!field) return;
+    const existing = field.value
+      .replace(/\b[A-Z]{4}[0-9]{4}\b/gi, '')
+      .replace(/\s*[·|,-]\s*$/, '')
+      .trim();
+    field.value = code ? (existing ? `${existing} · ${code}` : code) : existing;
+    dispatchChange(field);
   };
 
   const fillWooAddress = (address, scope) => {
@@ -173,7 +174,7 @@
     const prefix = scope === 'shipping' ? 'shipping' : 'billing';
     setField(`#${prefix}_country`, address.country || 'SA');
     setField(`#${prefix}_address_1`, address.address1);
-    appendShortCode(`#${prefix}_address_2`, address.code);
+    syncShortCode(`#${prefix}_address_2`, address.code);
     setField(`#${prefix}_city`, address.city);
     setField(`#${prefix}_state`, address.state);
     setField(`#${prefix}_postcode`, address.postcode);
@@ -364,6 +365,7 @@
     mapCanvas.setAttribute('aria-label', text('mapLabel', 'Choose delivery address on map'));
 
     let mapControllerPromise;
+    let restoredAddress;
 
     let lookupTimer = 0;
 
@@ -422,14 +424,18 @@
         () => input.value,
         mapSearchInput,
         mapSearchButton
-      ).catch(() => {
+      ).then((controller) => {
+        if (restoredAddress) controller.showAddress(restoredAddress);
+        return controller;
+      }).catch(() => {
         mapCanvas.classList.add('is-unavailable');
         mapCanvas.textContent = text('mapUnavailable', 'The map is temporarily unavailable. You can still enter your address manually.');
         return null;
       });
     });
     wrapper.blueRestoreAddress = (address) => {
-      if (address.code) input.value = address.code;
+      restoredAddress = address;
+      input.value = address.code || '';
       if (address.formattedAddress) mapSearchInput.value = address.formattedAddress;
       fillWooAddress(address, scope);
       renderResult(status, address);
@@ -455,15 +461,18 @@
   const restoreCartAddress = () => {
     if (!document.body.classList.contains('woocommerce-checkout')) return;
     const address1 = document.getElementById('billing_address_1');
-    if (!address1 || address1.value.trim() || address1.dataset.blueShortAddressRestored === 'true') return;
+    if (!address1 || address1.dataset.blueShortAddressRestored === 'true') return;
 
     try {
       const address = JSON.parse(sessionStorage.getItem(storageKey) || 'null');
       if (!address?.address1 && !address?.formattedAddress) return;
-      address1.dataset.blueShortAddressRestored = 'true';
-      const lookup = document.querySelector('[data-blue-short-address="billing"]');
-      if (lookup?.blueRestoreAddress) lookup.blueRestoreAddress(address);
-      else fillWooAddress(address, 'billing');
+      ['billing', 'shipping'].forEach((scope) => {
+        const field = document.getElementById(`${scope}_address_1`);
+        if (field) field.dataset.blueShortAddressRestored = 'true';
+        const lookup = document.querySelector(`[data-blue-short-address="${scope}"]`);
+        if (lookup?.blueRestoreAddress) lookup.blueRestoreAddress(address);
+        else fillWooAddress(address, scope);
+      });
     } catch (error) {}
   };
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.8.21
+
+- Made the address explicitly selected on Cart replace older saved billing and shipping values when Checkout opens.
+- Restored the same National Address code, full address, region, city, postcode and coordinates into both Checkout address sections.
+- Replaced stale Checkout Short Address codes with the Cart-selected code instead of appending duplicates.
+- Kept the Checkout map pin synchronized even when Google Maps finishes loading after WooCommerce fields are restored.
+
 ## 2.8.20
 
 - Added Google Maps place and address search above the interactive Cart and Checkout maps.
