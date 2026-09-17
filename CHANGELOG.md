@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.8.16
+
+- Kept WooCommerce cart and checkout AJAX requests in the active storefront language.
+- Prevented English checkout fragments from switching to Arabic after order-review refreshes.
+- Localized saved order product names, shipping method labels and VAT labels for both storefront languages without changing WooCommerce rates, coupons or order calculations.
+
 ## 2.8.15
 
 - Restored the complete light palette on WooCommerce product-detail pages while preserving their existing dark appearance in dark mode.

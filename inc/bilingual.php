@@ -156,6 +156,10 @@ add_filter(
 add_filter(
 	'locale',
 	function ( string $locale ): string {
+		$requested = isset( $_REQUEST['blue_lang'] ) ? sanitize_key( wp_unslash( $_REQUEST['blue_lang'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( in_array( $requested, array( 'en', 'ar' ), true ) ) {
+			return 'ar' === $requested ? 'ar' : 'en_US';
+		}
 		if ( ! is_admin() && ! function_exists( 'pll_current_language' ) ) {
 			return 'en' === blue_request_path_language() ? 'en_US' : 'ar';
 		}
@@ -1126,11 +1130,32 @@ add_filter(
 	30
 );
 
-/** Guarantee Arabic messages for WooCommerce's dynamic cart/variation scripts. */
+/** Add an explicit language to an AJAX URL without encoding Woo placeholders. */
+function blue_ajax_url_for_language( string $url, string $language ): string {
+	if ( '' === $url ) {
+		return $url;
+	}
+	$language = 'ar' === $language ? 'ar' : 'en';
+	if ( preg_match( '/([?&])blue_lang=[^&]*/', $url ) ) {
+		return (string) preg_replace( '/([?&])blue_lang=[^&]*/', '$1blue_lang=' . $language, $url, 1 );
+	}
+	return $url . ( str_contains( $url, '?' ) ? '&' : '?' ) . 'blue_lang=' . $language;
+}
+
+/** Keep WooCommerce's asynchronous cart and checkout responses in page language. */
 add_filter(
 	'woocommerce_get_script_data',
 	function ( $params, string $handle ) {
-		if ( ! blue_is_arabic() || ! is_array( $params ) ) {
+		if ( ! is_array( $params ) ) {
+			return $params;
+		}
+		$language = blue_language();
+		foreach ( array( 'wc_ajax_url', 'checkout_url', 'ajax_url' ) as $url_key ) {
+			if ( isset( $params[ $url_key ] ) && is_string( $params[ $url_key ] ) ) {
+				$params[ $url_key ] = blue_ajax_url_for_language( $params[ $url_key ], $language );
+			}
+		}
+		if ( 'ar' !== $language ) {
 			return $params;
 		}
 		if ( 'wc-add-to-cart' === $handle ) {
@@ -1145,6 +1170,60 @@ add_filter(
 		return $params;
 	},
 	20,
+	2
+);
+
+/** Localize configured shipping titles without changing rates or zone rules. */
+function blue_localized_shipping_label( string $label ): string {
+	$english = array(
+		'شحن مجاني' => 'Free shipping',
+		'سعر ثابت'  => 'Flat rate',
+	);
+	if ( blue_is_arabic() ) {
+		return str_ireplace( array_values( $english ), array_keys( $english ), $label );
+	}
+	return str_replace( array_keys( $english ), array_values( $english ), $label );
+}
+
+add_filter( 'woocommerce_cart_shipping_method_full_label', fn( string $label ): string => blue_localized_shipping_label( $label ), 30 );
+add_filter( 'woocommerce_order_shipping_method', fn( string $label ): string => blue_localized_shipping_label( $label ), 30 );
+add_filter(
+	'woocommerce_rate_label',
+	function ( string $label ): string {
+		if ( 'VAT' !== trim( $label ) ) {
+			return $label;
+		}
+		return blue_is_arabic() ? 'ضريبة القيمة المضافة' : 'VAT';
+	},
+	30
+);
+
+/** Render saved order product names in the language of the current page. */
+add_filter(
+	'woocommerce_order_item_name',
+	function ( string $name, $item ): string {
+		if ( ! $item instanceof WC_Order_Item_Product ) {
+			return $name;
+		}
+		$product = $item->get_product();
+		if ( ! $product ) {
+			return $name;
+		}
+		$localized_name = trim( (string) $product->get_name() );
+		if ( '' === $localized_name || $localized_name === $item->get_name() ) {
+			return $name;
+		}
+		if ( str_contains( $name, '<a' ) ) {
+			return (string) preg_replace_callback(
+				'/(<a\b[^>]*>)(.*?)(<\/a>)/is',
+				fn( array $matches ): string => $matches[1] . esc_html( $localized_name ) . $matches[3],
+				$name,
+				1
+			);
+		}
+		return esc_html( $localized_name );
+	},
+	30,
 	2
 );
 
