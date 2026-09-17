@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.8.15
+
+- Restored the complete light palette on WooCommerce product-detail pages while preserving their existing dark appearance in dark mode.
+- Improved the disabled Update cart button contrast in both light and dark modes without changing WooCommerce button behavior.
+
 ## 2.8.14
 
 - Redesigned the cart shipping calculator to match the other dark commerce fields and use the full available width, including on mobile.

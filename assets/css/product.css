@@ -456,6 +456,82 @@ body.single-product .blue-product-detail .pd-gallery > span.onsale {
 .blue-product-detail .pd-pairings .pcard-wish.is-wished { background:#eef3fb; color:#5f82ed; }
 .blue-product-detail .pd-pairings .pcard-wish.is-wished path { fill:currentColor; }
 
+/* ---------------------------------------------- WooCommerce light theme */
+html:not([data-theme="dark"]) .blue-single-product main,
+html:not([data-theme="dark"]) .blue-single-product .blue-product-detail { background:var(--canvas); color:var(--ink); }
+html:not([data-theme="dark"]) .blue-product-detail .woocommerce-breadcrumb { color:var(--ink-soft); }
+html:not([data-theme="dark"]) .blue-product-detail .woocommerce-breadcrumb a { color:var(--ink-soft); }
+html:not([data-theme="dark"]) .blue-product-detail .pd-crumb-sep { color:rgba(14,31,56,.28); }
+html:not([data-theme="dark"]) .blue-product-detail .woocommerce-product-gallery__image:first-child,
+html:not([data-theme="dark"]) .blue-product-detail .flex-control-thumbs li { background:var(--powder-2); }
+html:not([data-theme="dark"]) .blue-product-detail .summary.pd-buy { color:var(--ink); }
+html:not([data-theme="dark"]) .blue-product-detail .pd-kind,
+html:not([data-theme="dark"]) .blue-product-detail .summary .star-rating,
+html:not([data-theme="dark"]) .blue-product-detail .reset_variations,
+html:not([data-theme="dark"]) .blue-product-detail .product_meta a,
+html:not([data-theme="dark"]) .blue-product-detail .pd-assure li .pd-assure-icon,
+html:not([data-theme="dark"]) .blue-product-detail .pd-acc-item summary::after { color:var(--royal); }
+html:not([data-theme="dark"]) .blue-product-detail .summary .product_title,
+html:not([data-theme="dark"]) .blue-product-detail .summary p.price,
+html:not([data-theme="dark"]) .blue-product-detail .summary p.price .woocommerce-Price-amount { color:var(--ink)!important; }
+html:not([data-theme="dark"]) .blue-product-detail .summary .woocommerce-product-rating,
+html:not([data-theme="dark"]) .blue-product-detail .summary .woocommerce-product-details__short-description,
+html:not([data-theme="dark"]) .blue-product-detail .summary p.price del,
+html:not([data-theme="dark"]) .blue-product-detail .variations label,
+html:not([data-theme="dark"]) .blue-product-detail .pd-size-x,
+html:not([data-theme="dark"]) .blue-product-detail .pd-size-d,
+html:not([data-theme="dark"]) .blue-product-detail .woocommerce-variation-description,
+html:not([data-theme="dark"]) .blue-product-detail .pd-qty-label,
+html:not([data-theme="dark"]) .blue-product-detail .product_meta,
+html:not([data-theme="dark"]) .blue-product-detail .pd-assure li,
+html:not([data-theme="dark"]) .blue-product-detail .pd-acc-body,
+html:not([data-theme="dark"]) .blue-product-detail .pd-construction .lead { color:var(--ink-soft); }
+html:not([data-theme="dark"]) .blue-product-detail .variations select,
+html:not([data-theme="dark"]) .blue-product-detail .pd-size,
+html:not([data-theme="dark"]) .blue-product-detail form.cart .qty,
+html:not([data-theme="dark"]) .blue-product-detail form.cart .quantity,
+html:not([data-theme="dark"]) .blue-product-detail .pd-wish {
+  border-color:var(--line); background:var(--paper); color:var(--ink);
+}
+html:not([data-theme="dark"]) .blue-product-detail .pd-size-l,
+html:not([data-theme="dark"]) .blue-product-detail .pd-feel-label,
+html:not([data-theme="dark"]) .blue-product-detail .blue-qty-minus,
+html:not([data-theme="dark"]) .blue-product-detail .blue-qty-plus,
+html:not([data-theme="dark"]) .blue-product-detail .pd-acc-item summary,
+html:not([data-theme="dark"]) .blue-product-detail .pd-acc-layers li { color:var(--ink); }
+html:not([data-theme="dark"]) .blue-product-detail .pd-size-p { color:var(--royal); }
+html:not([data-theme="dark"]) .blue-product-detail .pd-wish:hover { background:var(--powder-2); }
+html:not([data-theme="dark"]) .blue-product-detail .pd-wish.is-wished { background:var(--navy); color:#fff; }
+html:not([data-theme="dark"]) .blue-product-detail .chip-soft,
+html:not([data-theme="dark"]) .blue-product-detail .pd-core {
+  border-color:var(--line); background:var(--powder-2); color:var(--ink);
+}
+html:not([data-theme="dark"]) .blue-product-detail .pd-core span { color:var(--royal); }
+html:not([data-theme="dark"]) .blue-product-detail .pd-assure,
+html:not([data-theme="dark"]) .blue-product-detail .pd-acc,
+html:not([data-theme="dark"]) .blue-product-detail .pd-acc-item { border-color:var(--line); }
+html:not([data-theme="dark"]) .blue-product-detail .pd-band { background:var(--powder-2); }
+html:not([data-theme="dark"]) .blue-product-detail .pd-layers,
+html:not([data-theme="dark"]) .blue-product-detail .pd-layer { border-color:var(--line); }
+html:not([data-theme="dark"]) .blue-product-detail .pd-layer-t { color:var(--ink); }
+html:not([data-theme="dark"]) .blue-product-detail .pd-layer-d { color:var(--ink-soft); }
+html:not([data-theme="dark"]) .blue-product-detail .pd-pairings { background:var(--powder-2); color:var(--ink); }
+html:not([data-theme="dark"]) .blue-product-detail .pd-pairings .h2,
+html:not([data-theme="dark"]) .blue-product-detail .pd-pairings .pcard-name,
+html:not([data-theme="dark"]) .blue-product-detail .pd-pairings .pcard-name a,
+html:not([data-theme="dark"]) .blue-product-detail .pd-pairings .pcard-price,
+html:not([data-theme="dark"]) .blue-product-detail .pd-pairings .pcard-price .price { color:var(--ink); }
+html:not([data-theme="dark"]) .blue-product-detail .pd-pairings ul.products li.product.pcard,
+html:not([data-theme="dark"]) .blue-product-detail .pd-pairings .pcard-wish {
+  border-color:var(--line); background:var(--paper); color:var(--ink);
+}
+html:not([data-theme="dark"]) .blue-product-detail .pd-pairings .pcard-kind,
+html:not([data-theme="dark"]) .blue-product-detail .pd-pairings .pcard-tag,
+html:not([data-theme="dark"]) .blue-product-detail .pd-pairings .pcard-price .from,
+html:not([data-theme="dark"]) .blue-product-detail .pd-pairings .pcard-price del { color:var(--ink-soft); }
+html:not([data-theme="dark"]) .blue-product-detail .pd-pairings .pcard-foot { border-color:var(--line-soft); }
+html:not([data-theme="dark"]) .blue-product-detail .pd-pairings .pcard-badge .chip { background:var(--navy); color:#fff; }
+
 @media(max-width:960px){
   .blue-product-detail .pd { grid-template-columns:1fr; }
   .blue-product-detail .summary.pd-buy { position:static; }

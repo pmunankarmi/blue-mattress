@@ -177,6 +177,16 @@ body.woocommerce-cart .woocommerce-shipping-calculator button[name="calc_shippin
   width:100%; min-height:48px; margin:2px 0 0; border-color:#6686ec!important;
   background:#6686ec!important; color:#07101f!important; text-align:center;
 }
+body.woocommerce-cart button[name="update_cart"]:disabled,
+body.woocommerce-cart button[name="update_cart"].disabled {
+  appearance:none!important; border-color:#a8b3c5!important; background:#cbd3df!important;
+  background-color:#cbd3df!important; background-image:none!important; color:#425169!important;
+  opacity:1!important; cursor:not-allowed; box-shadow:none!important; transform:none!important;
+}
+html[data-theme="dark"] body.woocommerce-cart button[name="update_cart"]:disabled,
+html[data-theme="dark"] body.woocommerce-cart button[name="update_cart"].disabled {
+  border-color:#34425a!important; background:#28354a!important; background-color:#28354a!important; color:#aebbd0!important;
+}
 body.woocommerce-cart .wc-empty-cart-message,
 body.woocommerce-cart .return-to-shop { grid-column:1/-1; width:100%; text-align:center; }
 body.woocommerce-cart .wc-empty-cart-message .cart-empty {

@@ -203,6 +203,16 @@
 .blue-shop-archive .site-header .brand-logo,
 .blue-single-product .site-header .brand-logo { filter: brightness(0) invert(1); }
 
+/* Product pages honor the user-selected light palette. Archive pages retain
+   their campaign treatment; only the single-product chrome changes here. */
+html:not([data-theme="dark"]) body.blue-single-product { background:var(--canvas); color:var(--ink); }
+html:not([data-theme="dark"]) body.blue-single-product .site-header.solid {
+  background:rgba(247,244,238,.96); border-bottom-color:var(--line);
+}
+html:not([data-theme="dark"]) body.blue-single-product .site-header .nav-link,
+html:not([data-theme="dark"]) body.blue-single-product .site-header .icon-btn { color:var(--ink); }
+html:not([data-theme="dark"]) body.blue-single-product .site-header .brand-logo { filter:none; }
+
 .blue-catalog { min-height: 70vh; background: #0b111b; color: #e9eff8; }
 .blue-catalog .shophero {
   min-height: 270px; display: flex; align-items: center; text-align: start;
