@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.8.8
+
+- Restored the full cart-totals width on mobile instead of squeezing Arabic values into a leftover desktop-width cell.
+- Kept cart-total headings and values in a readable two-column layout across the complete card.
+- Removed the off-canvas WordPress administrator name that still widened RTL mobile pages while logged in.
+
 ## 2.8.7
 
 - Removed the remaining mobile horizontal scrollbar on Cart and Checkout for logged-in administrators.

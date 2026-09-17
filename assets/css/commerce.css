@@ -498,6 +498,21 @@ html[data-theme="dark"] body.blue-commerce-flow .wc-block-components-sidebar {
   body.woocommerce-cart table.shop_table td.actions .coupon .input-text { width:100%; }
   body.woocommerce-cart table.shop_table td.actions .coupon button { width:100%; }
   body.woocommerce-cart table.shop_table td.actions>button[name="update_cart"] { float:none; width:100%; margin-top:12px; }
+  /* Keep the totals as a real two-column table on phones. WooCommerce's
+     responsive conversion hides the headings but leaves our desktop 56%
+     cell width in place, squeezing Arabic values into half of the card. */
+  body.woocommerce-cart .cart_totals table.shop_table_responsive { display:table; width:100%; table-layout:fixed; }
+  body.woocommerce-cart .cart_totals table.shop_table_responsive tbody { display:table-row-group; }
+  body.woocommerce-cart .cart_totals table.shop_table_responsive tr { display:table-row; }
+  body.woocommerce-cart .cart_totals table.shop_table_responsive tr th {
+    display:table-cell; width:38%; padding-inline-end:14px; vertical-align:top; text-align:start;
+  }
+  body.woocommerce-cart .cart_totals table.shop_table_responsive tr td {
+    display:table-cell; width:62%; vertical-align:top; text-align:end;
+  }
+  body.woocommerce-cart .cart_totals table.shop_table_responsive tr td::before { display:none; content:none; }
+  body.woocommerce-cart .cart_totals .woocommerce-shipping-destination,
+  body.woocommerce-cart .cart_totals .woocommerce-shipping-calculator { max-width:100%; overflow-wrap:anywhere; }
   body.woocommerce-cart .cart-collaterals .cross-sells ul.products { grid-template-columns:1fr; }
   body.woocommerce-cart .wc-empty-cart-message .cart-empty { min-height:190px; padding:34px 20px; }
   body.woocommerce-cart .wc-empty-cart-message .cart-empty::before { flex-basis:52px; width:52px; height:52px; background-size:24px; }
