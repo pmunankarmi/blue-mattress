@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.8.7
+
+- Removed the remaining mobile horizontal scrollbar on Cart and Checkout for logged-in administrators.
+- Contained WordPress's RTL mobile admin toolbar so its off-canvas account label cannot widen the root document.
+- Switched the root viewport guard from `overflow-x: clip` to the consistently enforced `overflow-x: hidden` behavior.
+
 ## 2.8.6
 
 - Restored the mobile cart flow so the editable cart table appears before totals and recommendations.
