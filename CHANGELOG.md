@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.8.14
+
+- Redesigned the cart shipping calculator to match the other dark commerce fields and use the full available width, including on mobile.
+- Left WooCommerce coupon rules, validation, checkout processing and email behavior unchanged.
+
 ## 2.8.13
 
 - Added a polished responsive Blue Mattress layout to every WooCommerce HTML email while retaining WooCommerce's dynamic email content.

@@ -140,6 +140,43 @@ body.woocommerce-cart .cart_totals .checkout-button:hover { border-color:#8da9ff
 body.woocommerce-cart .woocommerce-shipping-destination,
 body.woocommerce-cart .woocommerce-shipping-calculator { color:rgba(233,239,248,.62); font-size:.78rem; }
 body.woocommerce-cart .woocommerce-shipping-calculator a { color:#8da9ff; }
+body.woocommerce-cart .woocommerce-shipping-calculator .shipping-calculator-form {
+  width:100%; margin:16px 0 0; padding:18px; box-sizing:border-box; border:1px solid rgba(233,239,248,.14);
+  border-radius:var(--r-md); background:rgba(233,239,248,.055); text-align:start;
+}
+body.woocommerce-cart .woocommerce-shipping-calculator .form-row {
+  float:none; width:100%; margin:0 0 13px; padding:0;
+}
+body.woocommerce-cart .woocommerce-shipping-calculator .form-row label {
+  display:block; margin:0 0 7px; color:rgba(233,239,248,.7); font-size:.69rem;
+  font-weight:700; letter-spacing:.07em; text-align:start; text-transform:uppercase;
+}
+body.woocommerce-cart .woocommerce-shipping-calculator input.input-text,
+body.woocommerce-cart .woocommerce-shipping-calculator select,
+body.woocommerce-cart .woocommerce-shipping-calculator .select2-container,
+body.woocommerce-cart .woocommerce-shipping-calculator .select2-selection--single {
+  display:block; width:100%!important; max-width:none; min-height:48px; box-sizing:border-box;
+}
+body.woocommerce-cart .woocommerce-shipping-calculator input.input-text,
+body.woocommerce-cart .woocommerce-shipping-calculator select,
+body.woocommerce-cart .woocommerce-shipping-calculator .select2-selection--single {
+  padding:11px 14px; border:1px solid rgba(233,239,248,.22)!important; border-radius:var(--r-sm)!important;
+  background:#172234!important; color:#eef3fb!important; -webkit-text-fill-color:#eef3fb; font:inherit;
+}
+body.woocommerce-cart .woocommerce-shipping-calculator .select2-selection__rendered {
+  padding:0 28px 0 0!important; color:#eef3fb!important; line-height:24px!important; text-align:start;
+}
+[dir="rtl"] body.woocommerce-cart .woocommerce-shipping-calculator .select2-selection__rendered { padding:0 0 0 28px!important; }
+body.woocommerce-cart .woocommerce-shipping-calculator .select2-selection__arrow { top:50%!important; transform:translateY(-50%); }
+body.woocommerce-cart .woocommerce-shipping-calculator input.input-text:focus,
+body.woocommerce-cart .woocommerce-shipping-calculator select:focus,
+body.woocommerce-cart .woocommerce-shipping-calculator .select2-container--focus .select2-selection--single {
+  border-color:#6686ec!important; outline:0; box-shadow:0 0 0 3px rgba(102,134,236,.16)!important;
+}
+body.woocommerce-cart .woocommerce-shipping-calculator button[name="calc_shipping"] {
+  width:100%; min-height:48px; margin:2px 0 0; border-color:#6686ec!important;
+  background:#6686ec!important; color:#07101f!important; text-align:center;
+}
 body.woocommerce-cart .wc-empty-cart-message,
 body.woocommerce-cart .return-to-shop { grid-column:1/-1; width:100%; text-align:center; }
 body.woocommerce-cart .wc-empty-cart-message .cart-empty {
@@ -515,8 +552,18 @@ html[data-theme="dark"] body.blue-commerce-flow .wc-block-components-sidebar {
     display:table-cell; width:62%; vertical-align:top; text-align:end;
   }
   body.woocommerce-cart .cart_totals table.shop_table_responsive tr td::before { display:none; content:none; }
+  body.woocommerce-cart .cart_totals table.shop_table_responsive tr.woocommerce-shipping-totals.shipping {
+    display:flex; width:100%; flex-direction:column;
+  }
+  body.woocommerce-cart .cart_totals table.shop_table_responsive tr.woocommerce-shipping-totals.shipping>th,
+  body.woocommerce-cart .cart_totals table.shop_table_responsive tr.woocommerce-shipping-totals.shipping>td {
+    display:block; width:100%; padding-inline:0; text-align:start;
+  }
+  body.woocommerce-cart .cart_totals table.shop_table_responsive tr.woocommerce-shipping-totals.shipping>th { padding-bottom:4px; }
+  body.woocommerce-cart .cart_totals table.shop_table_responsive tr.woocommerce-shipping-totals.shipping>td { padding-top:8px; }
   body.woocommerce-cart .cart_totals .woocommerce-shipping-destination,
   body.woocommerce-cart .cart_totals .woocommerce-shipping-calculator { max-width:100%; overflow-wrap:anywhere; }
+  body.woocommerce-cart .woocommerce-shipping-calculator .shipping-calculator-form { width:100%; padding:16px; }
   body.woocommerce-cart .cart-collaterals .cross-sells ul.products { grid-template-columns:1fr; }
   body.woocommerce-cart .wc-empty-cart-message .cart-empty { min-height:190px; padding:34px 20px; }
   body.woocommerce-cart .wc-empty-cart-message .cart-empty::before { flex-basis:52px; width:52px; height:52px; background-size:24px; }
