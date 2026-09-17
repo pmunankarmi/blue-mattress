@@ -485,6 +485,10 @@ html[data-theme="dark"] body.blue-commerce-flow .wc-block-components-sidebar {
 }
 
 @media(max-width:700px){
+  /* Negative inline offsets on these decorative glows make mobile WebKit
+     widen the RTL layout viewport before overflow clipping is applied. */
+  body.woocommerce-cart .cart-collaterals .cart_totals::before,
+  body.woocommerce-checkout #order_review::before { display:none; }
   body.woocommerce-cart .blue-prose>article>h1,
   body.woocommerce-checkout .blue-prose>article>h1 { font-size:2.5rem; }
   body.woocommerce-cart table.shop_table_responsive tr.cart_item { padding:18px; border-bottom:1px solid var(--line-soft); }

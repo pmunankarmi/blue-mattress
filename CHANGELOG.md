@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.8.11
+
+- Removed the off-canvas Cart and Checkout card glows on phones; their negative RTL offsets expanded iPhone Safari's layout viewport by 120–140px before clipping.
+- Restored a true 390px mobile viewport with zero horizontal scroll on both the populated Cart and Checkout pages.
+
 ## 2.8.10
 
 - Collapsed the rendered width of clipped screen-reader labels while keeping their accessible text available to assistive technology.
