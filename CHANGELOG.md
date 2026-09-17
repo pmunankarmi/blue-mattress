@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.8.9
+
+- Prevented clipped accessibility text from creating a hidden 120px RTL scroll range in iOS Safari.
+- Kept the skip link accessible and visible when focused without positioning it from the Arabic inline edge.
+- Contained animated product, footer and WhatsApp decoration so transformed layers cannot widen mobile pages.
+
 ## 2.8.8
 
 - Restored the full cart-totals width on mobile instead of squeezing Arabic values into a leftover desktop-width cell.

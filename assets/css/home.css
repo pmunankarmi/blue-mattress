@@ -574,17 +574,6 @@ html[data-theme="dark"] .lineup.woocommerce .pcard-wish { background:rgba(18,25,
 /* ============================================================
    RTL / ARABIC (index-ar.html)
    ============================================================ */
-/* the shared skip-link hides at left:-9999px, which becomes real,
-   scrollable leftward overflow on an RTL page — park it with the
-   clip pattern instead */
-[dir="rtl"] .skip-link:not(:focus) {
-  left: 0; top: 0;
-  width: 1px; height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-
 /* Arabic descenders need more room inside the clipped hero lines */
 html[lang="ar"] .hero-line { padding-bottom: .22em; margin-bottom: -.22em; }
 
