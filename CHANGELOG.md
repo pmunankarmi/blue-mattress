@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.8.17
+
+- Made the checkout order review and cart totals cards follow the selected light or dark theme.
+- Added light-theme colors to totals tables, payment panels and the cart shipping calculator while preserving the existing dark-theme appearance.
+- Expanded the cart shipping calculator across the full totals-card width.
+
 ## 2.8.16
 
 - Kept WooCommerce cart and checkout AJAX requests in the active storefront language.
