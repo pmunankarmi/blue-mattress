@@ -4,9 +4,17 @@
   const config = window.BlueAddressLookup || {};
   const isArabic = document.documentElement.lang.toLowerCase().startsWith('ar');
   const storageKey = 'blue-short-address';
+  const saudiCenter = { lat: 23.8859, lng: 45.0792 };
   let mapsPromise;
 
   const text = (key, fallback) => config.strings?.[key] || fallback;
+
+  const withTimeout = (promise, duration = 15000) => Promise.race([
+    promise,
+    new Promise((resolve, reject) => {
+      window.setTimeout(() => reject(new Error('maps-timeout')), duration);
+    })
+  ]);
 
   const loadMaps = () => {
     if (window.google?.maps?.importLibrary) return Promise.resolve(window.google.maps);
@@ -86,13 +94,13 @@
 
     try {
       const { Place } = await window.google.maps.importLibrary('places');
-      const response = await Place.searchByText({
-        textQuery: `${code}, Saudi Arabia`,
+      const response = await withTimeout(Place.searchByText({
+        textQuery: code,
         fields: ['formattedAddress', 'addressComponents', 'location'],
         language: config.language || (isArabic ? 'ar' : 'en'),
         region: 'sa',
         maxResultCount: 1
-      });
+      }));
       if (response.places?.length) return parseResult(response.places[0], code);
     } catch (error) {
       // Some existing Google projects only have Geocoding enabled; use it as
@@ -101,13 +109,22 @@
 
     const { Geocoder } = await window.google.maps.importLibrary('geocoding');
     const geocoder = new Geocoder();
-    const response = await geocoder.geocode({
+    const response = await withTimeout(geocoder.geocode({
       address: `${code}, Saudi Arabia`,
       componentRestrictions: { country: 'SA' },
       region: 'SA'
-    });
+    }));
     if (!response.results?.length) throw new Error('no-results');
     return parseResult(response.results[0], code);
+  };
+
+  const reverseGeocode = async (location) => {
+    await loadMaps();
+    const { Geocoder } = await window.google.maps.importLibrary('geocoding');
+    const geocoder = new Geocoder();
+    const response = await withTimeout(geocoder.geocode({ location, region: 'SA' }));
+    if (!response.results?.length) throw new Error('no-results');
+    return parseResult(response.results[0], '');
   };
 
   const dispatchChange = (field) => {
@@ -178,6 +195,67 @@
     status.appendChild(link);
   };
 
+  const createMapPicker = async (canvas, status, scope, getShortCode) => {
+    await loadMaps();
+    const { Map } = await window.google.maps.importLibrary('maps');
+    const map = new Map(canvas, {
+      center: saudiCenter,
+      zoom: 5,
+      clickableIcons: false,
+      fullscreenControl: true,
+      mapTypeControl: false,
+      streetViewControl: false
+    });
+    const marker = new window.google.maps.Marker({
+      map,
+      position: saudiCenter,
+      visible: false
+    });
+
+    const showAddress = (address, zoom = 17) => {
+      if (!Number.isFinite(address.lat) || !Number.isFinite(address.lng)) return;
+      const position = { lat: address.lat, lng: address.lng };
+      marker.setPosition(position);
+      marker.setVisible(true);
+      map.setCenter(position);
+      map.setZoom(zoom);
+    };
+
+    map.addListener('click', async (event) => {
+      const location = event.latLng;
+      marker.setPosition(location);
+      marker.setVisible(true);
+      status.className = 'blue-short-address__status';
+      status.textContent = text('mapLoading', 'Getting the selected address…');
+      canvas.classList.add('is-loading');
+      try {
+        const address = await reverseGeocode(location);
+        const shortCode = normalizeCode(getShortCode?.() || '');
+        if (/^[A-Z]{4}[0-9]{4}$/.test(shortCode)) address.code = shortCode;
+        fillWooAddress(address, scope);
+        showAddress(address, Math.max(map.getZoom() || 17, 16));
+        renderResult(status, address);
+      } catch (error) {
+        status.className = 'blue-short-address__status is-error';
+        status.textContent = text('mapError', 'We could not read that map location. Choose another point or enter the address manually.');
+      } finally {
+        canvas.classList.remove('is-loading');
+      }
+    });
+
+    if (window.ResizeObserver) {
+      let lastWidth = canvas.offsetWidth;
+      new ResizeObserver(() => {
+        if (!canvas.offsetWidth || canvas.offsetWidth === lastWidth) return;
+        lastWidth = canvas.offsetWidth;
+        window.google.maps.event.trigger(map, 'resize');
+        if (marker.getVisible()) map.setCenter(marker.getPosition());
+      }).observe(canvas);
+    }
+
+    return { showAddress };
+  };
+
   const createLookup = (scope) => {
     const wrapper = document.createElement('div');
     const id = `blue-short-address-${scope}`;
@@ -218,6 +296,17 @@
     status.className = 'blue-short-address__status';
     status.setAttribute('aria-live', 'polite');
 
+    const mapHint = document.createElement('p');
+    mapHint.className = 'blue-short-address__map-hint';
+    mapHint.textContent = text('mapHint', 'Or choose your exact location on the map. The address fields will be filled automatically.');
+
+    const mapCanvas = document.createElement('div');
+    mapCanvas.className = 'blue-short-address__map';
+    mapCanvas.setAttribute('role', 'application');
+    mapCanvas.setAttribute('aria-label', text('mapLabel', 'Choose delivery address on map'));
+
+    let mapControllerPromise;
+
     let lookupTimer = 0;
 
     const lookup = async () => {
@@ -240,6 +329,9 @@
         const address = await searchAddress(code);
         fillWooAddress(address, scope);
         renderResult(status, address);
+        if (mapControllerPromise) {
+          mapControllerPromise.then((controller) => controller?.showAddress(address)).catch(() => {});
+        }
       } catch (error) {
         status.className = 'blue-short-address__status is-error';
         status.textContent = text('notFound', 'We could not find that Short Address. Check the code and try again.');
@@ -263,7 +355,14 @@
     });
 
     controls.append(input, button);
-    wrapper.append(label, controls, hint, status);
+    wrapper.append(label, controls, hint, status, mapHint, mapCanvas);
+    window.requestAnimationFrame(() => {
+      mapControllerPromise = createMapPicker(mapCanvas, status, scope, () => input.value).catch(() => {
+        mapCanvas.classList.add('is-unavailable');
+        mapCanvas.textContent = text('mapUnavailable', 'The map is temporarily unavailable. You can still enter your address manually.');
+        return null;
+      });
+    });
     return wrapper;
   };
 
@@ -286,10 +385,10 @@
 
     try {
       const address = JSON.parse(sessionStorage.getItem(storageKey) || 'null');
-      if (!address?.code) return;
+      if (!address?.address1 && !address?.formattedAddress) return;
       address1.dataset.blueShortAddressRestored = 'true';
       const input = document.getElementById('blue-short-address-billing');
-      if (input) input.value = address.code;
+      if (input && address.code) input.value = address.code;
       fillWooAddress(address, 'billing');
       const status = document.getElementById('blue-short-address-billing-status');
       if (status) renderResult(status, address);

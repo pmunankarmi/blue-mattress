@@ -219,6 +219,11 @@ add_action(
 								'invalid'     => 'أدخل عنوانًا مختصرًا صحيحًا: 4 أحرف متبوعة بـ 4 أرقام.',
 								'loading'     => 'جارٍ العثور على عنوانك…',
 								'notFound'    => 'تعذر العثور على هذا العنوان المختصر. تحقق من الرمز وحاول مرة أخرى.',
+								'mapHint'     => 'أو اختر موقعك الدقيق على الخريطة. سيتم تعبئة حقول العنوان تلقائيًا.',
+								'mapLabel'    => 'اختر عنوان التوصيل على الخريطة',
+								'mapLoading'  => 'جارٍ تحديد العنوان المختار…',
+								'mapError'    => 'تعذر قراءة هذا الموقع. اختر نقطة أخرى أو أدخل العنوان يدويًا.',
+								'mapUnavailable' => 'الخريطة غير متاحة مؤقتًا. لا يزال بإمكانك إدخال عنوانك يدويًا.',
 							)
 							: array(
 								'label'       => 'Saudi Short Address',
@@ -228,6 +233,11 @@ add_action(
 								'invalid'     => 'Enter a valid Short Address: 4 letters followed by 4 numbers.',
 								'loading'     => 'Finding your address…',
 								'notFound'    => 'We could not find that Short Address. Check the code and try again.',
+								'mapHint'     => 'Or choose your exact location on the map. The address fields will be filled automatically.',
+								'mapLabel'    => 'Choose delivery address on map',
+								'mapLoading'  => 'Getting the selected address…',
+								'mapError'    => 'We could not read that map location. Choose another point or enter the address manually.',
+								'mapUnavailable' => 'The map is temporarily unavailable. You can still enter your address manually.',
 							),
 					)
 				);

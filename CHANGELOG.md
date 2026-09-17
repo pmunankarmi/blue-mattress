@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.8.19
+
+- Added an interactive Google Map below every Saudi Short Address field on Cart and Checkout.
+- Let customers select a delivery point on the map and populate WooCommerce's standard address fields using reverse geocoding.
+- Kept Short Address lookup and map selection available together in English and Arabic.
+- Added a timeout and manual-entry fallback so a Maps API problem cannot leave the address lookup loading indefinitely.
+
 ## 2.8.18
 
 - Made the Paymob card-information panel, labels and cardholder field follow the active light or dark storefront theme.

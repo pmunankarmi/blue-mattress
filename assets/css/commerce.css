@@ -214,6 +214,21 @@ body.woocommerce-checkout .blue-short-address { grid-column:1/-1; }
 .blue-short-address__status.is-success a { display:inline-flex; align-items:flex-start; gap:7px; color:var(--royal); font-weight:600; }
 .blue-short-address__status.is-success a::before { content:'⌖'; flex:0 0 auto; font-size:1rem; line-height:1.2; }
 .blue-short-address__status.is-error { color:var(--danger); }
+.blue-short-address__map-hint {
+  margin:14px 0 8px!important; color:var(--ink-soft); font-size:.76rem; line-height:1.5;
+}
+.blue-short-address__map {
+  position:relative; width:100%; height:clamp(230px,28vw,320px); overflow:hidden;
+  border:1px solid var(--line); border-radius:var(--r-sm); background:var(--paper-soft);
+}
+.blue-short-address__map.is-loading::after {
+  content:''; position:absolute; inset:0; z-index:5; background:rgba(255,255,255,.38); pointer-events:none;
+}
+html[data-theme="dark"] .blue-short-address__map.is-loading::after { background:rgba(7,16,31,.42); }
+.blue-short-address__map.is-unavailable {
+  display:flex; align-items:center; justify-content:center; padding:24px; color:var(--ink-soft);
+  font-size:.78rem; line-height:1.6; text-align:center;
+}
 body.woocommerce-cart .blue-short-address { margin:0 0 4px; }
 body.woocommerce-cart .blue-short-address>label {
   display:block; margin:0 0 7px; color:var(--ink-soft); font-size:.69rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
@@ -588,6 +603,7 @@ html[data-theme="dark"] body.blue-commerce-flow .wc-block-components-sidebar {
 @media(max-width:700px){
   .blue-short-address__controls { grid-template-columns:1fr; }
   .blue-short-address__controls .blue-short-address__button { width:100%; }
+  .blue-short-address__map { height:240px; }
   /* Negative inline offsets on these decorative glows make mobile WebKit
      widen the RTL layout viewport before overflow clipping is applied. */
   body.woocommerce-cart .cart-collaterals .cart_totals::before,
