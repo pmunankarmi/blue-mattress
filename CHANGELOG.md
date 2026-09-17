@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.8.12
+
+- Restored products on English Mattress, Pillows, Toppers and Bedding category archives.
+- Prevented Polylang's internal language query from filtering shared WooCommerce products out of `/en/product-category/` routes.
+- Kept English path, locale, labels and product content active while sharing the canonical WooCommerce catalog with Arabic.
+
 ## 2.8.11
 
 - Removed the off-canvas Cart and Checkout card glows on phones; their negative RTL offsets expanded iPhone Safari's layout viewport by 120–140px before clipping.
