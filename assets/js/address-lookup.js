@@ -89,19 +89,19 @@
     };
   };
 
-  const searchAddress = async (code) => {
+  const searchGoogleAddress = async (query, shortCode = '') => {
     await loadMaps();
 
     try {
       const { Place } = await window.google.maps.importLibrary('places');
       const response = await withTimeout(Place.searchByText({
-        textQuery: code,
+        textQuery: query,
         fields: ['formattedAddress', 'addressComponents', 'location'],
         language: config.language || (isArabic ? 'ar' : 'en'),
         region: 'sa',
         maxResultCount: 1
       }));
-      if (response.places?.length) return parseResult(response.places[0], code);
+      if (response.places?.length) return parseResult(response.places[0], shortCode);
     } catch (error) {
       // Some existing Google projects only have Geocoding enabled; use it as
       // a compatible fallback before showing an error to the customer.
@@ -110,13 +110,15 @@
     const { Geocoder } = await window.google.maps.importLibrary('geocoding');
     const geocoder = new Geocoder();
     const response = await withTimeout(geocoder.geocode({
-      address: `${code}, Saudi Arabia`,
+      address: `${query}, Saudi Arabia`,
       componentRestrictions: { country: 'SA' },
       region: 'SA'
     }));
     if (!response.results?.length) throw new Error('no-results');
-    return parseResult(response.results[0], code);
+    return parseResult(response.results[0], shortCode);
   };
+
+  const searchAddress = (code) => searchGoogleAddress(code, code);
 
   const reverseGeocode = async (location) => {
     await loadMaps();
@@ -195,7 +197,7 @@
     status.appendChild(link);
   };
 
-  const createMapPicker = async (canvas, status, scope, getShortCode) => {
+  const createMapPicker = async (canvas, status, scope, getShortCode, searchInput, searchButton) => {
     await loadMaps();
     const { Map } = await window.google.maps.importLibrary('maps');
     const map = new Map(canvas, {
@@ -220,6 +222,45 @@
       map.setCenter(position);
       map.setZoom(zoom);
     };
+
+    const searchMap = async () => {
+      const query = searchInput.value.trim();
+      if (!query || searchButton.disabled) {
+        if (!query) {
+          status.className = 'blue-short-address__status is-error';
+          status.textContent = text('mapSearchEmpty', 'Enter a place or address to search the map.');
+          searchInput.focus();
+        }
+        return;
+      }
+
+      searchButton.disabled = true;
+      canvas.classList.add('is-loading');
+      status.className = 'blue-short-address__status';
+      status.textContent = text('mapSearchLoading', 'Searching Google Maps…');
+      try {
+        const normalized = normalizeCode(query);
+        const shortCode = /^[A-Z]{4}[0-9]{4}$/.test(normalized) ? normalized : '';
+        const address = await searchGoogleAddress(query, shortCode);
+        fillWooAddress(address, scope);
+        showAddress(address);
+        renderResult(status, address);
+      } catch (error) {
+        status.className = 'blue-short-address__status is-error';
+        status.textContent = text('mapSearchError', 'No Google Maps result was found. Try a nearby landmark or a more complete address.');
+      } finally {
+        searchButton.disabled = false;
+        canvas.classList.remove('is-loading');
+      }
+    };
+
+    searchButton.addEventListener('click', searchMap);
+    searchInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        searchMap();
+      }
+    });
 
     map.addListener('click', async (event) => {
       const location = event.latLng;
@@ -300,6 +341,23 @@
     mapHint.className = 'blue-short-address__map-hint';
     mapHint.textContent = text('mapHint', 'Or choose your exact location on the map. The address fields will be filled automatically.');
 
+    const mapSearch = document.createElement('div');
+    mapSearch.className = 'blue-short-address__map-search';
+
+    const mapSearchInput = document.createElement('input');
+    mapSearchInput.className = 'input-text blue-short-address__map-search-input';
+    mapSearchInput.type = 'search';
+    mapSearchInput.autocomplete = 'off';
+    mapSearchInput.placeholder = text('mapSearchPlaceholder', 'Search place or address');
+    mapSearchInput.setAttribute('aria-label', text('mapSearchLabel', 'Search Google Maps'));
+
+    const mapSearchButton = document.createElement('button');
+    mapSearchButton.type = 'button';
+    mapSearchButton.className = 'button blue-short-address__map-search-button';
+    mapSearchButton.textContent = text('mapSearchButton', 'Search map');
+
+    mapSearch.append(mapSearchInput, mapSearchButton);
+
     const mapCanvas = document.createElement('div');
     mapCanvas.className = 'blue-short-address__map';
     mapCanvas.setAttribute('role', 'application');
@@ -355,14 +413,30 @@
     });
 
     controls.append(input, button);
-    wrapper.append(label, controls, hint, status, mapHint, mapCanvas);
+    wrapper.append(label, controls, hint, status, mapHint, mapSearch, mapCanvas);
     window.requestAnimationFrame(() => {
-      mapControllerPromise = createMapPicker(mapCanvas, status, scope, () => input.value).catch(() => {
+      mapControllerPromise = createMapPicker(
+        mapCanvas,
+        status,
+        scope,
+        () => input.value,
+        mapSearchInput,
+        mapSearchButton
+      ).catch(() => {
         mapCanvas.classList.add('is-unavailable');
         mapCanvas.textContent = text('mapUnavailable', 'The map is temporarily unavailable. You can still enter your address manually.');
         return null;
       });
     });
+    wrapper.blueRestoreAddress = (address) => {
+      if (address.code) input.value = address.code;
+      if (address.formattedAddress) mapSearchInput.value = address.formattedAddress;
+      fillWooAddress(address, scope);
+      renderResult(status, address);
+      if (mapControllerPromise) {
+        mapControllerPromise.then((controller) => controller?.showAddress(address)).catch(() => {});
+      }
+    };
     return wrapper;
   };
 
@@ -387,11 +461,9 @@
       const address = JSON.parse(sessionStorage.getItem(storageKey) || 'null');
       if (!address?.address1 && !address?.formattedAddress) return;
       address1.dataset.blueShortAddressRestored = 'true';
-      const input = document.getElementById('blue-short-address-billing');
-      if (input && address.code) input.value = address.code;
-      fillWooAddress(address, 'billing');
-      const status = document.getElementById('blue-short-address-billing-status');
-      if (status) renderResult(status, address);
+      const lookup = document.querySelector('[data-blue-short-address="billing"]');
+      if (lookup?.blueRestoreAddress) lookup.blueRestoreAddress(address);
+      else fillWooAddress(address, 'billing');
     } catch (error) {}
   };
 

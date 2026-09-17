@@ -217,6 +217,24 @@ body.woocommerce-checkout .blue-short-address { grid-column:1/-1; }
 .blue-short-address__map-hint {
   margin:14px 0 8px!important; color:var(--ink-soft); font-size:.76rem; line-height:1.5;
 }
+.blue-short-address__map-search {
+  display:grid; grid-template-columns:minmax(0,1fr) auto; gap:10px; margin:0 0 10px;
+}
+.blue-short-address__map-search .blue-short-address__map-search-input {
+  width:100%!important; min-width:0; min-height:48px; margin:0!important; padding:11px 14px!important;
+  border:1px solid var(--line)!important; border-radius:var(--r-sm)!important;
+  background:var(--paper)!important; color:var(--ink)!important; -webkit-text-fill-color:var(--ink); font:inherit;
+  box-sizing:border-box;
+}
+.blue-short-address__map-search .blue-short-address__map-search-input:focus {
+  border-color:var(--royal)!important; outline:0; box-shadow:0 0 0 3px rgba(var(--royal-rgb),.12)!important;
+}
+.blue-short-address__map-search .blue-short-address__map-search-button {
+  min-width:130px; min-height:48px; margin:0!important; padding:11px 16px!important;
+  border-color:var(--royal)!important; border-radius:var(--r-sm)!important;
+  background:var(--royal)!important; color:#07101f!important; white-space:nowrap;
+}
+.blue-short-address__map-search .blue-short-address__map-search-button:disabled { opacity:.65!important; cursor:wait; }
 .blue-short-address__map {
   position:relative; width:100%; height:clamp(230px,28vw,320px); overflow:hidden;
   border:1px solid var(--line); border-radius:var(--r-sm); background:var(--paper-soft);
@@ -603,6 +621,8 @@ html[data-theme="dark"] body.blue-commerce-flow .wc-block-components-sidebar {
 @media(max-width:700px){
   .blue-short-address__controls { grid-template-columns:1fr; }
   .blue-short-address__controls .blue-short-address__button { width:100%; }
+  .blue-short-address__map-search { grid-template-columns:1fr; }
+  .blue-short-address__map-search .blue-short-address__map-search-button { width:100%; }
   .blue-short-address__map { height:240px; }
   /* Negative inline offsets on these decorative glows make mobile WebKit
      widen the RTL layout viewport before overflow clipping is applied. */

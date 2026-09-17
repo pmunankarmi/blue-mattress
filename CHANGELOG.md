@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.8.20
+
+- Added Google Maps place and address search above the interactive Cart and Checkout maps.
+- Let customers search by landmark, neighbourhood or full address, move the map pin to the result and populate WooCommerce address fields.
+- Restored the Cart-selected National Address, full address and map pin together when customers continue to Checkout.
+- Added English and Arabic search labels, progress states and validation messages.
+
 ## 2.8.19
 
 - Added an interactive Google Map below every Saudi Short Address field on Cart and Checkout.

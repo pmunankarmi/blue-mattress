@@ -224,6 +224,12 @@ add_action(
 								'mapLoading'  => 'جارٍ تحديد العنوان المختار…',
 								'mapError'    => 'تعذر قراءة هذا الموقع. اختر نقطة أخرى أو أدخل العنوان يدويًا.',
 								'mapUnavailable' => 'الخريطة غير متاحة مؤقتًا. لا يزال بإمكانك إدخال عنوانك يدويًا.',
+								'mapSearchPlaceholder' => 'ابحث عن مكان أو عنوان',
+								'mapSearchLabel' => 'البحث في خرائط Google',
+								'mapSearchButton' => 'البحث في الخريطة',
+								'mapSearchEmpty' => 'أدخل مكانًا أو عنوانًا للبحث في الخريطة.',
+								'mapSearchLoading' => 'جارٍ البحث في خرائط Google…',
+								'mapSearchError' => 'لم يتم العثور على نتيجة. جرّب معلمًا قريبًا أو عنوانًا أكثر تفصيلًا.',
 							)
 							: array(
 								'label'       => 'Saudi Short Address',
@@ -238,6 +244,12 @@ add_action(
 								'mapLoading'  => 'Getting the selected address…',
 								'mapError'    => 'We could not read that map location. Choose another point or enter the address manually.',
 								'mapUnavailable' => 'The map is temporarily unavailable. You can still enter your address manually.',
+								'mapSearchPlaceholder' => 'Search place or address',
+								'mapSearchLabel' => 'Search Google Maps',
+								'mapSearchButton' => 'Search map',
+								'mapSearchEmpty' => 'Enter a place or address to search the map.',
+								'mapSearchLoading' => 'Searching Google Maps…',
+								'mapSearchError' => 'No Google Maps result was found. Try a nearby landmark or a more complete address.',
 							),
 					)
 				);
