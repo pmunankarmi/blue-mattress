@@ -444,7 +444,11 @@ function initializePaymobElement(key, cs) {
             Width_of_Container: pixelContainerWidth,
             Vertical_Padding: customStyles.vertical_padding,
             Vertical_Spacing_between_components: customStyles.vertical_spacing_between_components,
-            Container_Padding: customStyles.container_padding
+            Container_Padding: customStyles.container_padding,
+            // Paymob renders these logos inside its secure cross-origin iframe.
+            // Use the SDK's presentation option so mobile card entry has the
+            // full row available without altering payment or validation logic.
+            HideCardIcons: window.matchMedia('(max-width: 700px)').matches
         };
     }
     

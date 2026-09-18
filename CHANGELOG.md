@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.8.24
+
+- Expanded the Cart shipping calculator, Saudi Short Address search, Google Map and address fields to the full totals-card width on phones.
+- Hid Paymob card-brand icons on mobile through Paymob's supported presentation option while leaving payment and validation behavior unchanged.
+- Prevented iPhone Safari from zooming when customers focus Checkout and secure card fields.
+
 ## 2.8.23
 
 - Extracted Saudi National Short Address codes returned by Google for selected map locations.

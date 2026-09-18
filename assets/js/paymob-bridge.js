@@ -41,7 +41,8 @@
     window.pxl_object.customize = Object.assign({}, window.pxl_object.customize || {}, {
       font_family: 'Poppins',
       font_size_label: '12',
-      font_size_input_fields: '15',
+      // A 16px input prevents iOS Safari from zooming the checkout viewport.
+      font_size_input_fields: window.matchMedia('(max-width: 700px)').matches ? '16' : '15',
       font_size_payment_button: '15',
       font_weight_label: '600',
       font_weight_input_fields: '400',
@@ -102,6 +103,7 @@
         background-color: ${theme.field} !important;
         color: ${theme.text} !important;
         -webkit-text-fill-color: ${theme.text} !important;
+        font-size: ${window.matchMedia('(max-width: 700px)').matches ? '16px' : '15px'} !important;
       }
       [data-blue-paymob-root="true"] input#name::placeholder {
         color: ${theme.placeholder} !important;

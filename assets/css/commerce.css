@@ -641,21 +641,23 @@ html[data-theme="dark"] body.blue-commerce-flow .wc-block-components-sidebar {
   body.woocommerce-cart table.shop_table td.actions .coupon .input-text { width:100%; }
   body.woocommerce-cart table.shop_table td.actions .coupon button { width:100%; }
   body.woocommerce-cart table.shop_table td.actions>button[name="update_cart"] { float:none; width:100%; margin-top:12px; }
-  /* Keep the totals as a real two-column table on phones. WooCommerce's
-     responsive conversion hides the headings but leaves our desktop 56%
-     cell width in place, squeezing Arabic values into half of the card. */
-  body.woocommerce-cart .cart_totals table.shop_table_responsive { display:table; width:100%; table-layout:fixed; }
-  body.woocommerce-cart .cart_totals table.shop_table_responsive tbody { display:table-row-group; }
-  body.woocommerce-cart .cart_totals table.shop_table_responsive tr { display:table-row; }
+  /* Use grid rather than WooCommerce's responsive table conversion. Keeping
+     the shipping calculator inside a table cell leaves its map and fields at
+     62% width on iPhone Safari, even when the shipping row is stacked. */
+  body.woocommerce-cart .cart_totals table.shop_table_responsive,
+  body.woocommerce-cart .cart_totals table.shop_table_responsive tbody { display:block!important; width:100%!important; }
+  body.woocommerce-cart .cart_totals table.shop_table_responsive tr {
+    display:grid!important; grid-template-columns:minmax(0,38%) minmax(0,62%); width:100%!important;
+  }
   body.woocommerce-cart .cart_totals table.shop_table_responsive tr th {
-    display:table-cell; width:38%; padding-inline-end:14px; vertical-align:top; text-align:start;
+    display:block!important; width:auto!important; min-width:0; padding-inline-end:14px; vertical-align:top; text-align:start;
   }
   body.woocommerce-cart .cart_totals table.shop_table_responsive tr td {
-    display:table-cell; width:62%; vertical-align:top; text-align:end;
+    display:block!important; width:auto!important; min-width:0; vertical-align:top; text-align:end;
   }
   body.woocommerce-cart .cart_totals table.shop_table_responsive tr td::before { display:none; content:none; }
   body.woocommerce-cart .cart_totals table.shop_table_responsive tr.woocommerce-shipping-totals.shipping {
-    display:flex; width:100%; flex-direction:column;
+    display:grid!important; grid-template-columns:minmax(0,1fr)!important; width:100%!important;
   }
   body.woocommerce-cart .cart_totals table.shop_table_responsive tr.woocommerce-shipping-totals.shipping>th,
   body.woocommerce-cart .cart_totals table.shop_table_responsive tr.woocommerce-shipping-totals.shipping>td {
@@ -664,8 +666,22 @@ html[data-theme="dark"] body.blue-commerce-flow .wc-block-components-sidebar {
   body.woocommerce-cart .cart_totals table.shop_table_responsive tr.woocommerce-shipping-totals.shipping>th { padding-bottom:4px; }
   body.woocommerce-cart .cart_totals table.shop_table_responsive tr.woocommerce-shipping-totals.shipping>td { padding-top:8px; }
   body.woocommerce-cart .cart_totals .woocommerce-shipping-destination,
-  body.woocommerce-cart .cart_totals .woocommerce-shipping-calculator { max-width:100%; overflow-wrap:anywhere; }
-  body.woocommerce-cart .woocommerce-shipping-calculator .shipping-calculator-form { width:100%; padding:16px; }
+  body.woocommerce-cart .cart_totals .woocommerce-shipping-calculator,
+  body.woocommerce-cart .woocommerce-shipping-calculator .shipping-calculator-form,
+  body.woocommerce-cart .woocommerce-shipping-calculator .blue-short-address,
+  body.woocommerce-cart .woocommerce-shipping-calculator .blue-short-address__map-search,
+  body.woocommerce-cart .woocommerce-shipping-calculator .blue-short-address__map {
+    width:100%!important; max-width:none!important; min-width:0; box-sizing:border-box; overflow-wrap:anywhere;
+  }
+  body.woocommerce-cart .woocommerce-shipping-calculator .shipping-calculator-form { padding:16px; }
+  /* iOS Safari zooms the viewport when a focused form control is smaller than
+     16px. Keep checkout inputs readable without changing desktop typography. */
+  body.woocommerce-checkout input,
+  body.woocommerce-checkout textarea,
+  body.woocommerce-checkout select,
+  body.woocommerce-checkout .select2-search__field,
+  body.woocommerce-checkout .blue-short-address__input,
+  body.woocommerce-checkout .blue-short-address__map-search-input { font-size:16px!important; }
   body.woocommerce-cart .cart-collaterals .cross-sells ul.products { grid-template-columns:1fr; }
   body.woocommerce-cart .wc-empty-cart-message .cart-empty { min-height:190px; padding:34px 20px; }
   body.woocommerce-cart .wc-empty-cart-message .cart-empty::before { flex-basis:52px; width:52px; height:52px; background-size:24px; }
