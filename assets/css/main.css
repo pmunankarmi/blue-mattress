@@ -395,6 +395,8 @@ li.open > .mega { opacity: 1; visibility: visible; pointer-events: auto; transfo
   display: none; flex-direction: column; gap: 4px;
 }
 .mobile-menu.open { display: flex; }
+.mobile-menu-links { display:flex; flex-direction:column; gap:4px; width:100%; margin:0; padding:0; list-style:none; }
+.mobile-menu-links .sub-menu { margin:0; padding:0 1rem; list-style:none; }
 .mobile-menu a { font-family: var(--font-display); font-size: 2rem; padding: 10px 0; border-bottom: 1px solid var(--line-soft); }
 .mobile-menu a.accent { color: var(--brass-ink); }
 .mobile-menu .mm-close { position: absolute; top: 18px; inset-inline-end: 18px; }

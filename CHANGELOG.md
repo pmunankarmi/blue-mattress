@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.8.25
+
+- Kept the Arabic Shop navigation URL on the public `/shop/` alias instead of exposing Polylang's internal `/shop-2/` record slug.
+- Centralized Shop links so desktop navigation, mobile navigation, footer links, homepage buttons and JavaScript use `/shop/` in Arabic and `/en/shop/` in English.
+- Removed the hardcoded navigation fallback and made both desktop and mobile navigation render only the assigned WordPress Primary Menu.
+
 ## 2.8.24
 
 - Expanded the Cart shipping calculator, Saudi Short Address search, Google Map and address fields to the full totals-card width on phones.

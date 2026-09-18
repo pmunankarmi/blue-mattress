@@ -48,7 +48,7 @@ add_filter(
 
 		$classes = preg_split( '/\s+/', (string) ( $atts['class'] ?? '' ), -1, PREG_SPLIT_NO_EMPTY ) ?: array();
 		$classes[] = 'nav-link';
-		$shop_url  = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : '';
+		$shop_url  = blue_shop_url();
 		$item_url  = untrailingslashit( (string) $atts['href'] );
 		if ( $shop_url && untrailingslashit( $shop_url ) === $item_url ) {
 			$classes[] = 'nav-store';
@@ -471,7 +471,7 @@ function blue_frontend_data(): array {
 	return array(
 		'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
 		'homeUrl'      => blue_home_url( '/' ),
-		'shopUrl'      => function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : blue_home_url( '/shop/' ),
+		'shopUrl'      => blue_shop_url(),
 		'cartUrl'      => function_exists( 'wc_get_cart_url' ) ? wc_get_cart_url() : blue_home_url( '/cart/' ),
 		'checkoutUrl'  => function_exists( 'wc_get_checkout_url' ) ? wc_get_checkout_url() : blue_home_url( '/checkout/' ),
 		'contactUrl'   => blue_page_url( 'page-contact.php', '/contact/' ),

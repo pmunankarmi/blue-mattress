@@ -6,7 +6,7 @@
  */
 
 defined( 'ABSPATH' ) || exit;
-$shop_url = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : blue_home_url( '/shop/' );
+$shop_url = blue_shop_url();
 $phone    = (string) blue_option( 'contact_phone' );
 $email    = (string) blue_option( 'contact_email' );
 $cr       = (string) blue_option( 'commercial_register', '7054657023' );

@@ -69,11 +69,46 @@ function blue_page_url( string $template, string $fallback = '/' ): string {
 	return blue_home_url( $fallback );
 }
 
+/** Return the public Shop URL without exposing Polylang's internal page slug. */
+function blue_shop_url( ?string $language = null ): string {
+	$language = in_array( $language, array( 'en', 'ar' ), true ) ? $language : blue_language();
+	$shop_id  = (int) get_option( 'woocommerce_shop_page_id' );
+
+	// Resolve from the English source record because the Arabic translation may
+	// retain an internal unique slug such as shop-2 even though its public alias
+	// is /shop/. blue_url_for_language() then produces the correct clean route.
+	if ( $shop_id > 0 && function_exists( 'pll_get_post' ) ) {
+		$shop_id = (int) ( pll_get_post( $shop_id, 'en' ) ?: $shop_id );
+	}
+	if ( $shop_id > 0 ) {
+		$url = get_permalink( $shop_id );
+		if ( $url ) {
+			return blue_url_for_language( $url, $language );
+		}
+	}
+
+	return trailingslashit( blue_language_home_url( $language ) ) . 'shop/';
+}
+
 /** Resolve a menu URL to the current-language page without rewriting external links. */
 function blue_navigation_url( string $url, ?WP_Post $menu_item = null ): string {
 	$language = blue_language();
 
 	if ( $menu_item && 'post_type' === $menu_item->type && function_exists( 'pll_get_post' ) ) {
+		$shop_id  = (int) get_option( 'woocommerce_shop_page_id' );
+		$shop_ids = array_filter(
+			array_unique(
+				array(
+					$shop_id,
+					(int) pll_get_post( $shop_id, 'en' ),
+					(int) pll_get_post( $shop_id, 'ar' ),
+				)
+			)
+		);
+		if ( in_array( (int) $menu_item->object_id, $shop_ids, true ) ) {
+			return blue_shop_url( $language );
+		}
+
 		$translated_id = (int) pll_get_post( (int) $menu_item->object_id, $language );
 		if ( $translated_id > 0 ) {
 			$translated_url = get_permalink( $translated_id );

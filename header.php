@@ -6,7 +6,6 @@
  */
 
 defined( 'ABSPATH' ) || exit;
-$shop_url    = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : blue_home_url( '/shop/' );
 $cart_url    = function_exists( 'wc_get_cart_url' ) ? wc_get_cart_url() : blue_home_url( '/cart/' );
 $account_url = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'myaccount' ) : wp_login_url();
 $cart_count  = function_exists( 'WC' ) && WC()->cart ? WC()->cart->get_cart_contents_count() : 0;
@@ -52,16 +51,6 @@ if ( blue_is_arabic() && 'Free delivery and setup across Saudi Arabia.' === trim
 					'depth'          => 2,
 				)
 			);
-		} else {
-			?>
-			<ul class="nav-links">
-				<li><a class="nav-link nav-store" href="<?php echo esc_url( $shop_url ); ?>"><?php echo esc_html( blue_text( 'Online Store', 'المتجر الإلكتروني' ) ); ?></a></li>
-				<li><a class="nav-link" href="<?php echo esc_url( blue_page_url( 'page-mattress-finder.php', '/mattress-finder/' ) ); ?>"><?php echo esc_html( blue_text( 'Mattress Finder', 'مرشد المراتب' ) ); ?></a></li>
-				<li><a class="nav-link" href="<?php echo esc_url( blue_page_url( 'page-our-story.php', '/our-story/' ) ); ?>"><?php echo esc_html( blue_text( 'Our Story', 'قصتنا' ) ); ?></a></li>
-				<li><a class="nav-link" href="<?php echo esc_url( blue_page_url( 'page-stark.php', '/stark/' ) ); ?>"><?php echo esc_html( blue_text( 'STARK', 'ستارك' ) ); ?></a></li>
-				<li><a class="nav-link" href="<?php echo esc_url( blue_page_url( 'page-contact.php', '/contact/' ) ); ?>"><?php echo esc_html( blue_text( 'Contact', 'تواصل معنا' ) ); ?></a></li>
-			</ul>
-			<?php
 		}
 		?>
 
@@ -90,11 +79,19 @@ if ( blue_is_arabic() && 'Free delivery and setup across Saudi Arabia.' === trim
 
 <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
 	<button class="icon-btn mm-close" id="mmClose" aria-label="<?php echo esc_attr( blue_text( 'Close', 'إغلاق' ) ); ?>">×</button>
-	<a href="<?php echo esc_url( $shop_url ); ?>"><?php echo esc_html( blue_text( 'Online Store', 'المتجر الإلكتروني' ) ); ?></a>
-	<a href="<?php echo esc_url( blue_page_url( 'page-mattress-finder.php', '/mattress-finder/' ) ); ?>"><?php echo esc_html( blue_text( 'Mattress Finder', 'مرشد المراتب' ) ); ?></a>
-	<a href="<?php echo esc_url( blue_page_url( 'page-our-story.php', '/our-story/' ) ); ?>"><?php echo esc_html( blue_text( 'Our Story', 'قصتنا' ) ); ?></a>
-	<a href="<?php echo esc_url( blue_page_url( 'page-stark.php', '/stark/' ) ); ?>"><?php echo esc_html( blue_text( 'STARK', 'ستارك' ) ); ?></a>
-	<a href="<?php echo esc_url( blue_page_url( 'page-contact.php', '/contact/' ) ); ?>"><?php echo esc_html( blue_text( 'Contact', 'تواصل معنا' ) ); ?></a>
+	<?php
+	if ( has_nav_menu( 'primary' ) ) {
+		wp_nav_menu(
+			array(
+				'theme_location' => 'primary',
+				'container'      => false,
+				'menu_class'     => 'mobile-menu-links',
+				'fallback_cb'    => false,
+				'depth'          => 2,
+			)
+		);
+	}
+	?>
 	<?php blue_language_switcher(); ?>
 </div>
 

@@ -7,7 +7,7 @@
  */
 
 get_header();
-$shop_url   = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : blue_home_url( '/shop/' );
+$shop_url   = blue_shop_url();
 $finder_url = blue_page_url( 'page-mattress-finder.php', '/mattress-finder/' );
 $hero_video      = blue_image_url( blue_field( 'hero_video' ) );
 $hero_image      = blue_image_url( blue_field( 'hero_poster' ), blue_media_asset_url( 'hero-sea.jpg' ) );
