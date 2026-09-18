@@ -231,6 +231,16 @@ add_action(
 					array( 'key' => 'field_blue_terms_page', 'label' => __( 'Terms page', 'blue-mattress' ), 'name' => 'terms_page', 'type' => 'page_link', 'post_type' => array( 'page' ), 'allow_null' => 1 ),
 					array( 'key' => 'field_blue_privacy_page', 'label' => __( 'Privacy page', 'blue-mattress' ), 'name' => 'privacy_page', 'type' => 'page_link', 'post_type' => array( 'page' ), 'allow_null' => 1 ),
 
+					array( 'key' => 'field_blue_tab_analytics', 'label' => __( 'Analytics', 'blue-mattress' ), 'name' => '', 'type' => 'tab' ),
+					array(
+						'key'          => 'field_blue_google_analytics_measurement_id',
+						'label'        => __( 'Google Analytics Measurement ID', 'blue-mattress' ),
+						'name'         => 'google_analytics_measurement_id',
+						'type'         => 'text',
+						'instructions' => __( 'Enter the GA4 web stream Measurement ID, for example G-XXXXXXXXXX. Leave empty to disable Google Analytics.', 'blue-mattress' ),
+						'placeholder'  => 'G-XXXXXXXXXX',
+					),
+
 					array( 'key' => 'field_blue_tab_checkout_address', 'label' => __( 'Checkout address', 'blue-mattress' ), 'name' => '', 'type' => 'tab' ),
 					array(
 						'key'          => 'field_blue_google_maps_api_key',

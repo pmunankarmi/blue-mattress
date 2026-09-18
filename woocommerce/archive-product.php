@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
 
 get_header();
 
-$shop_url      = wc_get_page_permalink( 'shop' );
+$shop_url      = blue_shop_url();
 $archive_title = is_shop() ? blue_text( 'The Store', 'المتجر' ) : woocommerce_page_title( false );
 $archive_intro = is_shop()
 	? blue_text( 'Everything for the best third of your life.', 'كل ما تحتاجه لأفضل ثلث من حياتك.' )
@@ -19,7 +19,7 @@ $current_term  = is_product_category() ? get_queried_object() : null;
 ?>
 <main id="primary" class="blue-catalog">
 	<section class="shophero">
-		<div class="container">
+		<div class="container-wide">
 			<?php woocommerce_breadcrumb( array( 'delimiter' => '<span class="sep">/</span>' ) ); ?>
 			<h1 class="display shophero-title"><?php echo esc_html( $archive_title ); ?></h1>
 			<?php if ( $archive_intro ) : ?><p class="lead shophero-sub"><?php echo esc_html( $archive_intro ); ?></p><?php endif; ?>

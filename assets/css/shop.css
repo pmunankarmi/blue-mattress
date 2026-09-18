@@ -16,7 +16,7 @@
   background: linear-gradient(180deg, var(--powder-2) 0%, var(--canvas) 100%);
   padding: clamp(44px, 7vw, 92px) 0 clamp(34px, 4.5vw, 60px);
 }
-.shophero .container { position: relative; z-index: 1; }
+.shophero .container-wide { position: relative; z-index: 1; }
 
 .shophero-crumb {
   display: flex; align-items: center; gap: 10px;
@@ -219,7 +219,7 @@ html:not([data-theme="dark"]) body.blue-single-product .site-header .brand-logo 
   padding: clamp(52px,6vw,78px) 0 clamp(44px,5vw,64px);
   background: radial-gradient(700px 360px at 22% 0%,rgba(61,99,201,.2),transparent 70%),linear-gradient(180deg,#142039,#0b111b);
 }
-.blue-catalog .shophero .container { width:100%; }
+.blue-catalog .shophero .container-wide { width:100%; }
 .blue-catalog .woocommerce-breadcrumb {
   display:flex; gap:12px; align-items:center; margin:0 0 20px;
   color:rgba(233,239,248,.58); font-size:.72rem; font-weight:700; letter-spacing:.16em; text-transform:uppercase;

@@ -75,6 +75,34 @@ add_action(
 	100
 );
 
+/** Load the standard GA4 tag when a valid Measurement ID is configured. */
+add_action(
+	'wp_head',
+	function (): void {
+		if ( is_admin() || wp_doing_ajax() ) {
+			return;
+		}
+
+		$measurement_id = defined( 'BLUE_GOOGLE_ANALYTICS_MEASUREMENT_ID' )
+			? (string) BLUE_GOOGLE_ANALYTICS_MEASUREMENT_ID
+			: (string) blue_option( 'google_analytics_measurement_id', '' );
+		$measurement_id = strtoupper( trim( sanitize_text_field( $measurement_id ) ) );
+		if ( ! preg_match( '/^G-[A-Z0-9]+$/', $measurement_id ) ) {
+			return;
+		}
+		?>
+		<script async src="https://www.googletagmanager.com/gtag/js?id=<?php echo esc_attr( $measurement_id ); ?>"></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag(){dataLayer.push(arguments);}
+			gtag('js', new Date());
+			gtag('config', <?php echo wp_json_encode( $measurement_id ); ?>);
+		</script>
+		<?php
+	},
+	2
+);
+
 /** Allow trusted administrators to upload sanitized SVG artwork. */
 add_filter(
 	'upload_mimes',

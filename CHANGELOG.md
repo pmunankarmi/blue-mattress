@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.8.26
+
+- Expanded the Shop and product-category hero content to the shared wide container used by the filter bar and product grid.
+- Kept the Shop archive's All-category link on the canonical language-aware Shop URL.
+- Added an Analytics tab in Theme Options with a GA4 Measurement ID field and loads the standard Google tag only when a valid `G-` ID is configured.
+
 ## 2.8.25
 
 - Kept the Arabic Shop navigation URL on the public `/shop/` alias instead of exposing Polylang's internal `/shop-2/` record slug.
