@@ -300,190 +300,6 @@ foreach ( array( 'shop', 'cart', 'checkout', 'myaccount', 'terms' ) as $blue_wc_
 	add_filter( 'woocommerce_get_' . $blue_wc_page . '_page_id', 'blue_woocommerce_page_id_for_language', 20 );
 }
 
-/**
- * Return clean Arabic aliases for every translated page.
- *
- * The installed Polylang Free edition cannot store duplicate page slugs, so
- * the Arabic records retain their internal slugs while visitors receive the
- * same unprefixed canonical slug as the English page record.
- *
- * @return array<string, int> English page URI => Arabic page ID.
- */
-function blue_arabic_clean_page_aliases(): array {
-	static $aliases = null;
-	if ( null !== $aliases ) {
-		return $aliases;
-	}
-
-	$aliases = array();
-	if ( ! function_exists( 'pll_get_post' ) || ! function_exists( 'pll_get_post_language' ) ) {
-		return $aliases;
-	}
-
-	$front_page_id = (int) get_option( 'page_on_front' );
-	$front_page_id = (int) ( pll_get_post( $front_page_id, 'en' ) ?: $front_page_id );
-	$source_ids    = get_posts(
-		array(
-			'post_type'      => 'page',
-			'post_status'    => 'publish',
-			'posts_per_page' => -1,
-			'fields'         => 'ids',
-			'suppress_filters' => true,
-		)
-	);
-
-	foreach ( array_unique( array_filter( $source_ids ) ) as $source_id ) {
-		$source_id = (int) $source_id;
-		if ( $source_id === $front_page_id || 'en' !== pll_get_post_language( $source_id, 'slug' ) ) {
-			continue;
-		}
-		$arabic_id = (int) pll_get_post( $source_id, 'ar' );
-		$uri       = trim( (string) get_page_uri( $source_id ), '/' );
-		if ( $arabic_id > 0 && $uri ) {
-			$aliases[ $uri ] = $arabic_id;
-		}
-	}
-
-	return $aliases;
-}
-
-/** Use the clean unprefixed English slug when linking to an Arabic page. */
-function blue_arabic_clean_page_link( string $url, int $post_id ): string {
-	foreach ( blue_arabic_clean_page_aliases() as $uri => $arabic_id ) {
-		if ( $arabic_id === $post_id ) {
-			return trailingslashit( blue_language_home_url( 'ar' ) ) . trailingslashit( $uri );
-		}
-	}
-	return $url;
-}
-add_filter( 'page_link', 'blue_arabic_clean_page_link', 12, 2 );
-
-/** Redirect legacy Arabic record slugs to clean unprefixed aliases. */
-add_action(
-	'template_redirect',
-	function (): void {
-		if ( is_admin() || wp_doing_ajax() || is_preview() || ! blue_is_arabic() ) {
-			return;
-		}
-
-		$request_path = trim( (string) wp_parse_url( wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ), PHP_URL_PATH ), '/' );
-		$arabic_home  = trim( (string) wp_parse_url( blue_language_home_url( 'ar' ), PHP_URL_PATH ), '/' );
-		$clean_uri   = '';
-		$legacy_path = '';
-		foreach ( blue_arabic_clean_page_aliases() as $candidate_uri => $arabic_id ) {
-			$internal_uri = trim( (string) get_page_uri( $arabic_id ), '/' );
-			if ( ! $internal_uri || $internal_uri === $candidate_uri ) {
-				continue;
-			}
-			$legacy_paths = array_unique(
-				array_filter(
-					array(
-						trim( $arabic_home . '/' . $internal_uri, '/' ),
-						trim( 'ar/' . $internal_uri, '/' ),
-						trim( 'ar/' . $candidate_uri, '/' ),
-					)
-				)
-			);
-			foreach ( $legacy_paths as $candidate_path ) {
-				if ( $request_path === $candidate_path || str_starts_with( $request_path, $candidate_path . '/' ) ) {
-					$clean_uri   = (string) $candidate_uri;
-					$legacy_path = $candidate_path;
-					break 2;
-				}
-			}
-		}
-		if ( ! $legacy_path || ! $clean_uri ) {
-			return;
-		}
-
-		$suffix = ltrim( substr( $request_path, strlen( $legacy_path ) ), '/' );
-		$target = trailingslashit( blue_language_home_url( 'ar' ) ) . trailingslashit( (string) $clean_uri );
-		if ( $suffix ) {
-			$target .= trailingslashit( $suffix );
-		}
-		if ( ! empty( $_GET ) ) {
-			$query = wp_unslash( $_GET );
-			unset( $query['lang'], $query['blue_lang'] );
-			if ( $query ) {
-				$target = add_query_arg( $query, $target );
-			}
-		}
-
-		wp_safe_redirect( $target, 301, 'Blue Mattress' );
-		exit;
-	},
-	1
-);
-
-/** Route clean Arabic aliases to their existing Polylang translation records. */
-add_action(
-	'init',
-	function (): void {
-		$site_path   = trim( (string) wp_parse_url( (string) get_option( 'home' ), PHP_URL_PATH ), '/' );
-		$arabic_path = trim( (string) wp_parse_url( blue_language_home_url( 'ar' ), PHP_URL_PATH ), '/' );
-		if ( $site_path && ( $arabic_path === $site_path || str_starts_with( $arabic_path, $site_path . '/' ) ) ) {
-			$arabic_path = ltrim( substr( $arabic_path, strlen( $site_path ) ), '/' );
-		}
-		$prefix = $arabic_path ? preg_quote( $arabic_path, '#' ) . '/' : '';
-
-		foreach ( blue_arabic_clean_page_aliases() as $uri => $arabic_id ) {
-			$pattern = preg_quote( $uri, '#' );
-			add_rewrite_rule( '^' . $prefix . $pattern . '/?$', 'index.php?page_id=' . $arabic_id . '&lang=ar', 'top' );
-
-			if ( $arabic_id === (int) pll_get_post( (int) get_option( 'woocommerce_shop_page_id' ), 'ar' ) ) {
-				add_rewrite_rule( '^' . $prefix . $pattern . '/page/([0-9]{1,})/?$', 'index.php?page_id=' . $arabic_id . '&lang=ar&paged=$matches[1]', 'top' );
-			}
-			if ( $arabic_id === (int) pll_get_post( (int) get_option( 'woocommerce_checkout_page_id' ), 'ar' ) ) {
-				add_rewrite_rule( '^' . $prefix . $pattern . '/order-pay/([0-9]+)/?$', 'index.php?page_id=' . $arabic_id . '&lang=ar&order-pay=$matches[1]', 'top' );
-				add_rewrite_rule( '^' . $prefix . $pattern . '/order-received/([0-9]+)/?$', 'index.php?page_id=' . $arabic_id . '&lang=ar&order-received=$matches[1]', 'top' );
-			}
-
-			if ( $arabic_id === (int) pll_get_post( (int) get_option( 'woocommerce_myaccount_page_id' ), 'ar' ) ) {
-				$account_endpoints = array(
-					'orders'                     => 'woocommerce_myaccount_orders_endpoint',
-					'view-order'                 => 'woocommerce_myaccount_view_order_endpoint',
-					'downloads'                  => 'woocommerce_myaccount_downloads_endpoint',
-					'edit-account'               => 'woocommerce_myaccount_edit_account_endpoint',
-					'edit-address'               => 'woocommerce_myaccount_edit_address_endpoint',
-					'payment-methods'            => 'woocommerce_myaccount_payment_methods_endpoint',
-					'lost-password'              => 'woocommerce_myaccount_lost_password_endpoint',
-					'customer-logout'            => 'woocommerce_logout_endpoint',
-					'saved-cards'                => '',
-				);
-				foreach ( $account_endpoints as $query_var => $option_name ) {
-					$endpoint = trim( (string) ( $option_name ? get_option( $option_name, $query_var ) : $query_var ), '/' );
-					if ( ! $endpoint ) {
-						continue;
-					}
-					$endpoint_pattern = preg_quote( $endpoint, '#' );
-					add_rewrite_rule( '^' . $prefix . $pattern . '/' . $endpoint_pattern . '/?$', 'index.php?page_id=' . $arabic_id . '&lang=ar&' . $query_var . '=1', 'top' );
-					add_rewrite_rule( '^' . $prefix . $pattern . '/' . $endpoint_pattern . '/([^/]+)/?$', 'index.php?page_id=' . $arabic_id . '&lang=ar&' . $query_var . '=$matches[1]', 'top' );
-				}
-			}
-		}
-	},
-	20
-);
-
-/** Refresh clean Arabic route rules once after the alias implementation changes. */
-function blue_maybe_flush_arabic_page_aliases(): void {
-	if ( ! empty( $GLOBALS['blue_url_strategy_changed'] ) || '2' === get_option( 'blue_arabic_page_alias_schema' ) ) {
-		return;
-	}
-	flush_rewrite_rules( false );
-	update_option( 'blue_arabic_page_alias_schema', '2', false );
-}
-add_action( 'after_switch_theme', 'blue_maybe_flush_arabic_page_aliases', 90 );
-add_action(
-	'admin_init',
-	function (): void {
-		if ( current_user_can( 'manage_options' ) ) {
-			blue_maybe_flush_arabic_page_aliases();
-		}
-	},
-	90
-);
-
 /** Convert a same-site URL between the shared English and Arabic routes. */
 function blue_url_for_language( string $url, string $language ): string {
 	$language = 'ar' === $language ? 'ar' : 'en';
@@ -1308,14 +1124,21 @@ function blue_ensure_woocommerce_page_translations(): void {
 		}
 		$arabic_id = (int) pll_get_post( $source_id, 'ar' );
 		if ( ! $arabic_id ) {
-			$slug     = $source->post_name . '-ar';
-			$existing = get_page_by_path( $slug, OBJECT, 'page' );
+			// Use a temporary unique slug until the page has an Arabic language term.
+			$temporary_slug = $source->post_name . '-ar';
+			$existing       = function_exists( 'blue_get_page_by_slug_in_language' ) ? blue_get_page_by_slug_in_language( $temporary_slug, 'ar' ) : get_page_by_path( $temporary_slug, OBJECT, 'page' );
+			if ( ! $existing && function_exists( 'pll_get_post_language' ) ) {
+				$unassigned = get_page_by_path( $temporary_slug, OBJECT, 'page' );
+				if ( $unassigned instanceof WP_Post && ! pll_get_post_language( $unassigned->ID ) ) {
+					$existing = $unassigned;
+				}
+			}
 			$arabic_id = $existing instanceof WP_Post ? $existing->ID : (int) wp_insert_post(
 				array(
 					'post_type'    => 'page',
 					'post_status'  => 'publish',
 					'post_title'   => $arabic_title,
-					'post_name'    => $slug,
+					'post_name'    => $temporary_slug,
 					'post_content' => $source->post_content,
 					'post_excerpt' => $source->post_excerpt,
 				)
@@ -1325,6 +1148,12 @@ function blue_ensure_woocommerce_page_translations(): void {
 			continue;
 		}
 		pll_set_post_language( $arabic_id, 'ar' );
+		wp_update_post(
+			array(
+				'ID'        => $arabic_id,
+				'post_name' => $source->post_name,
+			)
+		);
 		$template = get_post_meta( $source_id, '_wp_page_template', true );
 		if ( $template ) {
 			update_post_meta( $arabic_id, '_wp_page_template', $template );

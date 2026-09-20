@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.9.0
+
+- Added shared English and Arabic page slugs directly to the theme under `inc/polylang-slugs.php`; no extra plugin is required.
+- Limited the adapted Polylang Slug behavior to WordPress pages and the active language instead of modifying every post-type query.
+- Migrated linked Arabic pages from suffixed slugs such as `our-story-ar` to the matching English slug and retained permanent redirects from recorded legacy URLs.
+- Removed the older hand-written Arabic alias rewrite layer so page routing has one documented source of truth.
+- Made theme-created core and WooCommerce pages language-aware when duplicate slugs exist.
+- Organized the theme bootstrap and documented the codebase so future maintenance is easier to follow.
+
 ## 2.8.26
 
 - Expanded the Shop and product-category hero content to the shared wide container used by the filter bar and product grid.
