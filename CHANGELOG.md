@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.9.2
+
+- Changed the light-mode product construction section to the stronger `--powder` background token.
+
 ## 2.9.1
 
 - Added English and Arabic Store Notice fields under Theme Options → Store notice.

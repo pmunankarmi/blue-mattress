@@ -527,7 +527,7 @@ html:not([data-theme="dark"]) .blue-product-detail .pd-acc,
 html:not([data-theme="dark"]) .blue-product-detail .pd-acc-item { border-color:var(--line); }
 html:not([data-theme="dark"]) .blue-product-detail .pd-band { background:var(--powder-2); }
 html:not([data-theme="dark"]) .blue-product-detail .pd-construction {
-  background:var(--powder-2);
+  background:var(--powder);
   color:var(--ink);
 }
 html:not([data-theme="dark"]) .blue-product-detail .pd-construction .eyebrow,
