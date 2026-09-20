@@ -231,6 +231,27 @@ add_action(
 					array( 'key' => 'field_blue_terms_page', 'label' => __( 'Terms page', 'blue-mattress' ), 'name' => 'terms_page', 'type' => 'page_link', 'post_type' => array( 'page' ), 'allow_null' => 1 ),
 					array( 'key' => 'field_blue_privacy_page', 'label' => __( 'Privacy page', 'blue-mattress' ), 'name' => 'privacy_page', 'type' => 'page_link', 'post_type' => array( 'page' ), 'allow_null' => 1 ),
 
+					array( 'key' => 'field_blue_tab_store_notice', 'label' => __( 'Store notice', 'blue-mattress' ), 'name' => '', 'type' => 'tab' ),
+					array(
+						'key'           => 'field_blue_store_notice_en',
+						'label'         => __( 'Store notice (English)', 'blue-mattress' ),
+						'name'          => 'store_notice_en',
+						'type'          => 'textarea',
+						'rows'          => 2,
+						'default_value' => 'Free delivery and setup across Saudi Arabia.',
+						'instructions'  => __( 'Shown in the announcement bar on English storefront pages.', 'blue-mattress' ),
+					),
+					array(
+						'key'           => 'field_blue_store_notice_ar',
+						'label'         => __( 'Store notice (Arabic)', 'blue-mattress' ),
+						'name'          => 'store_notice_ar',
+						'type'          => 'textarea',
+						'rows'          => 2,
+						'dir'           => 'rtl',
+						'default_value' => 'توصيل وتركيب مجاني في جميع أنحاء المملكة العربية السعودية.',
+						'instructions'  => __( 'Shown in the announcement bar on Arabic storefront pages. Visibility remains controlled by WooCommerce’s Store notice setting.', 'blue-mattress' ),
+					),
+
 					array( 'key' => 'field_blue_tab_analytics', 'label' => __( 'Analytics', 'blue-mattress' ), 'name' => '', 'type' => 'tab' ),
 					array(
 						'key'          => 'field_blue_google_analytics_measurement_id',

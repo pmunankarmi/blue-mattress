@@ -16,7 +16,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-const BLUE_SHARED_PAGE_SLUGS_SCHEMA = '1';
+const BLUE_SHARED_PAGE_SLUGS_SCHEMA = '2';
 
 /** Return the language taxonomy ID used by Polylang. */
 function blue_language_term_taxonomy_id( string $language ): int {
@@ -246,6 +246,43 @@ function blue_maybe_sync_translated_page_slugs(): void {
 }
 add_action( 'after_switch_theme', 'blue_maybe_sync_translated_page_slugs', 70 );
 add_action( 'admin_init', 'blue_maybe_sync_translated_page_slugs', 70 );
+
+/** Redirect stale translated-page suffixes left behind in cached rewrite rules. */
+function blue_redirect_stale_page_suffix(): void {
+	if ( is_admin() || wp_doing_ajax() || is_preview() || ! is_singular( 'page' ) ) {
+		return;
+	}
+
+	$page_id = (int) get_queried_object_id();
+	if ( $page_id < 1 || ! function_exists( 'pll_get_post' ) || ! pll_get_post( $page_id, 'en' ) ) {
+		return;
+	}
+
+	$request_path = trim( (string) wp_parse_url( wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ), PHP_URL_PATH ), '/' );
+	$clean_path   = preg_replace( '#-(?:ar|2)(?=/|$)#i', '', $request_path );
+	if ( ! is_string( $clean_path ) || $clean_path === $request_path ) {
+		return;
+	}
+
+	$source_id   = (int) pll_get_post( $page_id, 'en' );
+	$source_slug = (string) get_post_field( 'post_name', $source_id );
+	if ( ! $source_slug || ! in_array( $source_slug, explode( '/', $clean_path ), true ) ) {
+		return;
+	}
+
+	$target = home_url( '/' . trailingslashit( $clean_path ) );
+	if ( ! empty( $_GET ) ) {
+		$query = wp_unslash( $_GET );
+		unset( $query['lang'], $query['blue_lang'] );
+		if ( $query ) {
+			$target = add_query_arg( $query, $target );
+		}
+	}
+
+	wp_safe_redirect( $target, 301, 'Blue Mattress' );
+	exit;
+}
+add_action( 'template_redirect', 'blue_redirect_stale_page_suffix', 0 );
 
 /** Redirect the old suffixed page URLs recorded during migration. */
 function blue_redirect_legacy_page_slug(): void {

@@ -304,7 +304,22 @@ body.single-product .blue-product-detail .pd-gallery > span.onsale {
 .blue-product-detail .summary .woocommerce-product-details__short-description p { margin:0; }
 .blue-product-detail .summary p.price,
 .blue-product-detail .summary p.price .woocommerce-Price-amount { color:#f4f6fb!important; font-size:clamp(1.8rem,3vw,2.45rem); font-weight:700; margin:0; }
-.blue-product-detail .summary p.price del { color:rgba(233,239,248,.4); }
+.blue-product-detail .summary p.price del { color:rgba(233,239,248,.4); text-decoration:none; }
+.blue-product-detail .summary p.price del .woocommerce-Price-amount {
+  display:inline-block;
+  position:relative;
+  text-decoration:none;
+}
+.blue-product-detail .summary p.price del .woocommerce-Price-amount::after {
+  content:"";
+  position:absolute;
+  inset-inline:0;
+  top:50%;
+  height:.08em;
+  background:currentColor;
+  transform:translateY(-50%);
+  pointer-events:none;
+}
 .blue-product-detail .summary p.price ins { text-decoration:none; }
 .blue-product-detail .variations { width:100%; margin:4px 0 10px; }
 .blue-product-detail .variations th,.blue-product-detail .variations td { display:block; padding:0 0 9px; text-align:start; }
@@ -511,6 +526,12 @@ html:not([data-theme="dark"]) .blue-product-detail .pd-assure,
 html:not([data-theme="dark"]) .blue-product-detail .pd-acc,
 html:not([data-theme="dark"]) .blue-product-detail .pd-acc-item { border-color:var(--line); }
 html:not([data-theme="dark"]) .blue-product-detail .pd-band { background:var(--powder-2); }
+html:not([data-theme="dark"]) .blue-product-detail .pd-construction {
+  background:var(--powder-2);
+  color:var(--ink);
+}
+html:not([data-theme="dark"]) .blue-product-detail .pd-construction .eyebrow,
+html:not([data-theme="dark"]) .blue-product-detail .pd-layer-n { color:var(--royal); }
 html:not([data-theme="dark"]) .blue-product-detail .pd-layers,
 html:not([data-theme="dark"]) .blue-product-detail .pd-layer { border-color:var(--line); }
 html:not([data-theme="dark"]) .blue-product-detail .pd-layer-t { color:var(--ink); }

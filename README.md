@@ -45,7 +45,7 @@ Polylang for WooCommerce is not required. Products, variations, categories and a
 3. Create linked Arabic and English home pages, assign the **Home Page** template, and select the Arabic page as the static front page.
 4. Review the theme-created Mattress Finder, Our Story, STARK and Contact pages and fill their ACF content.
 5. Assign a Primary Menu and Footer Menu for each language. The theme intentionally has no hard-coded menu fallback.
-6. Configure global copy, media, contact details, legal links, analytics and checkout settings under **Theme Options**.
+6. Configure global copy, bilingual Store Notice text, media, contact details, legal links, analytics and checkout settings under **Theme Options**.
 
 ## Products and translations
 

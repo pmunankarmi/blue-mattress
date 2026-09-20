@@ -34,6 +34,18 @@ function blue_field( string $name, mixed $default = '', int|false $post_id = fal
 	return $default;
 }
 
+/** Build a clean language-specific URL from a translated page record. */
+function blue_page_route_url( int $page_id, ?string $language = null ): string {
+	$language = in_array( $language, array( 'en', 'ar' ), true ) ? $language : blue_language();
+	$source_id = function_exists( 'pll_get_post' ) ? (int) pll_get_post( $page_id, 'en' ) : 0;
+	$source_id = $source_id > 0 ? $source_id : $page_id;
+	$page_uri  = trim( (string) get_page_uri( $source_id ), '/' );
+
+	return $page_uri
+		? trailingslashit( blue_language_home_url( $language ) ) . trailingslashit( $page_uri )
+		: blue_language_home_url( $language );
+}
+
 /** Resolve a translated page template URL. */
 function blue_page_url( string $template, string $fallback = '/' ): string {
 	$language = blue_language();
@@ -60,23 +72,18 @@ function blue_page_url( string $template, string $fallback = '/' ): string {
 			}
 		}
 
-		$url = get_permalink( $page_id );
-		if ( $url ) {
-			return blue_url_for_language( $url, $language );
-		}
+		return blue_page_route_url( $page_id, $language );
 	}
 
 	return blue_home_url( $fallback );
 }
 
-/** Return the public Shop URL without exposing Polylang's internal page slug. */
+/** Return the public Shop URL without exposing a translated record slug. */
 function blue_shop_url( ?string $language = null ): string {
 	$language = in_array( $language, array( 'en', 'ar' ), true ) ? $language : blue_language();
 	$shop_id  = (int) get_option( 'woocommerce_shop_page_id' );
 
-	// Resolve from the English source record because the Arabic translation may
-	// retain an internal unique slug such as shop-2 even though its public alias
-	// is /shop/. blue_url_for_language() then produces the correct clean route.
+	// Resolve from the English source record so every language uses /shop/.
 	if ( $shop_id > 0 && function_exists( 'pll_get_post' ) ) {
 		$shop_id = (int) ( pll_get_post( $shop_id, 'en' ) ?: $shop_id );
 	}
@@ -90,9 +97,9 @@ function blue_shop_url( ?string $language = null ): string {
 	return trailingslashit( blue_language_home_url( $language ) ) . 'shop/';
 }
 
-/** Resolve a menu URL to the current-language page without rewriting external links. */
-function blue_navigation_url( string $url, ?WP_Post $menu_item = null ): string {
-	$language = blue_language();
+/** Resolve a menu URL to the requested-language page without rewriting external links. */
+function blue_navigation_url( string $url, ?WP_Post $menu_item = null, ?string $language = null ): string {
+	$language = in_array( $language, array( 'en', 'ar' ), true ) ? $language : blue_language();
 
 	if ( $menu_item && 'post_type' === $menu_item->type && function_exists( 'pll_get_post' ) ) {
 		$shop_id  = (int) get_option( 'woocommerce_shop_page_id' );
@@ -111,10 +118,7 @@ function blue_navigation_url( string $url, ?WP_Post $menu_item = null ): string 
 
 		$translated_id = (int) pll_get_post( (int) $menu_item->object_id, $language );
 		if ( $translated_id > 0 ) {
-			$translated_url = get_permalink( $translated_id );
-			if ( $translated_url ) {
-				return blue_url_for_language( $translated_url, $language );
-			}
+			return blue_page_route_url( $translated_id, $language );
 		}
 	}
 
@@ -133,6 +137,11 @@ function blue_navigation_url( string $url, ?WP_Post $menu_item = null ): string 
 	$home_host = strtolower( (string) wp_parse_url( home_url( '/' ), PHP_URL_HOST ) );
 	if ( $host && $home_host && $host !== $home_host ) {
 		return $url;
+	}
+
+	$page_id = url_to_postid( $url );
+	if ( $page_id > 0 && 'page' === get_post_type( $page_id ) ) {
+		return blue_page_route_url( $page_id, $language );
 	}
 
 	return blue_url_for_language( $url, $language );

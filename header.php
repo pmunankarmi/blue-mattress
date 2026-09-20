@@ -10,11 +10,10 @@ $cart_url    = function_exists( 'wc_get_cart_url' ) ? wc_get_cart_url() : blue_h
 $account_url = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'myaccount' ) : wp_login_url();
 $cart_count  = function_exists( 'WC' ) && WC()->cart ? WC()->cart->get_cart_contents_count() : 0;
 $notice_on   = 'yes' === get_option( 'woocommerce_demo_store', 'no' );
-$notice_text = (string) get_option( 'woocommerce_demo_store_notice', '' );
-
-if ( blue_is_arabic() && 'Free delivery and setup across Saudi Arabia.' === trim( wp_strip_all_tags( $notice_text ) ) ) {
-	$notice_text = 'توصيل وتركيب مجاني في جميع أنحاء المملكة العربية السعودية.';
-}
+$notice_fallback = blue_is_arabic()
+	? 'توصيل وتركيب مجاني في جميع أنحاء المملكة العربية السعودية.'
+	: (string) get_option( 'woocommerce_demo_store_notice', 'Free delivery and setup across Saudi Arabia.' );
+$notice_text = (string) blue_option( 'store_notice', $notice_fallback );
 ?>
 <!doctype html>
 <html <?php language_attributes(); ?> dir="<?php echo esc_attr( is_rtl() || blue_is_arabic() ? 'rtl' : 'ltr' ); ?>">

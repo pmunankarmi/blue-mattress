@@ -367,11 +367,14 @@ function blue_current_url_for_language( string $language, string $fallback = '' 
 	if ( $page_id > 0 ) {
 		$target_id = function_exists( 'pll_get_post' ) ? (int) pll_get_post( $page_id, $language ) : 0;
 		$target_id = $target_id > 0 ? $target_id : $page_id;
-		$target_uri = trim( (string) get_page_uri( $target_id ), '/' );
+		$source_id  = function_exists( 'pll_get_post' ) ? (int) pll_get_post( $target_id, 'en' ) : 0;
+		$source_id  = $source_id > 0 ? $source_id : $target_id;
+		$target_uri = trim( (string) get_page_uri( $source_id ), '/' );
 
 		if ( $target_uri ) {
-			$url = get_permalink( $target_id );
-			$url = $url ? trailingslashit( $url ) : trailingslashit( blue_language_home_url( $language ) ) . trailingslashit( $target_uri );
+			$url = function_exists( 'blue_page_route_url' )
+				? blue_page_route_url( $target_id, $language )
+				: trailingslashit( blue_language_home_url( $language ) ) . trailingslashit( $target_uri );
 
 			// Retain WooCommerce account endpoints such as /orders/ or /edit-account/.
 			$current_permalink = get_permalink( $page_id );

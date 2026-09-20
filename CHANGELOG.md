@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.9.1
+
+- Added English and Arabic Store Notice fields under Theme Options → Store notice.
+- Rendered the announcement-bar message from the active storefront language while preserving WooCommerce’s existing Store Notice visibility setting.
+- Kept the current WooCommerce notice as the English fallback so existing content is not lost before the new fields are saved.
+- Rebuilt page and navigation URLs from the clean English source URI so public menu links no longer expose translated `-ar` or `-2` record suffixes.
+- Scheduled the shared-page-slug migration to run again for existing Arabic pages after this update.
+- Added permanent canonical redirects for stale `-ar` and `-2` page URLs that remain reachable through cached rewrite rules even after the page slug is clean in WordPress.
+- Drew the regular-price strike-through directly through the price text in both English and Arabic layouts.
+- Restored a light construction panel and readable feature copy on product pages when light mode is active.
+
 ## 2.9.0
 
 - Added shared English and Arabic page slugs directly to the theme under `inc/polylang-slugs.php`; no extra plugin is required.
