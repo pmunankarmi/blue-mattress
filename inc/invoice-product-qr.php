@@ -1,82 +1,18 @@
 <?php
 /**
- * Public product links on PDF invoices (not tax-verification QR codes).
- *
- * Uses WP Overnight's PDF-only hook; email content and totals are untouched.
+ * Static demo QR on PDF invoices. Encodes only "DEMO", never a URL.
+ * This placeholder is not a tax-verification code.
  */
 defined( 'ABSPATH' ) || exit;
 
-/** Generate an embedded PNG without contacting a third-party QR service. */
-function blue_product_qr_image( string $url ): string {
-	static $images = array();
-	if ( isset( $images[ $url ] ) ) {
-		return $images[ $url ];
-	}
-	if ( ! function_exists( 'imagepng' ) || strlen( $url ) > 500 || ! preg_match( '#^https?://#i', $url ) ) {
-		return '';
-	}
-	require_once __DIR__ . '/vendor/product-qrcode.php';
-	try {
-		$qr = \BlueMattress\ProductQR\QRCode::getMinimumQRCode( $url, BLUE_PRODUCT_QR_ERROR_CORRECT_LEVEL_M );
-		$image = $qr->createImage( 5, 4 );
-		if ( ! $image ) {
-			return '';
-		}
-		ob_start();
-		imagepng( $image );
-		$png = ob_get_clean();
-		unset( $image );
-		$images[ $url ] = 'data:image/png;base64,' . base64_encode( $png );
-		return $images[ $url ];
-	} catch ( \Throwable $error ) {
-		// A product-link enhancement must never prevent invoice delivery.
-		return '';
-	}
-}
-
-/** Render a product QR without a caption or clickable PDF link. */
-function blue_invoice_product_qr( $document_type, $item, $order ): void {
-	if ( 'invoice' !== $document_type || ! is_array( $item ) || empty( $item['product_id'] ) ) {
+/** Place one non-clickable demo image in the notes cell beside the totals. */
+function blue_invoice_demo_qr( $document_type, $order ): void {
+	if ( 'invoice' !== $document_type ) {
 		return;
 	}
-	$product = wc_get_product( (int) $item['product_id'] );
-	if ( ! $product ) {
-		return;
-	}
-	$product_id = $product->get_parent_id() ?: $product->get_id();
-	if ( 'publish' !== get_post_status( $product_id ) || post_password_required( $product_id ) ) {
-		return;
-	}
-	$url = get_permalink( $product_id );
-	if ( ! $url ) {
-		return;
-	}
-	// Keep long, percent-encoded Arabic slugs scannable using WordPress's public short URL.
-	if ( strlen( $url ) > 200 ) {
-		$url = add_query_arg( 'p', $product_id, home_url( '/' ) );
-	}
-	$image = blue_product_qr_image( $url );
-	if ( '' === $image ) {
-		return;
-	}
+	$image = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHEAAABxCAIAAABtHNuHAAAACXBIWXMAAA7EAAAOxAGVKw4bAAACFUlEQVR4nO2cwY6DMAwFl1X//5fZa5WDtyZjY6qZW1WV0JHFUxKT4zzPH0H5vfsGvhCd8uiU5/X+4TiOnlGXh3g8bvzEX36bujLI+7jWKY9OeXTKo1OeV/AdOB3YSaH4Uqnf9vwj65RHpzw65dEpT5RRC6k5Sdty105kFf0j65RHpzw65dEpTyKj6thZkRu492Od8uiUR6c8OuUZkVEp4h2nCZFlnfLolEenPDrlSWRU2+N/p0kCHOgy1imPTnl0yqNTniij2priYlKde6l8K8I65dEpj055dMpzTFgcS3X9gS2CRVinPDrl0SmPTnmi96PAlvCdDjowwVJcXnK0Tnl0yqNTHp3yRPMocJHtn5vg1uvqXvi19/xOdMqjUx6d8lT19e3MZ1KRtRNoqcj6/K6sUx6d8uiUR6c818+ZqIuOGHCWVdRCYZ3y6JRHpzw65Umc1zfz3Ly6uHM/ahA65dEpj055HtDXtwB2Y8S3cXn/zTrl0SmPTnl0yjPi3PPUt+BARZeyTnl0yqNTHp3yPODc87aZUgrX+lrRKY9OeXTKM+Lc851Gh7a+vs+xTnl0yqNTHp3yjDhTti5nUvlGRZZ1yqNTHp3y6JRnREYttB3Qt5N+AdYpj055dMqjU57nnXte935UauLkflQrOuXRKY9OeUace97Wex5fKsa1vjvRKY9OeXTKM+L9qC/DOuXRKY9Oef4AKwUC+fWpTLAAAAAASUVORK5CYII=';
 	echo '<div style="margin-top:8px;page-break-inside:avoid;">';
-	echo '<img src="' . esc_attr( $image ) . '" alt="View product details" style="width:28mm;height:28mm;" />';
+	echo '<img src="' . esc_attr( $image ) . '" alt="Demo QR" style="width:28mm;height:28mm;" />';
 	echo '</div>';
 }
-
-/** Place product QR codes in the notes cell alongside the invoice totals. */
-function blue_invoice_product_qr_beside_totals( $document_type, $order ): void {
-	if ( 'invoice' !== $document_type || ! is_a( $order, 'WC_Order' ) ) {
-		return;
-	}
-	$seen = array();
-	foreach ( $order->get_items() as $item ) {
-		$product_id = (int) $item->get_product_id();
-		if ( ! $product_id || isset( $seen[ $product_id ] ) ) {
-			continue;
-		}
-		$seen[ $product_id ] = true;
-		blue_invoice_product_qr( $document_type, array( 'product_id' => $product_id ), $order );
-	}
-}
-add_action( 'wpo_wcpdf_before_document_notes', 'blue_invoice_product_qr_beside_totals', 10, 2 );
+add_action( 'wpo_wcpdf_before_document_notes', 'blue_invoice_demo_qr', 10, 2 );
