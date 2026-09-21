@@ -197,7 +197,7 @@
         if (cardInformation) {
           cardInformation.dataset.bluePaymobCardInformation = 'true';
           cardInformation.style.setProperty('box-sizing', 'border-box', 'important');
-          cardInformation.style.setProperty('padding-inline', '20px', 'important');
+          cardInformation.style.setProperty('padding-inline', window.matchMedia('(max-width: 700px)').matches ? '8px' : '20px', 'important');
         }
       }
 

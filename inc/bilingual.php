@@ -279,6 +279,20 @@ add_action( 'admin_init', 'blue_ensure_arabic_default_url_strategy', 1 );
  */
 function blue_woocommerce_page_id_for_language( $page_id ): int {
 	$page_id = (int) $page_id;
+	// Shared slugs can resolve a different translated record than the stored
+	// Woo page ID. After the main query, trust the actual cart/checkout page.
+	// This restores Woo's own page detection, templates and shipping calculator.
+	if ( ! is_admin() && did_action( 'wp' ) && is_page() ) {
+		$hook = current_filter();
+		$kind = 'woocommerce_get_cart_page_id' === $hook ? 'cart'
+			: ( 'woocommerce_get_checkout_page_id' === $hook ? 'checkout' : '' );
+		$page = get_queried_object();
+		if ( $kind && $page instanceof WP_Post
+			&& ( has_block( 'woocommerce/' . $kind, $page->post_content )
+				|| has_shortcode( $page->post_content, 'woocommerce_' . $kind ) ) ) {
+			return (int) $page->ID;
+		}
+	}
 	if ( $page_id < 1 || ! function_exists( 'pll_get_post' ) || ( is_admin() && ! wp_doing_ajax() ) ) {
 		return $page_id;
 	}

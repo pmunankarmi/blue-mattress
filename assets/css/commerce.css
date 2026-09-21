@@ -380,7 +380,7 @@ body.woocommerce-checkout #payment ul.payment_methods li label { color:var(--ink
 body.woocommerce-checkout #payment div.payment_box { margin:10px 0; border-radius:var(--r-sm); background:var(--paper); color:var(--ink-soft); font-size:.8rem; }
 body.woocommerce-checkout #payment div.payment_box::before { border-bottom-color:var(--paper); }
 body.woocommerce-checkout #payment .payment_method_paymob-pixel>label {
-  display:flex; align-items:center; justify-content:space-between; gap:16px; margin:0;
+  display:inline-flex; align-items:center; gap:8px; margin:0; vertical-align:middle;
   font-size:.92rem; font-weight:600;
 }
 body.woocommerce-checkout #payment #paymob-logo { width:auto; max-width:82px; max-height:28px; margin:0; object-fit:contain; }
@@ -644,6 +644,15 @@ html[data-theme="dark"] body.blue-commerce-flow .wc-block-components-sidebar {
 }
 
 @media(max-width:700px){
+  body.woocommerce-checkout #payment .payment_method_paymob-pixel > input[type="radio"] {
+    float:none; display:inline-block; vertical-align:middle; margin-inline:0 8px;
+  }
+  body.woocommerce-checkout #payment .payment_method_paymob-pixel > label {
+    width:auto; font-size:14px; line-height:1.5;
+  }
+  body.woocommerce-checkout #payment .payment_method_paymob-pixel > .payment_box {
+    clear:both; padding:8px;
+  }
   .blue-short-address__controls { grid-template-columns:1fr; }
   .blue-short-address__controls .blue-short-address__button { width:100%; }
   .blue-short-address__map-search { grid-template-columns:1fr; }

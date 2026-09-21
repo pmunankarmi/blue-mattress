@@ -110,11 +110,6 @@ if (typeof window.wc !== 'undefined' && typeof window.wp !== 'undefined' && type
          html[lang="ar"] #paymob-pixel-logo {
              float: left !important;
          }
-         .wc-block-checkout .wc-block-components-sidebar-layout .wc-block-components-main {
-             flex: 1 1 0% !important;
-             min-width: 0 !important;
-             width: 0 !important;
-         }
          .wc-block-checkout #paymob-elements {
              overflow-x: auto !important;
              overflow-y: visible !important;
