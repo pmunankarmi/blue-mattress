@@ -34,7 +34,7 @@ function blue_product_qr_image( string $url ): string {
 	}
 }
 
-/** Add one public product QR per order line, below its existing description. */
+/** Render a product QR without a caption or clickable PDF link. */
 function blue_invoice_product_qr( $document_type, $item, $order ): void {
 	if ( 'invoice' !== $document_type || ! is_array( $item ) || empty( $item['product_id'] ) ) {
 		return;
@@ -63,4 +63,20 @@ function blue_invoice_product_qr( $document_type, $item, $order ): void {
 	echo '<img src="' . esc_attr( $image ) . '" alt="View product details" style="width:28mm;height:28mm;" />';
 	echo '</div>';
 }
-add_action( 'wpo_wcpdf_after_item_meta', 'blue_invoice_product_qr', 10, 3 );
+
+/** Place product QR codes in the notes cell alongside the invoice totals. */
+function blue_invoice_product_qr_beside_totals( $document_type, $order ): void {
+	if ( 'invoice' !== $document_type || ! is_a( $order, 'WC_Order' ) ) {
+		return;
+	}
+	$seen = array();
+	foreach ( $order->get_items() as $item ) {
+		$product_id = (int) $item->get_product_id();
+		if ( ! $product_id || isset( $seen[ $product_id ] ) ) {
+			continue;
+		}
+		$seen[ $product_id ] = true;
+		blue_invoice_product_qr( $document_type, array( 'product_id' => $product_id ), $order );
+	}
+}
+add_action( 'wpo_wcpdf_before_document_notes', 'blue_invoice_product_qr_beside_totals', 10, 2 );
