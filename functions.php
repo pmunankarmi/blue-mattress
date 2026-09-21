@@ -24,6 +24,7 @@ require_once BLUE_THEME_DIR . '/inc/smtp.php';
 
 // Storefront integrations.
 require_once BLUE_THEME_DIR . '/inc/woocommerce.php';
+require_once BLUE_THEME_DIR . '/inc/invoice-product-qr.php';
 require_once BLUE_THEME_DIR . '/inc/shipping.php';
 require_once BLUE_THEME_DIR . '/inc/paymob.php';
 
