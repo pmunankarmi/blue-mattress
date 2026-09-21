@@ -397,9 +397,16 @@ li.open > .mega { opacity: 1; visibility: visible; pointer-events: auto; transfo
 .mobile-menu.open { display: flex; }
 .mobile-menu-links { display:flex; flex-direction:column; gap:4px; width:100%; margin:0; padding:0; list-style:none; }
 .mobile-menu-links .sub-menu { margin:0; padding:0 1rem; list-style:none; }
-.mobile-menu a { font-family: var(--font-display); font-size: 2rem; padding: 10px 0; border-bottom: 1px solid var(--line-soft); }
+.mobile-menu a { font-family: var(--font-display); font-size: 1.25rem; line-height:1.5; padding: 10px 0; border:0; box-shadow:none; }
+.mobile-menu-links a { min-height:44px; }
 .mobile-menu a.accent { color: var(--brass-ink); }
-.mobile-menu .mm-close { position: absolute; top: 18px; inset-inline-end: 18px; }
+.mobile-menu .mm-close {
+  position:absolute; top:max(18px,env(safe-area-inset-top)); inset-inline-end:18px;
+  width:48px; height:48px; background:var(--paper); color:var(--ink);
+  border:1px solid var(--line); cursor:pointer;
+}
+.mobile-menu .mm-close svg { width:26px; height:26px; }
+.mobile-menu .mm-close:focus-visible { outline:2px solid var(--royal); outline-offset:3px; }
 
 @media (max-width: 960px) {
   .nav-links { display: none; }

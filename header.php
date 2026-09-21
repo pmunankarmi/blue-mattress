@@ -77,7 +77,9 @@ $notice_text = (string) blue_option( 'store_notice', $notice_fallback );
 </header>
 
 <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
-	<button class="icon-btn mm-close" id="mmClose" aria-label="<?php echo esc_attr( blue_text( 'Close', 'إغلاق' ) ); ?>">×</button>
+	<button type="button" class="icon-btn mm-close" id="mmClose" aria-label="<?php echo esc_attr( blue_text( 'Close menu', 'إغلاق القائمة' ) ); ?>">
+		<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="m6 6 12 12M18 6 6 18"/></svg>
+	</button>
 	<?php
 	if ( has_nav_menu( 'primary' ) ) {
 		wp_nav_menu(

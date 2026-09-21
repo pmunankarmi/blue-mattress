@@ -16,6 +16,20 @@ body.woocommerce-checkout .blue-prose>article>h1::before {
 }
 
 /* Shared WooCommerce controls and messages. */
+/* Use logical spacing so Woo's physical RTL icon offsets cannot overlap text. */
+body.woocommerce-checkout .woocommerce-form-coupon-toggle .woocommerce-info {
+  position:relative; padding:16px 20px; padding-inline-start:48px;
+}
+body.woocommerce-checkout .woocommerce-form-coupon-toggle .woocommerce-info::before {
+  content:'i'; font-family:serif; font-style:italic; font-weight:700;
+  position:absolute; top:18px; left:auto; right:auto;
+  inset-inline-start:18px; width:18px; height:18px;
+  border:1px solid currentColor; border-radius:50%;
+  font-size:13px; line-height:16px; text-align:center;
+}
+body.woocommerce-checkout .woocommerce-form-coupon-toggle .showcoupon {
+  display:inline; margin-inline-start:4px; overflow-wrap:break-word;
+}
 .blue-commerce-flow .woocommerce-notices-wrapper,
 body.woocommerce-cart .woocommerce-notices-wrapper,
 body.woocommerce-checkout .woocommerce-notices-wrapper { grid-column:1/-1; }

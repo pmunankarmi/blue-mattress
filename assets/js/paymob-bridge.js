@@ -7,6 +7,32 @@
   let waitCycles = 0;
   const observedRoots = new WeakSet();
 
+  // Presentation only: never translate saved order titles or PDF/email data.
+  const translatePaymentUI = (root) => {
+    if (!root || !document.documentElement.lang.toLowerCase().startsWith('ar')) return;
+    const labels = {
+      'Debit/Credit Card': 'بطاقة الخصم / الائتمان',
+      'Debit/Credit Card Payment': 'بطاقة الخصم / الائتمان',
+      'Apple Pay': 'آبل باي',
+      'Card Information': 'معلومات البطاقة',
+      'Save card for future use': 'حفظ البطاقة للاستخدام لاحقًا',
+      'Loading payments, Please wait..': 'جارٍ تحميل خيارات الدفع، يرجى الانتظار...',
+      'Cardholder name is required': 'اسم حامل البطاقة مطلوب',
+      'Card number is required': 'رقم البطاقة مطلوب'
+    };
+    root.querySelectorAll('label, p, span, div').forEach((element) => {
+      Array.from(element.childNodes).forEach((node) => {
+        if (node.nodeType !== Node.TEXT_NODE) return;
+        const translated = labels[node.textContent.trim()];
+        if (translated) node.textContent = translated;
+      });
+    });
+    root.querySelectorAll('input#name').forEach((input) => {
+      if (input.placeholder === 'ex. Abdullah Adel') input.placeholder = 'اسم حامل البطاقة';
+      input.setAttribute('aria-label', 'اسم حامل البطاقة');
+    });
+  };
+
   const getTheme = () => {
     const dark = document.documentElement.dataset.theme === 'dark';
 
@@ -69,6 +95,7 @@
   };
 
   const applyShadowTheme = (root) => {
+    translatePaymentUI(root);
     // Hide only the provider attribution row, never card-brand or wallet icons.
     root.querySelectorAll('p').forEach((paragraph) => {
       if (!['Powered by', 'مدعوم بواسطة'].includes(paragraph.textContent.trim())) return;
@@ -236,6 +263,7 @@
   };
 
   const repairPaymob = () => {
+    translatePaymentUI(document.querySelector('#payment') || document.querySelector('.wc-block-checkout__payment-method'));
     const container = document.querySelector(checkoutSelector);
     if (!container) return;
 
