@@ -60,9 +60,7 @@ function blue_invoice_product_qr( $document_type, $item, $order ): void {
 		return;
 	}
 	echo '<div style="margin-top:8px;page-break-inside:avoid;">';
-	echo '<a href="' . esc_url( $url ) . '">';
 	echo '<img src="' . esc_attr( $image ) . '" alt="View product details" style="width:28mm;height:28mm;" />';
-	echo '<br /><span style="font-size:9pt;color:#334155;">View product details</span></a>';
-	echo '<br /><span style="font-size:7pt;color:#64748b;">Product link — not tax verification</span></div>';
+	echo '</div>';
 }
 add_action( 'wpo_wcpdf_after_item_meta', 'blue_invoice_product_qr', 10, 3 );
