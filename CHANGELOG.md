@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.9.3
+
+- Removed the theme email stylesheet, logo override and language-switching hooks.
+- Restored WooCommerce's default email templates, styles, locale handling and delivery flow without changing order or coupon behavior.
+
 ## 2.9.2
 
 - Changed the light-mode product construction section to the stronger `--powder` background token.

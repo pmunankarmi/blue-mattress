@@ -10,7 +10,7 @@ Custom bilingual WooCommerce theme for Blue Mattress.
 - `polylang-slugs.php` lets linked English and Arabic pages share a slug safely.
 - `setup.php` registers theme support, assets, menus and the small set of theme-supplied pages.
 - `acf.php` defines Theme Options and editable content fields.
-- `woocommerce.php`, `shipping.php`, `paymob.php` and `emails.php` contain storefront integrations.
+- `woocommerce.php`, `shipping.php` and `paymob.php` contain storefront integrations.
 - `media-assets.php` resolves images stored in the WordPress Media Library.
 - `theme-updater.php` connects tagged GitHub releases to WordPress theme updates.
 - `contact-submissions.php` stores and manages contact-form enquiries.
@@ -60,7 +60,7 @@ Common storefront text lives in `languages/ui.json`. Update official WordPress a
 - Keep `functions.php` as a loader. Add feature code to the closest existing file under `inc/`, or create a clearly named module when the responsibility is new.
 - Keep business data in WooCommerce and editable presentation content in ACF. Do not hard-code prices, stock, coupons, addresses or product IDs into templates.
 - Prefer named functions for reusable hooks. Short closures are acceptable only when their purpose is obvious beside the hook.
-- Preserve WooCommerce behavior when making visual changes. Form, coupon, payment and email styling belongs in CSS or template-safe presentation hooks.
+- Preserve WooCommerce behavior when making visual changes. The theme does not replace or restyle WooCommerce emails; manage them through WooCommerce itself.
 - Put third-party code in an isolated module, retain its attribution and narrow it to the exact behavior the theme needs.
 - Test both languages, both color modes and a mobile viewport before tagging a release.
 

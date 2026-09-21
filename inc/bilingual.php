@@ -32,11 +32,6 @@ function blue_translation_catalog(): array {
 	return $catalog;
 }
 
-/** Temporarily force a language, primarily while WooCommerce builds an email. */
-function blue_set_language_override( ?string $language ): void {
-	$GLOBALS['blue_language_override'] = in_array( $language, array( 'en', 'ar' ), true ) ? $language : null;
-}
-
 /** Detect an explicit language prefix in the request path. */
 function blue_request_path_language(): ?string {
 	$request_path = wp_parse_url( (string) ( $_SERVER['REQUEST_URI'] ?? '' ), PHP_URL_PATH );
@@ -53,11 +48,6 @@ function blue_request_path_language(): ?string {
 
 /** Return the active storefront language. */
 function blue_language(): string {
-	$override = $GLOBALS['blue_language_override'] ?? null;
-	if ( in_array( $override, array( 'en', 'ar' ), true ) ) {
-		return $override;
-	}
-
 	$requested = isset( $_REQUEST['blue_lang'] ) ? sanitize_key( wp_unslash( $_REQUEST['blue_lang'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	if ( in_array( $requested, array( 'en', 'ar' ), true ) ) {
 		return $requested;
@@ -537,9 +527,8 @@ add_action(
 function blue_localize_product_request(): bool {
 	// WooCommerce loads the variation editor through admin-ajax.php. Keeping all
 	// admin requests unlocalized ensures product data and variation dropdowns
-	// always show their canonical English values. Email generation may opt in via
-	// the explicit language override below.
-	return ! is_admin() || ! empty( $GLOBALS['blue_language_override'] );
+	// always show their canonical English values.
+	return ! is_admin();
 }
 
 /** Product ID helper that also accepts variations. */
@@ -905,7 +894,7 @@ add_filter(
 add_filter(
 	'gettext',
 	function ( string $translation, string $original, string $domain ): string {
-		if ( ! blue_is_arabic() || ( is_admin() && ! wp_doing_ajax() && empty( $GLOBALS['blue_language_override'] ) ) ) {
+		if ( ! blue_is_arabic() || ( is_admin() && ! wp_doing_ajax() ) ) {
 			return $translation;
 		}
 		if ( ! in_array( $domain, array( 'woocommerce', 'blue-mattress' ), true ) && ! str_contains( $domain, 'paymob' ) ) {
@@ -1060,42 +1049,6 @@ add_action(
 		$order->update_meta_data( '_blue_language', blue_language() );
 	},
 	10
-);
-
-/** Switch customer emails to the language saved with their order. */
-add_filter(
-	'woocommerce_allow_switching_email_locale',
-	function ( bool $allow, $email ): bool {
-		if ( ! is_object( $email ) || ! method_exists( $email, 'is_customer_email' ) || ! $email->is_customer_email() || ! isset( $email->object ) || ! $email->object instanceof WC_Order ) {
-			return $allow;
-		}
-		$language = $email->object->get_meta( '_blue_language' );
-		if ( ! in_array( $language, array( 'en', 'ar' ), true ) ) {
-			return $allow;
-		}
-		blue_set_language_override( $language );
-		$GLOBALS['blue_email_locale_switched'][ spl_object_id( $email ) ] = switch_to_locale( 'ar' === $language ? 'ar' : 'en_US' );
-		return false;
-	},
-	20,
-	2
-);
-add_filter(
-	'woocommerce_allow_restoring_email_locale',
-	function ( bool $allow, $email ): bool {
-		$key = is_object( $email ) ? spl_object_id( $email ) : 0;
-		if ( $key && isset( $GLOBALS['blue_email_locale_switched'][ $key ] ) ) {
-			if ( $GLOBALS['blue_email_locale_switched'][ $key ] ) {
-				restore_previous_locale();
-			}
-			unset( $GLOBALS['blue_email_locale_switched'][ $key ] );
-			blue_set_language_override( null );
-			return false;
-		}
-		return $allow;
-	},
-	20,
-	2
 );
 
 /** Create missing Arabic translations of WooCommerce's four core pages. */
