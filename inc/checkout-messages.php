@@ -1,6 +1,6 @@
 <?php
 /**
- * Arabic classic-checkout wording supplied in checkout-messages-ar-en.xlsx.
+ * Arabic classic-checkout wording supplied in checkout-messages-ar-en (1).xlsx.
  * Presentation only: WooCommerce still owns validation and error metadata.
  */
 defined( 'ABSPATH' ) || exit;
@@ -10,11 +10,11 @@ function blue_checkout_required_message( string $message, string $label, string 
 		return $message;
 	}
 	$messages = array(
-		'billing_first_name'  => 'يرجى إدخال الاسم الأول في بيانات الفاتورة',
-		'billing_last_name'   => 'يرجى إدخال اسم العائلة في بيانات الفاتورة',
-		'billing_address_1'   => 'يرجى إدخال العنوان في بيانات الفاتورة',
-		'billing_email'       => 'يرجى إدخال البريد الإلكتروني في بيانات الفاتورة',
-		'shipping_first_name' => 'يرجى إدخال الاسم الأول في بيانات الشحن',
+		'billing_first_name'  => 'يرجى إدخال الاسم الأول',
+		'billing_last_name'   => 'يرجى إدخال اسم العائلة',
+		'billing_address_1'   => 'يرجى إدخال العنوان',
+		'billing_email'       => 'يرجى إدخال البريد الإلكتروني',
+		'shipping_first_name' => 'يرجى إدخال الاسم الأول',
 		'shipping_last_name'  => 'يرجى إدخال اسم العائلة في بيانات الشحن',
 		'shipping_address_1'  => 'يرجى إدخال عنوان الشحن',
 	);
