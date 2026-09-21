@@ -11,6 +11,7 @@ Custom bilingual WooCommerce theme for Blue Mattress.
 - `setup.php` registers theme support, assets, menus and the small set of theme-supplied pages.
 - `acf.php` defines Theme Options and editable content fields.
 - `woocommerce.php`, `shipping.php` and `paymob.php` contain storefront integrations.
+- `smtp.php` optionally routes WordPress mail through Microsoft 365 without changing email templates.
 - `media-assets.php` resolves images stored in the WordPress Media Library.
 - `theme-updater.php` connects tagged GitHub releases to WordPress theme updates.
 - `contact-submissions.php` stores and manages contact-form enquiries.
@@ -77,6 +78,20 @@ The key may instead be supplied as the `BLUE_GOOGLE_MAPS_API_KEY` constant in `w
 ## Contact submissions
 
 The Contact Page validates and sanitizes submissions, stores a private record under **Contact Submissions**, and sends a plain-text notification to the address configured in Theme Options. Production mail delivery still requires a properly configured SMTP or transactional mail service.
+
+## Microsoft 365 SMTP
+
+Enable SMTP under **Theme Options → Email delivery** and enter the Microsoft 365 mailbox and From name. The connection uses `smtp.office365.com`, port `587`, and STARTTLS. Authenticated SMTP must be enabled for that mailbox in Microsoft 365.
+
+For better credential security, define the password in `wp-config.php` instead of the database:
+
+```php
+define( 'BLUE_SMTP_PASSWORD', 'your-mailbox-password' );
+```
+
+The admin password field is masked and never redisplays the stored value. Leaving it blank keeps the existing password. SMTP changes transport only; WooCommerce continues using its own default templates, content, locale handling and email settings.
+
+SMTP authentication alone does not guarantee inbox placement. Configure Microsoft 365 SPF, DKIM and DMARC records for the sending domain, and plan an OAuth migration before Microsoft disables Basic SMTP authentication by default.
 
 ## Releasing an update
 

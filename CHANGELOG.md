@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.9.4
+
+- Added an optional native Microsoft 365 SMTP transport using WordPress's bundled PHPMailer.
+- Added Theme Options fields for SMTP enablement, mailbox, masked password and From name.
+- Kept WooCommerce's default email templates, content and settings unchanged.
+
 ## 2.9.3
 
 - Removed the theme email stylesheet, logo override and language-switching hooks.
