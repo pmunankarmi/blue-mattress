@@ -384,6 +384,10 @@ body.woocommerce-checkout #payment .payment_method_paymob-pixel>label {
   font-size:.92rem; font-weight:600;
 }
 body.woocommerce-checkout #payment #paymob-logo { width:auto; max-width:82px; max-height:28px; margin:0; object-fit:contain; }
+/* Card gateway branding only; preserve the separate Apple Pay payment icon. */
+body.woocommerce-checkout #payment .payment_method_paymob-pixel > label img,
+.blue-commerce-flow #paymob-pixel-logo,
+body.woocommerce-checkout #payment #paymob-logo { display:none !important; }
 body.woocommerce-checkout #paymob-elements {
   position:relative; width:100%; min-width:0; min-height:176px; overflow:visible!important;
   border:0; border-radius:var(--r-sm); color:var(--ink); color-scheme:light;
@@ -432,7 +436,9 @@ body.woocommerce-checkout form.login {
 
 /* WooCommerce Blocks fallback. The theme normally switches these pages to
    native Woo templates, but these rules keep cached/block-rendered pages on-brand. */
-.blue-commerce-flow .wc-block-components-sidebar-layout { gap:clamp(24px,3.5vw,48px); }
+.blue-commerce-flow .wc-block-components-sidebar-layout { gap:0; }
+.blue-commerce-flow .wp-block-woocommerce-checkout,
+.blue-commerce-flow .wp-block-woocommerce-cart { width:100%; max-width:100%; min-width:0; }
 .blue-commerce-flow .wc-block-components-sidebar-layout .wc-block-components-main,
 .blue-commerce-flow .wc-block-components-sidebar-layout .wc-block-components-sidebar { padding:0; }
 .blue-commerce-flow .wc-block-components-checkout-step,
@@ -601,6 +607,25 @@ html[data-theme="dark"] body.blue-commerce-flow .wc-block-components-sidebar {
 }
 
 @media(max-width:980px){
+  /* Stack Blocks explicitly, including translated pages without Woo body classes.
+     Reset intrinsic flex/fieldset widths so RTL text cannot collapse to letters. */
+  .blue-commerce-flow .wc-block-components-sidebar-layout {
+    flex-direction:column; align-items:stretch; width:100%; min-width:0;
+  }
+  .blue-commerce-flow .wc-block-components-sidebar-layout .wc-block-components-main,
+  .blue-commerce-flow .wc-block-components-sidebar-layout .wc-block-components-sidebar {
+    flex:0 0 auto; width:100%; max-width:100%; min-width:0; margin-inline:0; padding-inline:0;
+  }
+  .blue-commerce-flow .wc-block-checkout__form,
+  .blue-commerce-flow .wc-block-components-checkout-step {
+    width:100%; max-width:100%; min-width:0; min-inline-size:0;
+  }
+  .blue-commerce-flow .wc-block-components-checkout-step { padding:20px 16px; }
+  .blue-commerce-flow .wc-block-components-checkout-step__container { min-width:0; }
+  .blue-commerce-flow .wc-block-components-sidebar { position:static; }
+  .blue-commerce-flow input,
+  .blue-commerce-flow textarea,
+  .blue-commerce-flow select { font-size:16px!important; }
   body.woocommerce-cart .woocommerce:not(.widget_shopping_cart),
   body.woocommerce-checkout form.checkout { grid-template-columns:1fr; }
   body.woocommerce-cart .cart-collaterals,

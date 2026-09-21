@@ -14,7 +14,8 @@ defined( 'ABSPATH' ) || exit;
 add_filter(
 	'script_loader_src',
 	function ( string $src ): string {
-		if ( ! function_exists( 'is_checkout' ) || ! is_checkout() ) {
+		if ( ! function_exists( 'is_checkout' )
+			|| ( ! is_checkout() && ! ( is_singular() && has_block( 'woocommerce/checkout' ) ) ) ) {
 			return $src;
 		}
 

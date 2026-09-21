@@ -113,7 +113,7 @@ function blue_js_strings(): array {
 		'decreaseQty'=> blue_text( 'Decrease quantity', 'تقليل الكمية' ),
 		'increaseQty'=> blue_text( 'Increase quantity', 'زيادة الكمية' ),
 		'placeOrder' => blue_text( 'Place order', 'تأكيد الطلب' ),
-		'cardPayment'=> blue_text( 'Debit/Credit Card Payment', 'الدفع ببطاقة الخصم/الائتمان' ),
+		'cardPayment'=> 'Debit/Credit Card',
 		'termsLead'  => blue_text( 'I have read and agree to the website', 'لقد قرأت ووافقت على' ),
 		'termsLink'  => blue_text( 'terms and conditions', 'شروط وأحكام الموقع' ),
 		'noSavedCards' => blue_text( 'No saved cards.', 'لا توجد بطاقات محفوظة.' ),
@@ -918,7 +918,7 @@ add_filter(
 add_filter(
 	'woocommerce_gateway_title',
 	function ( string $title, string $gateway_id ): string {
-		return blue_is_arabic() && str_contains( $gateway_id, 'paymob' ) ? blue_text( 'Debit/Credit Card Payment', 'الدفع ببطاقة الخصم/الائتمان' ) : $title;
+		return 'paymob-pixel' === $gateway_id ? 'Debit/Credit Card' : $title;
 	},
 	30,
 	2

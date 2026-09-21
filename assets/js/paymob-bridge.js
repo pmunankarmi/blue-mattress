@@ -69,6 +69,14 @@
   };
 
   const applyShadowTheme = (root) => {
+    // Hide only the provider attribution row, never card-brand or wallet icons.
+    root.querySelectorAll('p').forEach((paragraph) => {
+      if (!['Powered by', 'مدعوم بواسطة'].includes(paragraph.textContent.trim())) return;
+      const row = paragraph.parentElement;
+      if (row && row.querySelector('img') && !row.querySelector('input, button, iframe')) {
+        row.style.setProperty('display', 'none', 'important');
+      }
+    });
     const theme = getTheme();
     const rootContainer = Array.from(root.children).find((child) => child.tagName !== 'STYLE');
 

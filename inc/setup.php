@@ -225,6 +225,14 @@ add_action(
 			wp_enqueue_style( 'blue-account', BLUE_THEME_URI . '/assets/css/account.css', array( 'blue-main', 'blue-wp' ), BLUE_THEME_VERSION );
 			wp_enqueue_script( 'blue-account', BLUE_THEME_URI . '/assets/js/account.js', array(), BLUE_THEME_VERSION, true );
 		}
+		// Translated block pages may not match WooCommerce's assigned page IDs.
+		// Load presentation assets from their content without changing checkout logic.
+		if ( is_singular() && ( has_block( 'woocommerce/checkout' ) || has_block( 'woocommerce/cart' ) ) ) {
+			wp_enqueue_style( 'blue-commerce-flow', BLUE_THEME_URI . '/assets/css/commerce.css', array( 'blue-main', 'blue-wp' ), BLUE_THEME_VERSION );
+			if ( has_block( 'woocommerce/checkout' ) ) {
+				wp_enqueue_script( 'blue-paymob-bridge', BLUE_THEME_URI . '/assets/js/paymob-bridge.js', array( 'jquery' ), BLUE_THEME_VERSION, true );
+			}
+		}
 		if ( class_exists( 'WooCommerce' ) && ( is_cart() || is_checkout() ) ) {
 			wp_enqueue_style( 'blue-commerce-flow', BLUE_THEME_URI . '/assets/css/commerce.css', array( 'blue-main', 'blue-wp' ), BLUE_THEME_VERSION );
 			$google_maps_api_key = defined( 'BLUE_GOOGLE_MAPS_API_KEY' )
@@ -324,7 +332,8 @@ add_filter(
 		if ( function_exists( 'is_product' ) && is_product() ) {
 			$classes[] = 'blue-single-product';
 		}
-		if ( function_exists( 'is_cart' ) && ( is_cart() || is_checkout() ) ) {
+		if ( ( function_exists( 'is_cart' ) && ( is_cart() || is_checkout() ) )
+			|| ( is_singular() && ( has_block( 'woocommerce/checkout' ) || has_block( 'woocommerce/cart' ) ) ) ) {
 			$classes[] = 'blue-commerce-flow';
 		}
 		if ( function_exists( 'is_account_page' ) && is_account_page() ) {
