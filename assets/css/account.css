@@ -245,11 +245,25 @@ body.blue-account-user .woocommerce-orders-table,
 body.blue-account-user .woocommerce-table--order-downloads { box-shadow:var(--shadow-sm); }
 body.blue-account-user .woocommerce-orders-table__cell-order-number a { color:var(--ink)!important; }
 body.blue-account-user .woocommerce-orders-table__cell-order-status { font-weight:700; }
-body.blue-account-user .woocommerce-orders-table__cell-order-actions .button { min-height:36px; padding:8px 14px; }
+body.blue-account-user .woocommerce-orders-table__cell-order-actions .button {
+  min-height:36px; padding:8px 14px; margin-block:4px; margin-inline:0 8px;
+}
+body.blue-account-user .woocommerce-orders-table__cell-order-actions .button:last-child { margin-inline-end:0; }
 body.blue-account-user .woocommerce-MyAccount-content>.woocommerce-info,
 body.blue-account-user .woocommerce-MyAccount-content>p:only-child {
   margin:0; padding:25px; border:1px dashed var(--line); border-radius:var(--r-md);
   background:var(--canvas); color:var(--ink-soft); text-align:center;
+}
+/* Reserve room for the notice icon without relying on WooCommerce's icon font. */
+body.blue-account-user .woocommerce-MyAccount-content>.woocommerce-info {
+  position:relative; margin-bottom:24px; padding-inline:56px 25px; text-align:start;
+}
+body.blue-account-user .woocommerce-MyAccount-content>.woocommerce-info::before {
+  content:'i'; display:flex; align-items:center; justify-content:center;
+  position:absolute; top:25px; left:auto; right:auto; inset-inline-start:20px;
+  width:20px; height:20px; box-sizing:border-box; transform:none;
+  border:1.5px solid currentColor; border-radius:50%; color:var(--royal);
+  font:700 13px/1 Arial,sans-serif; font-style:normal;
 }
 
 /* Individual order view. */
