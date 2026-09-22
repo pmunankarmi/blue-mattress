@@ -277,8 +277,13 @@ body.blue-account-user .woocommerce-customer-details>h2 { margin:0 0 14px!import
 body.blue-account-user .woocommerce-customer-details .woocommerce-columns--addresses {
   display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; margin:0;
 }
+/* Woo's float clearfix must not occupy a cell in the address grid. */
+body.blue-account-user .woocommerce-customer-details .woocommerce-columns--addresses::before,
+body.blue-account-user .woocommerce-customer-details .woocommerce-columns--addresses::after {
+  content:none; display:none;
+}
 body.blue-account-user .woocommerce-customer-details .woocommerce-column {
-  float:none; width:auto; padding:21px; border:1px solid var(--line-soft);
+  float:none; clear:none; width:auto; min-width:0; margin:0; padding:21px; border:1px solid var(--line-soft);
   border-radius:var(--r-md); background:var(--canvas);
 }
 body.blue-account-user .woocommerce-customer-details .woocommerce-column h2 { font-size:1.08rem!important; }
