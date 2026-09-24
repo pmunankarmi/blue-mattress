@@ -44,7 +44,7 @@ $anatomy    = $cut_video || count( $layers ) > 1;
 		<?php if ( $product->get_short_description() ) : ?><p class="pcard-tag"><?php echo esc_html( wp_trim_words( wp_strip_all_tags( $product->get_short_description() ), 18 ) ); ?></p><?php endif; ?>
 		<?php woocommerce_template_loop_rating(); ?>
 		<div class="pcard-foot">
-			<span class="pcard-price"><?php if ( $is_feature ) : ?><span class="from"><?php echo esc_html( blue_text( 'From', 'ابتداءً من' ) ); ?></span><?php endif; ?><?php woocommerce_template_loop_price(); ?></span>
+			<span class="pcard-price"><?php if ( $is_feature ) : ?><span class="from"><?php echo esc_html( blue_text( 'From', 'ابتداءً من' ) ); ?></span><?php endif; ?><span class="price"><?php echo wp_kses_post( blue_product_card_price_html( $product ) ); ?></span></span>
 			<a class="pcard-cta" href="<?php echo esc_url( $product->get_permalink() ); ?>"><?php echo esc_html( blue_text( 'Details', 'التفاصيل' ) ); ?> <span class="arr"><?php echo esc_html( blue_text( '→', '←' ) ); ?></span></a>
 		</div>
 	</div>

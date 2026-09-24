@@ -7,6 +7,24 @@
 
 defined( 'ABSPATH' ) || exit;
 
+/** Card prices use one variation, so its regular and sale prices always match. */
+function blue_product_card_price_html( WC_Product $product ): string {
+	if ( ! $product->is_type( 'variable' ) ) {
+		return $product->get_price_html();
+	}
+
+	// Woo sorts these by active price and applies the shop's tax display setting.
+	$prices = $product->get_variation_prices( true );
+	if ( empty( $prices['price'] ) ) {
+		return '';
+	}
+
+	$variation_id = array_key_first( $prices['price'] );
+	$variation    = wc_get_product( $variation_id );
+
+	return $variation ? $variation->get_price_html() : wc_price( $prices['price'][ $variation_id ] );
+}
+
 /** Suppress WooCommerce's dismissible footer overlay; the theme renders the notice in the header. */
 function blue_remove_default_store_notice(): void {
 	remove_action( 'wp_footer', 'woocommerce_demo_store' );
