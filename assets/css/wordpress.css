@@ -75,9 +75,9 @@ body.woocommerce-page .woocommerce-info .button {
 }
 .blue-language-switcher a { color: inherit; opacity: 1; white-space: nowrap; }
 .blue-language-switcher a.is-current { display: none; }
-body[data-header="overlay"] .site-header .blue-language-switcher,
+body[data-header="overlay"] .site-header .blue-language-switcher { color: #e9eff8; border-color: rgba(233,239,248,.38); }
 .blue-shop-archive .site-header .blue-language-switcher,
-.blue-single-product .site-header .blue-language-switcher { color: #e9eff8; border-color: rgba(233,239,248,.38); }
+.blue-single-product .site-header .blue-language-switcher { color:var(--ink); border-color:var(--line); }
 .nav-links .menu-item > a { display: inline-flex; align-items: center; padding: 1rem .7rem; font-size: .86rem; color: inherit; }
 .nav-links .menu-item > a.nav-store { padding: 10px 20px; color: #fff; }
 .nav-links .sub-menu { position: absolute; visibility: hidden; opacity: 0; min-width: 220px; padding: .8rem; background: var(--ivory, #f7f4ee); box-shadow: 0 16px 45px rgba(10,24,48,.16); transition: .2s; }

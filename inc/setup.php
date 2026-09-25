@@ -196,7 +196,6 @@ add_action(
 		wp_enqueue_style( 'blue-fonts', 'https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Cairo:wght@300..900&display=swap', array(), null );
 		wp_enqueue_style( 'blue-main', BLUE_THEME_URI . '/assets/css/main.css', array(), BLUE_THEME_VERSION );
 		wp_enqueue_style( 'blue-anatomy', BLUE_THEME_URI . '/assets/css/anatomy.css', array( 'blue-main' ), BLUE_THEME_VERSION );
-		wp_enqueue_style( 'blue-dark', BLUE_THEME_URI . '/assets/css/dark.css', array( 'blue-main' ), BLUE_THEME_VERSION );
 		wp_enqueue_style( 'blue-wp', BLUE_THEME_URI . '/assets/css/wordpress.css', array( 'blue-main' ), BLUE_THEME_VERSION );
 
 		if ( is_page_template( 'page-home.php' ) ) {
@@ -297,6 +296,12 @@ add_action(
 
 		wp_enqueue_script( 'blue-gsap', 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js', array(), '3.12.5', true );
 		wp_enqueue_script( 'blue-scroll-trigger', 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js', array( 'blue-gsap' ), '3.12.5', true );
+		// Load palette corrections after every page-specific theme stylesheet.
+		$theme_styles = array_values( array_filter( wp_styles()->queue, static function ( $handle ) {
+			return 'blue-dark' !== $handle && 0 === strpos( $handle, 'blue-' );
+		} ) );
+		wp_enqueue_style( 'blue-dark', BLUE_THEME_URI . '/assets/css/dark.css', $theme_styles, BLUE_THEME_VERSION );
+
 		wp_enqueue_script( 'blue-theme', BLUE_THEME_URI . '/assets/js/theme.js', array( 'blue-scroll-trigger' ), BLUE_THEME_VERSION, true );
 		wp_localize_script( 'blue-theme', 'BlueTheme', blue_frontend_data() );
 		wp_enqueue_script( 'blue-anatomy', BLUE_THEME_URI . '/assets/js/anatomy-wp.js', array( 'blue-theme' ), BLUE_THEME_VERSION, true );

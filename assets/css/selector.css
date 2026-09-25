@@ -420,42 +420,26 @@ html[data-theme="dark"] .finder-product-grid .pcard-quick.button,html[data-theme
 @media(max-width:760px){ .finder-product-grid.products li.product.pcard.is-best-match { grid-template-columns:1fr; } .finder-product-grid.products li.product.pcard.is-best-match .pcard-media { min-height:0; } }
 @media(max-width:640px){ .finder-results-head,.finder-help-inner { align-items:flex-start; flex-direction:column; } .finder-product-grid.products { grid-template-columns:1fr; } .finder-product-grid.products li.product.pcard.is-best-match { grid-column:auto; } .finder-results-head .btn { width:100%; justify-content:center; } }
 
-/* Current V12 reference uses a fixed dark selector experience. */
-body.blue-finder-page { background:#0b111b; color:#e9eff8; }
-.blue-finder-page .site-header.solid {
-  background:rgba(9,15,24,.97); border-bottom-color:rgba(233,239,248,.12);
-}
-.blue-finder-page .site-header .nav-link,
-.blue-finder-page .site-header .icon-btn { color:#e9eff8; }
-.blue-finder-page .site-header .nav-link:hover,
-.blue-finder-page .site-header .icon-btn:hover { background:rgba(233,239,248,.12); }
-.blue-finder-page .site-header .brand-logo { filter:brightness(0) invert(1); }
-.blue-finder-page .site-header .blue-language-switcher { color:#e9eff8; border-color:rgba(233,239,248,.38); }
-.blue-finder-page .theme-toggle .th-moon { display:none!important; }
-.blue-finder-page .theme-toggle .th-sun { display:inline-flex!important; }
-.blue-mattress-finder {
-  --canvas:#0b111b;
-  --paper:#172234;
-  --ink:#e9eff8;
-  --ink-soft:#a8b5ca;
-  --line:rgba(233,239,248,.20);
-  --line-soft:rgba(233,239,248,.11);
-  --powder:#2a3650;
-  --powder-2:#1b273a;
-  min-height:100vh; background:#0b111b; color:#e9eff8;
-}
+/* The finder follows the same user-selected palette as the rest of the site. */
+body.blue-finder-page { background:var(--canvas); color:var(--ink); }
+.blue-finder-page .site-header.solid { background:var(--canvas); border-bottom-color:var(--line); }
+.blue-finder-page .site-header .nav-link:not(.nav-store),
+.blue-finder-page .site-header .icon-btn { color:var(--ink); }
+.blue-finder-page .site-header .blue-language-switcher { color:var(--ink); border-color:var(--line); }
+html:not([data-theme="dark"]) .blue-finder-page .site-header .brand-logo { filter:none; }
+.blue-mattress-finder { min-height:100vh; background:var(--canvas); color:var(--ink); }
 .blue-mattress-finder .sel-top {
   background:radial-gradient(720px 340px at 50% 0%,rgba(61,99,201,.12),transparent 72%);
 }
 .blue-mattress-finder .sel-hero .h1,
 .blue-mattress-finder .wiz-q,
-.blue-mattress-finder .finder-results-head .h2 { color:#f4f6fb; }
+.blue-mattress-finder .finder-results-head .h2 { color:var(--ink); }
 .blue-mattress-finder .sel-hero .lead,
-.blue-mattress-finder .sel-note { color:rgba(233,239,248,.62); }
-.blue-mattress-finder .mode-switch { background:#182235; border-color:rgba(233,239,248,.16); }
-.blue-mattress-finder .seg-btn { color:#aab6ca; }
-.blue-mattress-finder .seg-btn:hover { color:#f4f6fb; }
-.blue-mattress-finder .seg-btn.is-on { background:#6686ec; color:#07101f; }
+.blue-mattress-finder .sel-note { color:var(--ink-soft); }
+.blue-mattress-finder .mode-switch { background:var(--paper); border-color:var(--line); }
+.blue-mattress-finder .seg-btn { color:var(--ink-soft); }
+.blue-mattress-finder .seg-btn:hover { color:var(--ink); }
+.blue-mattress-finder .seg-btn.is-on { background:var(--navy); color:#ffffff; }
 .blue-mattress-finder .wiz-opt,
 .blue-mattress-finder .chip-btn,
 .blue-mattress-finder .res-hero,
@@ -463,27 +447,27 @@ body.blue-finder-page { background:#0b111b; color:#e9eff8; }
 .blue-mattress-finder .flt-panel,
 .blue-mattress-finder .fcard,
 .blue-mattress-finder .swipe-card,
-.blue-mattress-finder .cmp-card { background:#172234; border-color:rgba(233,239,248,.16); color:#e9eff8; }
+.blue-mattress-finder .cmp-card { background:var(--paper); border-color:var(--line); color:var(--ink); }
 .blue-mattress-finder .wiz-opt:hover,
-.blue-mattress-finder .wiz-opt.is-on { border-color:#6686ec; box-shadow:0 0 0 1px #6686ec; }
+.blue-mattress-finder .wiz-opt.is-on { border-color:var(--royal); box-shadow:0 0 0 1px var(--royal); }
 .blue-mattress-finder .wiz-ico,
 .blue-mattress-finder .cmp-cta,
-.blue-mattress-finder .fcard-ctas a { color:#8da9ff; }
-.blue-mattress-finder .wiz-bar { background:#2a3650; }
-.blue-mattress-finder .wiz-fill { background:#6686ec; }
-.blue-mattress-finder .cmp-head { background:#0b111b; }
+.blue-mattress-finder .fcard-ctas a { color:var(--royal); }
+.blue-mattress-finder .wiz-bar { background:var(--powder); }
+.blue-mattress-finder .wiz-fill { background:var(--royal); }
+.blue-mattress-finder .cmp-head { background:var(--canvas); }
 .blue-mattress-finder .cmp-head.is-match,
-.blue-mattress-finder .cmp-head.col-best { background:#192842; }
+.blue-mattress-finder .cmp-head.col-best { background:var(--powder-2); }
 .blue-mattress-finder .cmp-cell.hl,
 .blue-mattress-finder .cmp-cell.row-hl,
 .blue-mattress-finder .cmp-cell.is-match,
 .blue-mattress-finder .cmp-cell.col-best { background:rgba(102,134,236,.12); }
-.blue-mattress-finder .finder-product-grid.products li.product.pcard { background:#172234; border-color:rgba(233,239,248,.12); color:#e9eff8; }
+.blue-mattress-finder .finder-product-grid.products li.product.pcard { background:var(--paper); border-color:var(--line); color:var(--ink); }
 .blue-mattress-finder .finder-product-grid .pcard-name,
 .blue-mattress-finder .finder-product-grid .pcard-name a,
 .blue-mattress-finder .finder-product-grid .pcard-price,
-.blue-mattress-finder .finder-product-grid .pcard-price .price { color:#f4f6fb; }
+.blue-mattress-finder .finder-product-grid .pcard-price .price { color:var(--ink); }
 .blue-mattress-finder .finder-product-grid .pcard-kind,
 .blue-mattress-finder .finder-product-grid .pcard-tag,
-.blue-mattress-finder .finder-product-grid .pcard-price .from { color:#a8b5ca; }
-.blue-mattress-finder .finder-product-grid .pcard-foot { border-color:rgba(233,239,248,.10); }
+.blue-mattress-finder .finder-product-grid .pcard-price .from { color:var(--ink-soft); }
+.blue-mattress-finder .finder-product-grid .pcard-foot { border-color:var(--line); }

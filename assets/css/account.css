@@ -34,7 +34,7 @@ body.blue-account-guest .blue-content {
   background:
     radial-gradient(circle at 14% 12%,rgba(80,119,226,.3),transparent 31rem),
     radial-gradient(circle at 88% 80%,rgba(159,194,236,.14),transparent 29rem),
-    #0b111b;
+    var(--canvas);
 }
 body.blue-account-guest .blue-content::before {
   content:''; position:absolute; inset:0; pointer-events:none; opacity:.15;
@@ -48,69 +48,67 @@ body.blue-account-guest .woocommerce-notices-wrapper { width:min(100%,480px); ma
 
 .blue-account-auth {
   width:100%; padding:18px 24px 20px; overflow:hidden;
-  border:1px solid rgba(255,255,255,.12); border-radius:var(--r-lg);
-  background:#f7f4ee; color:#0a1830; box-shadow:0 30px 80px rgba(0,0,0,.3);
+  border:1px solid var(--line); border-radius:var(--r-lg);
+  background:var(--paper); color:var(--ink); box-shadow:var(--shadow-lg);
 }
 .blue-auth-tabs {
   display:flex; gap:5px; margin:0 0 18px; padding:4px;
-  border-radius:var(--r-pill); background:#e9edf4;
+  border-radius:var(--r-pill); background:var(--powder-2);
 }
 .blue-auth-tab {
   flex:1; min-height:42px; padding:9px 16px; border:0; border-radius:var(--r-pill);
-  background:transparent; color:#697589; font:700 .83rem/1.2 var(--font-body); cursor:pointer;
+  background:transparent; color:var(--ink-soft); font:700 .83rem/1.2 var(--font-body); cursor:pointer;
   transition:background .2s,color .2s,box-shadow .2s;
 }
-.blue-auth-tab:hover { color:#0a1830; }
-.blue-auth-tab.is-active { background:#fff; color:#0a1830; box-shadow:0 4px 14px rgba(10,24,48,.09); }
+.blue-auth-tab:hover { color:var(--ink); }
+.blue-auth-tab.is-active { background:var(--paper); color:var(--ink); box-shadow:0 4px 14px rgba(10,24,48,.09); }
 .blue-auth-panel[hidden] { display:none; }
 .blue-auth-head { display:grid; justify-items:center; gap:6px; margin:0 0 17px; text-align:center; }
 .blue-auth-mark {
   width:44px; height:44px; display:grid; place-items:center; margin-bottom:3px;
-  border:1px solid rgba(61,99,201,.22); border-radius:50%; color:#3d63c9; background:rgba(61,99,201,.06);
+  border:1px solid rgba(61,99,201,.22); border-radius:50%; color:var(--royal); background:rgba(61,99,201,.06);
 }
 .blue-auth-mark svg { width:22px; height:22px; }
-.blue-auth-head h2 { margin:0; color:#0a1830; font:600 clamp(1.45rem,3vw,1.75rem)/1.15 var(--font-display); }
-.blue-auth-head p { max-width:38ch; margin:0; color:#687487; font-size:.78rem; line-height:1.55; }
-.blue-auth-form { display:grid; gap:12px; margin:0; padding:0; border:0; }
+.blue-auth-head h2 { margin:0; color:var(--ink); font:600 clamp(1.45rem,3vw,1.75rem)/1.15 var(--font-display); }
+.blue-auth-head p { max-width:38ch; margin:0; color:var(--ink-soft); font-size:.78rem; line-height:1.55; }
+body.blue-account-guest .blue-account-auth form.blue-auth-form { display:grid; gap:12px; margin:0; padding:0; border:0; }
 .blue-auth-form .form-row { float:none; width:100%; margin:0; padding:0; }
 .blue-auth-form .form-row label:not(.woocommerce-form__label-for-checkbox) {
-  display:block; margin:0 0 6px; color:#526075; font-size:.72rem; font-weight:700; letter-spacing:.035em;
+  display:block; margin:0 0 6px; color:var(--ink-soft); font-size:.72rem; font-weight:700; letter-spacing:.035em;
 }
-.blue-auth-form .required { color:#3d63c9; }
-.blue-auth-form input.input-text,
-.blue-auth-form .password-input input.input-text {
-  width:100%; min-height:48px; padding:11px 14px; border:1px solid #cfd5df; border-radius:var(--r-sm);
-  background:#fff; color:#0a1830; font:400 .92rem/1.45 var(--font-body); outline:0;
+.blue-auth-form .required { color:var(--royal); }
+body.blue-account-guest .blue-account-auth .blue-auth-form input.input-text {
+  width:100%; min-height:48px; padding:11px 14px; border:1px solid var(--line); border-radius:var(--r-sm);
+  background:var(--paper); color:var(--ink); font:400 .92rem/1.45 var(--font-body); outline:0;
   transition:border-color .2s,box-shadow .2s;
 }
-.blue-auth-form input.input-text:focus,
-.blue-auth-form .password-input input.input-text:focus {
-  border-color:#3d63c9; box-shadow:0 0 0 3px rgba(61,99,201,.12);
+body.blue-account-guest .blue-account-auth .blue-auth-form input.input-text:focus {
+  border-color:var(--royal); box-shadow:0 0 0 3px rgba(61,99,201,.12);
 }
 .blue-auth-form .password-input { width:100%; }
-.blue-auth-form .show-password-input { color:#526075; }
+.blue-auth-form .show-password-input { color:var(--ink-soft); }
 .blue-auth-options { display:flex; align-items:center; justify-content:space-between; gap:14px; margin-top:1px; }
-.blue-auth-options label { display:inline-flex; align-items:center; gap:7px; color:#687487; font-size:.74rem; cursor:pointer; }
-.blue-auth-options input { width:16px; height:16px; accent-color:#3d63c9; }
-.blue-auth-options a { color:#3d63c9; font-size:.74rem; font-weight:700; }
+.blue-auth-options label { display:inline-flex; align-items:center; gap:7px; color:var(--ink-soft); font-size:.74rem; cursor:pointer; }
+.blue-auth-options input { width:16px; height:16px; accent-color:var(--royal); }
+.blue-auth-options a { color:var(--royal); font-size:.74rem; font-weight:700; }
 .blue-auth-submit-row { margin-top:2px!important; }
 .blue-account-auth .blue-auth-submit,
 .blue-account-auth .woocommerce-button.button {
   width:100%; min-height:50px; display:inline-flex; align-items:center; justify-content:center;
-  margin:0; padding:13px 22px; border:1px solid #3d63c9; border-radius:var(--r-pill);
-  background:#3d63c9; color:#fff; font:700 .85rem/1.25 var(--font-body); cursor:pointer;
+  margin:0; padding:13px 22px; border:1px solid var(--royal); border-radius:var(--r-pill);
+  background:var(--royal); color:#fff; font:700 .85rem/1.25 var(--font-body); cursor:pointer;
   transition:background .2s,border-color .2s,transform .2s;
 }
 .blue-account-auth .blue-auth-submit:hover,
-.blue-account-auth .woocommerce-button.button:hover { border-color:#0a1830; background:#0a1830; color:#fff; transform:translateY(-1px); }
-.blue-account-auth .woocommerce-privacy-policy-text { color:#687487; font-size:.7rem; line-height:1.5; }
-.blue-account-auth .woocommerce-privacy-policy-text a { color:#3d63c9; }
-.blue-auth-generated { margin:0; padding:11px 13px; border-radius:var(--r-sm); background:#edf1f7; color:#687487; font-size:.74rem; line-height:1.5; }
+.blue-account-auth .woocommerce-button.button:hover { border-color:var(--ink); background:#0a1830; color:#fff; transform:translateY(-1px); }
+.blue-account-auth .woocommerce-privacy-policy-text { color:var(--ink-soft); font-size:.7rem; line-height:1.5; }
+.blue-account-auth .woocommerce-privacy-policy-text a { color:var(--royal); }
+.blue-auth-generated { margin:0; padding:11px 13px; border-radius:var(--r-sm); background:var(--powder-2); color:var(--ink-soft); font-size:.74rem; line-height:1.5; }
 .blue-auth-note {
   display:flex; align-items:center; justify-content:center; gap:7px; margin:14px 0 0; padding-top:14px;
-  border-top:1px solid #dce1e8; color:#7c8798; font-size:.68rem; text-align:center;
+  border-top:1px solid var(--line); color:var(--ink-soft); font-size:.68rem; text-align:center;
 }
-.blue-auth-note svg { width:15px; height:15px; flex:none; color:#3d63c9; }
+.blue-auth-note svg { width:15px; height:15px; flex:none; color:var(--royal); }
 
 /* Signed-in account shell. */
 body.blue-account-user .blue-prose>article>.woocommerce {
@@ -142,7 +140,7 @@ body.blue-account-user .woocommerce-MyAccount-navigation a:hover { background:va
 body.blue-account-user .woocommerce-MyAccount-navigation .is-active a { background:var(--navy); color:#fff; }
 .blue-account-nav-icon { width:9px; height:9px; flex:none; border:1.5px solid currentColor; border-radius:50%; opacity:.75; }
 .woocommerce-MyAccount-navigation-link--customer-logout { margin-top:7px!important; padding-top:7px!important; border-top:1px solid var(--line-soft)!important; }
-.woocommerce-MyAccount-navigation-link--customer-logout a { color:#a04444!important; }
+.woocommerce-MyAccount-navigation-link--customer-logout a { color:var(--danger)!important; }
 
 body.blue-account-user .woocommerce-MyAccount-content {
   grid-column:2;
