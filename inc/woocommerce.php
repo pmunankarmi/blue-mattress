@@ -7,6 +7,12 @@
 
 defined( 'ABSPATH' ) || exit;
 
+/** Physical products do not need a Downloads entry in the account navigation. */
+add_filter( 'woocommerce_account_menu_items', static function ( array $items ): array {
+	unset( $items['downloads'] );
+	return $items;
+}, 99 );
+
 /** Card prices use one variation, so its regular and sale prices always match. */
 function blue_product_card_price_html( WC_Product $product ): string {
 	if ( ! $product->is_type( 'variable' ) ) {

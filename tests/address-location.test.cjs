@@ -5,7 +5,7 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const path = require('node:path');
 const source = fs.readFileSync(path.join(__dirname, '../assets/js/address-lookup.js'), 'utf8')
-  .replace('  if (document.readyState', '  window.testCreateLookup = createLookup;\n  if (document.readyState');
+  .replace('  if (document.readyState', '  window.testCreateLookup = createLookup; window.testResetShipping = resetShippingAddress; window.testRestoreCart = restoreCartAddress;\n  if (document.readyState');
 
 class Element {
   constructor(tag = 'div') {
@@ -35,6 +35,13 @@ function fixture({ scope = 'billing', error, country = 'SA', secure = true, supp
     for (const key of ['country', 'state', 'city', 'postcode', 'address_1', 'address_2']) {
       fields['#' + prefix + '_' + key] = new Element('input');
     }
+    const countrySelect = fields['#' + prefix + '_country'];
+    countrySelect.tagName = 'SELECT';
+    countrySelect.value = 'SA';
+    countrySelect.options = [
+      { value: 'SA', textContent: 'Saudi Arabia' },
+      { value: 'NP', textContent: 'Nepal' }
+    ];
   }
   const storage = new Map();
   const component = (type, value) => ({ types: [type], long_name: value, short_name: value });
@@ -50,7 +57,7 @@ function fixture({ scope = 'billing', error, country = 'SA', secure = true, supp
           return { results: [{
             formatted_address: '123 Test Road, Riyadh',
             address_components: [
-              component('country', country), component('locality', 'Riyadh'),
+              component('country', country), component('locality', country === 'NP' ? 'Kathmandu' : 'Riyadh'),
               component('route', 'Test Road'), component('street_number', '123'),
               component('postal_code', '12345')
             ], geometry: { location }
@@ -69,10 +76,12 @@ function fixture({ scope = 'billing', error, country = 'SA', secure = true, supp
   } } : {};
   vm.runInNewContext(source, {
     window, navigator, Event: class {},
-    sessionStorage: { setItem: (k, v) => storage.set(k, v) },
+    sessionStorage: { setItem: (k, v) => storage.set(k, v), getItem: (k) => storage.get(k) },
     document: {
       documentElement: { lang: arabic ? 'ar' : 'en' }, readyState: 'loading',
       createElement: (tag) => new Element(tag), addEventListener() {},
+      getElementById: (id) => fields['#' + id] || null,
+      body: { classList: { contains: (name) => name === 'woocommerce-checkout' } },
       querySelector: (selector) => fields[selector] || null
     }
   });
@@ -95,6 +104,17 @@ test('location is opt-in and fills only the chosen checkout address', async () =
   assert.equal(f.button.attributes['aria-busy'], undefined);
 });
 
+for (const scope of ['billing', 'shipping', 'cart']) {
+  test('Nepal location fills allowed country and city for ' + scope, async () => {
+    const f = fixture({ scope, country: 'NP' });
+    await f.click();
+    const prefix = scope === 'cart' ? 'calc_shipping' : scope;
+    assert.equal(f.fields['#' + prefix + '_country'].value, 'NP');
+    assert.equal(f.fields['#' + prefix + '_city'].value, 'Kathmandu');
+    assert.equal(f.status.className, 'blue-short-address__status is-success');
+  });
+}
+
 test('cart fills shipping calculator and retains address for checkout', async () => {
   const f = fixture({ scope: 'cart' });
   await f.click();
@@ -110,13 +130,34 @@ test('shipping lookup does not replace billing fields and supports localized lab
   assert.equal(f.fields['#billing_city'].value, '');
 });
 
+test('different shipping address clears destination, but preserves billing and country', () => {
+  const f = fixture();
+  f.fields['#shipping_city'].value = 'Old city';
+  f.fields['#shipping_address_1'].value = 'Old street';
+  f.fields['#shipping_country'].value = 'SA';
+  f.fields['#billing_city'].value = 'Billing city';
+  f.window.testResetShipping();
+  assert.equal(f.fields['#shipping_city'].value, '');
+  assert.equal(f.fields['#shipping_address_1'].value, '');
+  assert.equal(f.fields['#shipping_country'].value, 'SA');
+  assert.equal(f.fields['#billing_city'].value, 'Billing city');
+});
+
+test('cart restoration no longer copies billing into the separate shipping address', () => {
+  const f = fixture();
+  f.storage.set('blue-short-address', JSON.stringify({ address1: 'Cart street', city: 'Riyadh', country: 'SA' }));
+  f.window.testRestoreCart();
+  assert.equal(f.fields['#billing_city'].value, 'Riyadh');
+  assert.equal(f.fields['#shipping_city'].value, '');
+});
+
 for (const [name, options, message] of [
   ['denied', { error: 1 }, /permission was denied/],
   ['unavailable', { error: 2 }, /could not detect/],
   ['timeout', { error: 3 }, /timed out/],
   ['insecure', { secure: false }, /HTTPS/],
   ['unsupported', { supported: false }, /unavailable/],
-  ['outside Saudi Arabia', { country: 'US' }, /outside Saudi/],
+  ['country not enabled in WooCommerce', { country: 'US' }, /country is not available/],
   ['Maps failure', { geocodeError: true }, /could not detect/]
 ]) {
   test(name + ' leaves manual address unchanged', async () => {

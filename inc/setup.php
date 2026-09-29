@@ -237,7 +237,7 @@ add_action(
 			$google_maps_api_key = defined( 'BLUE_GOOGLE_MAPS_API_KEY' )
 				? sanitize_text_field( (string) constant( 'BLUE_GOOGLE_MAPS_API_KEY' ) )
 				: sanitize_text_field( (string) blue_option( 'google_maps_api_key', '' ) );
-			if ( $google_maps_api_key && ! is_order_received_page() ) {
+			if ( ! is_order_received_page() ) {
 				wp_enqueue_script( 'blue-address-lookup', BLUE_THEME_URI . '/assets/js/address-lookup.js', array( 'jquery' ), BLUE_THEME_VERSION, true );
 				wp_localize_script(
 					'blue-address-lookup',
@@ -255,7 +255,7 @@ add_action(
 								'locationDenied' => 'تم رفض إذن الموقع. اسمح به في إعدادات المتصفح أو أدخل عنوانك يدويًا.',
 								'locationTimeout' => 'انتهت مهلة تحديد الموقع. حاول مجددًا أو أدخل عنوانك يدويًا.',
 								'locationUnsupported' => 'الموقع غير متاح في هذا المتصفح. استخدم اتصال HTTPS أو أدخل عنوانك يدويًا.',
-								'locationOutside' => 'الموقع المحدد خارج السعودية. أدخل عنوان التوصيل داخل السعودية يدويًا.',
+								'locationOutside' => 'الدولة المحددة غير متاحة لهذا العنوان. اختر دولة متاحة وأدخل العنوان يدويًا.',
 								'locationError' => 'تعذر تحديد عنوانك. حاول مجددًا أو اختر نقطة على الخريطة أو أدخل العنوان يدويًا.',
 								'placeholder' => '',
 								'button'      => 'العثور على العنوان',
@@ -284,7 +284,7 @@ add_action(
 								'locationDenied' => 'Location permission was denied. Allow it in your browser settings, or enter your address manually.',
 								'locationTimeout' => 'The location request timed out. Try again or enter your address manually.',
 								'locationUnsupported' => 'Location is unavailable in this browser. Use HTTPS or enter your address manually.',
-								'locationOutside' => 'The detected location is outside Saudi Arabia. Enter your Saudi delivery address manually.',
+								'locationOutside' => 'The detected country is not available for this address. Choose an available country and enter the address manually.',
 								'locationError' => 'We could not detect your address. Try again, choose a point on the map, or enter it manually.',
 								'placeholder' => '',
 								'button'      => 'Find address',

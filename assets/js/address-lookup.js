@@ -5,6 +5,13 @@
   const isArabic = document.documentElement.lang.toLowerCase().startsWith('ar');
   const storageKey = 'blue-short-address';
   const saudiCenter = { lat: 23.8859, lng: 45.0792 };
+  const countryField = (scope) => document.querySelector(
+    scope === 'cart' ? '#calc_shipping_country' : `#${scope}_country`
+  );
+  const selectedCountry = (scope) => countryField(scope)?.value || 'SA';
+  const countryCenter = (country) => ({
+    SA: saudiCenter, NP: { lat: 28.3949, lng: 84.124 }
+  }[country] || { lat: 20, lng: 0 });
   let mapsPromise;
 
   const text = (key, fallback) => config.strings?.[key] || fallback;
@@ -102,13 +109,13 @@
         || componentValue(components, 'sublocality_level_1'),
       state: componentValue(components, 'administrative_area_level_1'),
       postcode: componentValue(components, 'postal_code'),
-      country: componentValue(components, 'country', true) || 'SA',
+      country: componentValue(components, 'country', true),
       lat,
       lng
     };
   };
 
-  const searchGoogleAddress = async (query, shortCode = '') => {
+  const searchGoogleAddress = async (query, shortCode = '', country = 'SA') => {
     await loadMaps();
 
     try {
@@ -117,7 +124,7 @@
         textQuery: query,
         fields: ['formattedAddress', 'addressComponents', 'location'],
         language: config.language || (isArabic ? 'ar' : 'en'),
-        region: 'sa',
+        region: country.toLowerCase(),
         maxResultCount: 1
       }));
       if (response.places?.length) return parseResult(response.places[0], shortCode);
@@ -129,9 +136,9 @@
     const { Geocoder } = await window.google.maps.importLibrary('geocoding');
     const geocoder = new Geocoder();
     const response = await withTimeout(geocoder.geocode({
-      address: `${query}, Saudi Arabia`,
-      componentRestrictions: { country: 'SA' },
-      region: 'SA'
+      address: query,
+      componentRestrictions: { country },
+      region: country
     }));
     if (!response.results?.length) throw new Error('no-results');
     return parseResult(response.results[0], shortCode);
@@ -143,7 +150,7 @@
     await loadMaps();
     const { Geocoder } = await window.google.maps.importLibrary('geocoding');
     const geocoder = new Geocoder();
-    const response = await withTimeout(geocoder.geocode({ location, region: 'SA' }));
+    const response = await withTimeout(geocoder.geocode({ location }));
     if (!response.results?.length) throw new Error('no-results');
     return parseResult(response.results[0], '');
   };
@@ -181,6 +188,14 @@
   };
 
   const fillWooAddress = (address, scope) => {
+    const country = countryField(scope);
+    // Respect WooCommerce's allowed countries; never mix a foreign address with
+    // an unchanged Saudi country value when the detected destination is unavailable.
+    if (!address.country || (country?.tagName === 'SELECT'
+      && !Array.from(country.options).some((option) => option.value === address.country))
+      || (country?.type === 'hidden' && country.value && country.value !== address.country)) {
+      throw new Error('unsupported-country');
+    }
     if (scope === 'cart') {
       setField('#calc_shipping_country', address.country || 'SA');
       setField('#calc_shipping_state', address.state);
@@ -221,7 +236,7 @@
     await loadMaps();
     const { Map } = await window.google.maps.importLibrary('maps');
     const map = new Map(canvas, {
-      center: saudiCenter,
+      center: countryCenter(selectedCountry(scope)),
       zoom: 5,
       clickableIcons: false,
       fullscreenControl: true,
@@ -230,8 +245,13 @@
     });
     const marker = new window.google.maps.Marker({
       map,
-      position: saudiCenter,
+      position: countryCenter(selectedCountry(scope)),
       visible: false
+    });
+    countryField(scope)?.addEventListener('change', () => {
+      marker.setVisible(false);
+      map.setCenter(countryCenter(selectedCountry(scope)));
+      map.setZoom(['SA', 'NP'].includes(selectedCountry(scope)) ? 5 : 2);
     });
 
     const showAddress = (address, zoom = 17) => {
@@ -261,7 +281,7 @@
       try {
         const normalized = normalizeCode(query);
         const shortCode = /^[A-Z]{4}[0-9]{4}$/.test(normalized) ? normalized : '';
-        const address = await searchGoogleAddress(query, shortCode);
+        const address = await searchGoogleAddress(query, shortCode, shortCode ? 'SA' : selectedCountry(scope));
         setShortCode(address.code || '');
         fillWooAddress(address, scope);
         showAddress(address);
@@ -293,7 +313,7 @@
       try {
         const address = await reverseGeocode(location);
         const shortCode = normalizeCode(getShortCode?.() || '');
-        if (!address.code && /^[A-Z]{4}[0-9]{4}$/.test(shortCode)) address.code = shortCode;
+        if (address.country === 'SA' && !address.code && /^[A-Z]{4}[0-9]{4}$/.test(shortCode)) address.code = shortCode;
         setShortCode(address.code || '');
         fillWooAddress(address, scope);
         showAddress(address, Math.max(map.getZoom() || 17, 16));
@@ -428,7 +448,6 @@
           lat: position.coords.latitude, lng: position.coords.longitude
         });
         if (!wrapper.isConnected) return;
-        if (address.country !== 'SA') throw new Error('outside-sa');
         input.value = address.code || '';
         mapSearchInput.value = address.formattedAddress || '';
         fillWooAddress(address, scope);
@@ -445,8 +464,8 @@
           status.textContent = text('locationDenied', 'Location permission was denied. Allow it in your browser settings, or enter your address manually.');
         } else if (error.code === 3 || error.message === 'maps-timeout') {
           status.textContent = text('locationTimeout', 'The location request timed out. Try again or enter your address manually.');
-        } else if (error.message === 'outside-sa') {
-          status.textContent = text('locationOutside', 'The detected location is outside Saudi Arabia. Enter your Saudi delivery address manually.');
+        } else if (error.message === 'unsupported-country') {
+          status.textContent = text('locationOutside', 'The detected country is not available for this address. Choose an available country and enter the address manually.');
         } else {
           status.textContent = text('locationError', 'We could not detect your address. Try again, choose a point on the map, or enter it manually.');
         }
@@ -555,7 +574,7 @@
     try {
       const address = JSON.parse(sessionStorage.getItem(storageKey) || 'null');
       if (!address?.address1 && !address?.formattedAddress) return;
-      ['billing', 'shipping'].forEach((scope) => {
+      ['billing'].forEach((scope) => {
         const field = document.getElementById(`${scope}_address_1`);
         if (field) field.dataset.blueShortAddressRestored = 'true';
         const lookup = document.querySelector(`[data-blue-short-address="${scope}"]`);
@@ -565,12 +584,33 @@
     } catch (error) {}
   };
 
+  const resetShippingAddress = () => {
+    // Keep the allowed country, but never reuse billing/cart data for a new destination.
+    ['first_name', 'last_name', 'company', 'address_1', 'address_2', 'city', 'state', 'postcode', 'phone'].forEach((name) => {
+      const field = document.getElementById(`shipping_${name}`);
+      if (!field) return;
+      field.value = '';
+      dispatchChange(field);
+    });
+    document.querySelector('[data-blue-short-address="shipping"]')?.remove();
+    if (config.apiKey) addCheckoutLookup('shipping');
+  };
+
   const init = () => {
-    if (document.body.classList.contains('woocommerce-cart')) addCartLookup();
+    if (config.apiKey && document.body.classList.contains('woocommerce-cart')) addCartLookup();
     if (document.body.classList.contains('woocommerce-checkout')) {
-      addCheckoutLookup('billing');
-      addCheckoutLookup('shipping');
-      restoreCartAddress();
+      if (config.apiKey) {
+        addCheckoutLookup('billing');
+        addCheckoutLookup('shipping');
+        restoreCartAddress();
+      }
+      const differentAddress = document.getElementById('ship-to-different-address-checkbox');
+      if (differentAddress && !differentAddress.dataset.blueResetBound) {
+        differentAddress.dataset.blueResetBound = 'true';
+        differentAddress.addEventListener('change', () => {
+          if (differentAddress.checked) resetShippingAddress();
+        });
+      }
     }
   };
 

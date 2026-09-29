@@ -305,6 +305,17 @@ add_action(
 						'placeholder'  => 'G-XXXXXXXXXX',
 					),
 
+					array( 'key' => 'field_blue_tab_payments', 'label' => __( 'Payment logos', 'blue-mattress' ), 'name' => '', 'type' => 'tab' ),
+					array(
+						'key' => 'field_blue_footer_payment_modes',
+						'label' => __( 'Footer payment methods', 'blue-mattress' ),
+						'name' => 'footer_payment_modes',
+						'type' => 'checkbox',
+						'choices' => array( 'mada' => 'mada', 'card' => 'Visa / Mastercard', 'apple' => 'Apple Pay', 'tabby' => 'Tabby', 'tamara' => 'Tamara' ),
+						'default_value' => array( 'mada', 'card', 'apple', 'tabby', 'tamara' ),
+						'return_format' => 'value',
+						'instructions' => __( 'Select the logos shown in the footer. Uncheck all to hide them. This does not enable or disable checkout gateways; manage those in WooCommerce → Settings → Payments.', 'blue-mattress' ),
+					),
 					array( 'key' => 'field_blue_tab_checkout_address', 'label' => __( 'Checkout address', 'blue-mattress' ), 'name' => '', 'type' => 'tab' ),
 					array(
 						'key'          => 'field_blue_google_maps_api_key',

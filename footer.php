@@ -91,13 +91,25 @@ $footer_terms = is_wp_error( $footer_terms ) ? array() : $footer_terms;
 		<div class="footer-legal">
 			<?php if ( $cr ) : ?><div class="legal-item"><img class="legal-cr" src="<?php echo esc_url( blue_media_asset_url( 'cr-badge.png' ) ); ?>" width="64" height="64" alt=""><div class="legal-txt"><span><?php echo esc_html( blue_text( 'Commercial Register', 'السجل التجاري' ) ); ?></span><b dir="ltr"><?php echo esc_html( $cr ); ?></b></div></div><?php endif; ?>
 			<?php if ( $vat ) : ?><div class="legal-item"><div class="legal-txt"><span><?php echo esc_html( blue_text( 'VAT Account Number', 'الرقم الضريبي' ) ); ?></span><b dir="ltr"><?php echo esc_html( $vat ); ?></b></div></div><?php endif; ?>
-			<div class="pay-icons" aria-label="<?php echo esc_attr( blue_text( 'Payment methods', 'طرق الدفع' ) ); ?>">
-				<img src="<?php echo esc_url( blue_media_asset_url( 'pay-mada_mini.png' ) ); ?>" alt="mada">
-				<img src="<?php echo esc_url( blue_media_asset_url( 'pay-credit_card_mini.png' ) ); ?>" alt="Visa / Mastercard">
-				<img src="<?php echo esc_url( blue_media_asset_url( 'pay-apple_pay_mini.png' ) ); ?>" alt="Apple Pay">
-				<img class="pay-tabby" src="<?php echo esc_url( blue_media_asset_url( 'pay-tabby-badge.svg' ) ); ?>" alt="Tabby">
-				<img class="pay-tamara" src="<?php echo esc_url( blue_media_asset_url( 'pay-tamara-badge.svg' ) ); ?>" alt="Tamara">
-			</div>
+			<?php
+			$payment_logos = array(
+				'mada'   => array( 'pay-mada_mini.png', 'mada', '' ),
+				'card'   => array( 'pay-credit_card_mini.png', 'Visa / Mastercard', '' ),
+				'apple'  => array( 'pay-apple_pay_mini.png', 'Apple Pay', '' ),
+				'tabby'  => array( 'pay-tabby-badge.svg', 'Tabby', 'pay-tabby' ),
+				'tamara' => array( 'pay-tamara-badge.svg', 'Tamara', 'pay-tamara' ),
+			);
+			// Raw ACF option distinguishes an explicitly empty selection from an unsaved setting.
+			$selected_logos = (array) get_option( 'options_footer_payment_modes', array_keys( $payment_logos ) );
+			$payment_logos = array_intersect_key( $payment_logos, array_flip( array_filter( $selected_logos, 'is_string' ) ) );
+			?>
+			<?php if ( $payment_logos ) : ?>
+				<div class="pay-icons" aria-label="<?php echo esc_attr( blue_text( 'Payment methods', 'طرق الدفع' ) ); ?>">
+					<?php foreach ( $payment_logos as $logo ) : ?>
+						<img class="<?php echo esc_attr( $logo[2] ); ?>" src="<?php echo esc_url( blue_media_asset_url( $logo[0] ) ); ?>" alt="<?php echo esc_attr( $logo[1] ); ?>">
+					<?php endforeach; ?>
+				</div>
+			<?php endif; ?>
 		</div>
 		<div class="footer-bottom">
 			<span><?php echo esc_html( blue_option( 'copyright', sprintf( blue_text( '© %d Blue Mattresses. All rights reserved.', '© %d مراتب بلو. جميع الحقوق محفوظة.' ), wp_date( 'Y' ) ) ) ); ?></span>
