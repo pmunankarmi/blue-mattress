@@ -490,6 +490,18 @@
         } else {
           status.textContent = text('locationError', 'We could not detect your address. Try again, choose a point on the map, or enter it manually.');
         }
+        if (locationStage === 'position') {
+          // Display only acquisition error details, never coordinates, API keys,
+          // or Google responses. Keep this local to the page (no telemetry).
+          const diagnostic = document.createElement('p');
+          diagnostic.className = 'blue-location-diagnostic';
+          diagnostic.dir = 'ltr';
+          const codes = { 1: 'PERMISSION_DENIED', 2: 'POSITION_UNAVAILABLE', 3: 'TIMEOUT' };
+          const code = codes[error.code] || (error.message === 'maps-timeout' ? 'REQUEST_TIMEOUT' : 'BROWSER_ERROR');
+          const message = String(error.message || error.name || 'No additional browser details').slice(0, 240);
+          diagnostic.textContent = `Location diagnostic: ${code} — ${message}`;
+          status.appendChild(diagnostic);
+        }
       } finally {
         locationButton.disabled = false;
         button.disabled = false;

@@ -27,7 +27,7 @@ class Element {
   dispatchEvent() {}
 }
 
-function fixture({ scope = 'billing', error, fallbackWorks = false, country = 'SA', secure = true, supported = true, geocodeError = false, arabic = false } = {}) {
+function fixture({ scope = 'billing', error, errorMessage, fallbackWorks = false, country = 'SA', secure = true, supported = true, geocodeError = false, arabic = false } = {}) {
   let requests = 0;
   let geocodes = 0;
   const fields = {};
@@ -72,7 +72,7 @@ function fixture({ scope = 'billing', error, fallbackWorks = false, country = 'S
       assert.equal(options.timeout, options.enableHighAccuracy ? 30000 : 15000);
       assert.equal(options.maximumAge, options.enableHighAccuracy ? 0 : 60000);
       assert.equal(options.enableHighAccuracy, requests > 1);
-      if (error && !(fallbackWorks && options.enableHighAccuracy)) reject({ code: error });
+      if (error && !(fallbackWorks && options.enableHighAccuracy)) reject({ code: error, message: errorMessage });
       else resolve({ coords: { latitude: 24.7, longitude: 46.7 } });
     }
   } } : {};
@@ -128,6 +128,15 @@ test('denied permission is never retried', async () => {
   const f = fixture({ error: 1 });
   await f.click();
   assert.equal(f.counts().requests, 1);
+});
+
+test('unavailable location displays browser diagnostic as plain text without a map request', async () => {
+  const f = fixture({ error: 2, errorMessage: '<b>CoreLocation failed</b>' });
+  await f.click();
+  const diagnostic = f.status.children.find((node) => node.className === 'blue-location-diagnostic');
+  assert.equal(diagnostic.textContent, 'Location diagnostic: POSITION_UNAVAILABLE — <b>CoreLocation failed</b>');
+  assert.equal(f.counts().geocodes, 0);
+  assert.equal(f.storage.size, 0);
 });
 
 test('cart fills shipping calculator and retains address for checkout', async () => {
