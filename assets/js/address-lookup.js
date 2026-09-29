@@ -437,17 +437,29 @@
       button.disabled = true;
       locationButton.setAttribute('aria-busy', 'true');
       status.textContent = text('locationLoading', 'Finding your location… Please allow location access in your browser.');
+      let locationStage = 'position';
       try {
-        const position = await withTimeout(new Promise((resolve, reject) => {
+        const requestPosition = (highAccuracy) => withTimeout(new Promise((resolve, reject) => {
           navigator.geolocation.getCurrentPosition(resolve, reject, {
-            enableHighAccuracy: true, timeout: 15000, maximumAge: 0
+            enableHighAccuracy: highAccuracy, timeout: 15000, maximumAge: 0
           });
         }), 25000);
+        let position;
+        try {
+          position = await requestPosition(true);
+        } catch (error) {
+          // GPS may be unavailable indoors; retry using the device's other
+          // location sources. Never retry a denied permission.
+          if (![2, 3].includes(error.code)) throw error;
+          position = await requestPosition(false);
+        }
         if (!wrapper.isConnected) return;
+        locationStage = 'geocode';
         const address = await reverseGeocode({
           lat: position.coords.latitude, lng: position.coords.longitude
         });
         if (!wrapper.isConnected) return;
+        locationStage = 'fields';
         input.value = address.code || '';
         mapSearchInput.value = address.formattedAddress || '';
         fillWooAddress(address, scope);
@@ -466,6 +478,12 @@
           status.textContent = text('locationTimeout', 'The location request timed out. Try again or enter your address manually.');
         } else if (error.message === 'unsupported-country') {
           status.textContent = text('locationOutside', 'The detected country is not available for this address. Choose an available country and enter the address manually.');
+        } else if (locationStage === 'position') {
+          status.textContent = text('locationPositionError', 'Your browser could not provide your location. Check device location services, or open this page in Safari or Chrome. Existing address fields have not been changed.');
+        } else if (locationStage === 'geocode') {
+          status.textContent = text('locationGeocodeError', 'Your location was received, but Google Maps could not find its address. Try map search or enter your address manually. Existing address fields have not been changed.');
+        } else if (locationStage === 'fields') {
+          status.textContent = text('locationFieldsError', 'The location was found, but not all address fields could be updated. Please review and complete the address manually.');
         } else {
           status.textContent = text('locationError', 'We could not detect your address. Try again, choose a point on the map, or enter it manually.');
         }

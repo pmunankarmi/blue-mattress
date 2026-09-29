@@ -29,6 +29,67 @@ body.blue-account-page .woocommerce-info a,
 body.blue-account-page .woocommerce-message a { color:var(--royal); font-weight:700; }
 
 /* Guest login / registration — adapted from the demo account modal. */
+/* Keep WooCommerce's reset form and validation, only replace its presentation. */
+body.blue-account-page:has(form.lost_reset_password) .blue-content {
+  display:block; background:var(--canvas);
+}
+body.blue-account-page:has(form.lost_reset_password) .blue-content::before { display:none; }
+body.blue-account-page:has(form.lost_reset_password) .blue-prose>article>h1 {
+  display:block; width:min(100%,560px); margin:0 auto 28px;
+  font-size:clamp(2rem,5vw,3rem); line-height:1.15;
+}
+body.blue-account-page:has(form.lost_reset_password) .blue-prose>article>.woocommerce {
+  display:block; width:min(100%,560px); margin:0 auto;
+}
+body.blue-account-page .woocommerce form.lost_reset_password {
+  display:flex; flex-direction:column; gap:20px; width:100%; min-width:0;
+  box-sizing:border-box; margin:0; padding:clamp(22px,4vw,36px);
+  border:1px solid var(--line); border-radius:var(--r-lg);
+  background:var(--paper); color:var(--ink); box-shadow:var(--shadow-sm);
+}
+body.blue-account-page .woocommerce form.lost_reset_password>p {
+  width:100%; float:none; clear:both; margin:0; padding:0; line-height:1.6;
+}
+body.blue-account-page .woocommerce form.lost_reset_password .clear { display:none; }
+body.blue-account-page .woocommerce form.lost_reset_password label {
+  display:block; margin:0 0 8px; color:var(--ink); font-size:.85rem; font-weight:600;
+}
+body.blue-account-page .woocommerce form.lost_reset_password .password-input {
+  display:block; position:relative; width:100%;
+}
+body.blue-account-page .woocommerce form.lost_reset_password input.input-text {
+  display:block; box-sizing:border-box; width:100%; max-width:none; min-height:50px;
+  margin:0; padding:12px 14px;
+  border:1px solid var(--line); border-radius:var(--r-sm);
+  background:var(--canvas); color:var(--ink); font:400 16px/1.5 var(--font-body);
+}
+body.blue-account-page .woocommerce form.lost_reset_password .password-input input.input-text {
+  padding-inline-end:54px;
+}
+body.blue-account-page .woocommerce form.lost_reset_password input.input-text:focus {
+  outline:2px solid var(--royal); outline-offset:2px;
+}
+body.blue-account-page .woocommerce form.lost_reset_password .show-password-input {
+  position:absolute; top:3px; right:auto; left:auto; inset-inline-end:3px;
+  display:flex; align-items:center; justify-content:center; width:44px; height:44px;
+  margin:0; padding:0; border:0; background:transparent; color:var(--ink-soft);
+  cursor:pointer; transform:none;
+}
+body.blue-account-page .woocommerce form.lost_reset_password .show-password-input::after { margin:0; }
+body.blue-account-page .woocommerce form.lost_reset_password button.button {
+  width:100%; min-height:50px; margin:0; padding:12px 20px;
+  border:0; border-radius:var(--r-pill); background:var(--royal); color:#fff;
+  font:700 .9rem/1.4 var(--font-body); cursor:pointer;
+}
+body.blue-account-page .woocommerce form.lost_reset_password button.button:disabled {
+  opacity:.5; cursor:not-allowed;
+}
+body.blue-account-page .woocommerce form.lost_reset_password .woocommerce-password-strength,
+body.blue-account-page .woocommerce form.lost_reset_password .woocommerce-password-hint {
+  display:block; margin-top:10px; padding:8px 12px; border-radius:var(--r-sm);
+  font-size:.8rem; line-height:1.5;
+}
+
 body.blue-account-guest .blue-content {
   display:grid; align-items:center; overflow:hidden; position:relative;
   background:

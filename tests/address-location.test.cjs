@@ -27,7 +27,7 @@ class Element {
   dispatchEvent() {}
 }
 
-function fixture({ scope = 'billing', error, country = 'SA', secure = true, supported = true, geocodeError = false, arabic = false } = {}) {
+function fixture({ scope = 'billing', error, fallbackWorks = false, country = 'SA', secure = true, supported = true, geocodeError = false, arabic = false } = {}) {
   let requests = 0;
   let geocodes = 0;
   const fields = {};
@@ -70,7 +70,7 @@ function fixture({ scope = 'billing', error, country = 'SA', secure = true, supp
     getCurrentPosition(resolve, reject, options) {
       requests++;
       assert.equal(options.timeout, 15000);
-      if (error) reject({ code: error });
+      if (error && !(fallbackWorks && !options.enableHighAccuracy)) reject({ code: error });
       else resolve({ coords: { latitude: 24.7, longitude: 46.7 } });
     }
   } } : {};
@@ -115,6 +115,19 @@ for (const scope of ['billing', 'shipping', 'cart']) {
   });
 }
 
+test('retries unavailable GPS with lower accuracy and fills address', async () => {
+  const f = fixture({ error: 2, fallbackWorks: true });
+  await f.click();
+  assert.equal(f.counts().requests, 2);
+  assert.equal(f.fields['#billing_city'].value, 'Riyadh');
+});
+
+test('denied permission is never retried', async () => {
+  const f = fixture({ error: 1 });
+  await f.click();
+  assert.equal(f.counts().requests, 1);
+});
+
 test('cart fills shipping calculator and retains address for checkout', async () => {
   const f = fixture({ scope: 'cart' });
   await f.click();
@@ -153,12 +166,12 @@ test('cart restoration no longer copies billing into the separate shipping addre
 
 for (const [name, options, message] of [
   ['denied', { error: 1 }, /permission was denied/],
-  ['unavailable', { error: 2 }, /could not detect/],
+  ['unavailable', { error: 2 }, /browser could not provide/],
   ['timeout', { error: 3 }, /timed out/],
   ['insecure', { secure: false }, /HTTPS/],
   ['unsupported', { supported: false }, /unavailable/],
   ['country not enabled in WooCommerce', { country: 'US' }, /country is not available/],
-  ['Maps failure', { geocodeError: true }, /could not detect/]
+  ['Maps failure', { geocodeError: true }, /Google Maps could not find/]
 ]) {
   test(name + ' leaves manual address unchanged', async () => {
     const f = fixture(options);

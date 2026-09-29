@@ -220,7 +220,7 @@ add_action(
 			wp_enqueue_style( 'blue-shop', BLUE_THEME_URI . '/assets/css/shop.css', array( 'blue-main' ), BLUE_THEME_VERSION );
 			wp_enqueue_style( 'blue-product', BLUE_THEME_URI . '/assets/css/product.css', array( 'blue-main' ), BLUE_THEME_VERSION );
 		}
-		if ( class_exists( 'WooCommerce' ) && is_account_page() ) {
+		if ( class_exists( 'WooCommerce' ) && ( is_account_page() || is_wc_endpoint_url( 'lost-password' ) || ( is_singular() && has_shortcode( (string) get_post_field( 'post_content', get_queried_object_id() ), 'woocommerce_my_account' ) ) ) ) {
 			wp_enqueue_style( 'blue-account', BLUE_THEME_URI . '/assets/css/account.css', array( 'blue-main', 'blue-wp' ), BLUE_THEME_VERSION );
 			wp_enqueue_script( 'blue-account', BLUE_THEME_URI . '/assets/js/account.js', array(), BLUE_THEME_VERSION, true );
 		}
@@ -249,6 +249,9 @@ add_action(
 							? array(
 								'label'       => 'العنوان المختصر السعودي',
 								'locationButton' => 'استخدام موقعي الحالي',
+								'locationPositionError' => 'تعذر على المتصفح تحديد موقعك. تحقق من خدمات الموقع أو افتح الصفحة في Safari أو Chrome. لم تتغير حقول العنوان الحالية.',
+								'locationGeocodeError' => 'تم تحديد موقعك، لكن خرائط Google لم تتمكن من العثور على عنوانه. ابحث في الخريطة أو أدخل العنوان يدويًا. لم تتغير حقول العنوان الحالية.',
+								'locationFieldsError' => 'تم العثور على الموقع، لكن تعذر تحديث جميع حقول العنوان. يرجى مراجعة العنوان وإكماله يدويًا.',
 								'locationHint' => 'بإذنك، تتم مشاركة موقعك مع خرائط Google لتعبئة عنوانك. يمكنك أيضًا إدخاله يدويًا.',
 								'locationLoading' => 'جارٍ تحديد موقعك… يرجى السماح بالوصول إلى الموقع في المتصفح.',
 								'locationReview' => 'راجع العنوان وأكمل بيانات المبنى أو الشقة أو الرمز البريدي الناقصة. في السلة، اضغط على تحديث لإعادة حساب الشحن.',
@@ -278,6 +281,9 @@ add_action(
 							: array(
 								'label'       => 'Saudi Short Address',
 								'locationButton' => 'Use my location',
+								'locationPositionError' => 'Your browser could not provide your location. Check device location services, or open this page in Safari or Chrome. Existing address fields have not been changed.',
+								'locationGeocodeError' => 'Your location was received, but Google Maps could not find its address. Try map search or enter your address manually. Existing address fields have not been changed.',
+								'locationFieldsError' => 'The location was found, but not all address fields could be updated. Please review and complete the address manually.',
 								'locationHint' => 'With your permission, your location is shared with Google Maps to fill your address. You can also enter it manually.',
 								'locationLoading' => 'Finding your location… Please allow location access in your browser.',
 								'locationReview' => 'Review the detected address and complete any missing building, apartment or postcode details. On cart, select Update to recalculate shipping.',
@@ -359,9 +365,12 @@ add_filter(
 			|| ( is_singular() && ( has_block( 'woocommerce/checkout' ) || has_block( 'woocommerce/cart' ) ) ) ) {
 			$classes[] = 'blue-commerce-flow';
 		}
-		if ( function_exists( 'is_account_page' ) && is_account_page() ) {
+		if ( function_exists( 'is_account_page' ) && ( is_account_page() || is_wc_endpoint_url( 'lost-password' ) || ( is_singular() && has_shortcode( (string) get_post_field( 'post_content', get_queried_object_id() ), 'woocommerce_my_account' ) ) ) ) {
 			$classes[] = 'blue-account-page';
 			$classes[] = is_user_logged_in() ? 'blue-account-user' : 'blue-account-guest';
+			if ( is_wc_endpoint_url( 'lost-password' ) ) {
+				$classes[] = 'blue-account-recovery';
+			}
 		}
 		return $classes;
 	}
