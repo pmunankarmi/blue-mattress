@@ -9,12 +9,15 @@
 
   const text = (key, fallback) => config.strings?.[key] || fallback;
 
-  const withTimeout = (promise, duration = 15000) => Promise.race([
-    promise,
-    new Promise((resolve, reject) => {
-      window.setTimeout(() => reject(new Error('maps-timeout')), duration);
-    })
-  ]);
+  const withTimeout = (promise, duration = 15000) => {
+    let timer;
+    return Promise.race([
+      promise,
+      new Promise((resolve, reject) => {
+        timer = window.setTimeout(() => reject(new Error('maps-timeout')), duration);
+      })
+    ]).finally(() => window.clearTimeout(timer));
+  };
 
   const loadMaps = () => {
     if (window.google?.maps?.importLibrary) return Promise.resolve(window.google.maps);
@@ -356,6 +359,19 @@
     status.className = 'blue-short-address__status';
     status.setAttribute('aria-live', 'polite');
 
+    const locationControls = document.createElement('div');
+    locationControls.className = 'blue-short-address__location';
+    const locationButton = document.createElement('button');
+    locationButton.type = 'button';
+    locationButton.className = 'button blue-short-address__location-button';
+    locationButton.textContent = text('locationButton', 'Use my location');
+    locationButton.setAttribute('aria-describedby', `${id}-location-hint ${id}-status`);
+    const locationHint = document.createElement('small');
+    locationHint.id = `${id}-location-hint`;
+    locationHint.className = 'blue-short-address__hint';
+    locationHint.textContent = text('locationHint', 'With your permission, your location is shared with Google Maps to fill your address. You can also enter it manually.');
+    locationControls.append(locationButton, locationHint);
+
     const mapHint = document.createElement('p');
     mapHint.className = 'blue-short-address__map-hint';
     mapHint.textContent = text('mapHint', 'Or choose your exact location on the map. The address fields will be filled automatically.');
@@ -386,6 +402,60 @@
     let restoredAddress;
 
     let lookupTimer = 0;
+
+    // Never request location on page load: the customer must choose this action.
+    locationButton.addEventListener('click', async () => {
+      if (locationButton.disabled) return;
+      status.className = 'blue-short-address__status';
+      if (!window.isSecureContext || !navigator.geolocation) {
+        status.className += ' is-error';
+        status.textContent = text('locationUnsupported', 'Location is unavailable in this browser. Use HTTPS or enter your address manually.');
+        return;
+      }
+      window.clearTimeout(lookupTimer);
+      locationButton.disabled = true;
+      button.disabled = true;
+      locationButton.setAttribute('aria-busy', 'true');
+      status.textContent = text('locationLoading', 'Finding your location… Please allow location access in your browser.');
+      try {
+        const position = await withTimeout(new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            enableHighAccuracy: true, timeout: 15000, maximumAge: 0
+          });
+        }), 25000);
+        if (!wrapper.isConnected) return;
+        const address = await reverseGeocode({
+          lat: position.coords.latitude, lng: position.coords.longitude
+        });
+        if (!wrapper.isConnected) return;
+        if (address.country !== 'SA') throw new Error('outside-sa');
+        input.value = address.code || '';
+        mapSearchInput.value = address.formattedAddress || '';
+        fillWooAddress(address, scope);
+        renderResult(status, address);
+        const review = document.createElement('p');
+        review.textContent = text('locationReview', 'Review the detected address and complete any missing building, apartment or postcode details. On cart, select Update to recalculate shipping.');
+        status.appendChild(review);
+        if (mapControllerPromise) {
+          mapControllerPromise.then((controller) => controller?.showAddress(address)).catch(() => {});
+        }
+      } catch (error) {
+        status.className = 'blue-short-address__status is-error';
+        if (error.code === 1) {
+          status.textContent = text('locationDenied', 'Location permission was denied. Allow it in your browser settings, or enter your address manually.');
+        } else if (error.code === 3 || error.message === 'maps-timeout') {
+          status.textContent = text('locationTimeout', 'The location request timed out. Try again or enter your address manually.');
+        } else if (error.message === 'outside-sa') {
+          status.textContent = text('locationOutside', 'The detected location is outside Saudi Arabia. Enter your Saudi delivery address manually.');
+        } else {
+          status.textContent = text('locationError', 'We could not detect your address. Try again, choose a point on the map, or enter it manually.');
+        }
+      } finally {
+        locationButton.disabled = false;
+        button.disabled = false;
+        locationButton.removeAttribute('aria-busy');
+      }
+    });
 
     const lookup = async () => {
       window.clearTimeout(lookupTimer);
@@ -433,7 +503,7 @@
     });
 
     controls.append(input, button);
-    wrapper.append(label, controls, hint, status, mapHint, mapSearch, mapCanvas);
+    wrapper.append(label, controls, hint, locationControls, status, mapHint, mapSearch, mapCanvas);
     window.requestAnimationFrame(() => {
       mapControllerPromise = createMapPicker(
         mapCanvas,

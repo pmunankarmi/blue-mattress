@@ -248,6 +248,15 @@ add_action(
 						'strings'  => blue_is_arabic()
 							? array(
 								'label'       => 'العنوان المختصر السعودي',
+								'locationButton' => 'استخدام موقعي الحالي',
+								'locationHint' => 'بإذنك، تتم مشاركة موقعك مع خرائط Google لتعبئة عنوانك. يمكنك أيضًا إدخاله يدويًا.',
+								'locationLoading' => 'جارٍ تحديد موقعك… يرجى السماح بالوصول إلى الموقع في المتصفح.',
+								'locationReview' => 'راجع العنوان وأكمل بيانات المبنى أو الشقة أو الرمز البريدي الناقصة. في السلة، اضغط على تحديث لإعادة حساب الشحن.',
+								'locationDenied' => 'تم رفض إذن الموقع. اسمح به في إعدادات المتصفح أو أدخل عنوانك يدويًا.',
+								'locationTimeout' => 'انتهت مهلة تحديد الموقع. حاول مجددًا أو أدخل عنوانك يدويًا.',
+								'locationUnsupported' => 'الموقع غير متاح في هذا المتصفح. استخدم اتصال HTTPS أو أدخل عنوانك يدويًا.',
+								'locationOutside' => 'الموقع المحدد خارج السعودية. أدخل عنوان التوصيل داخل السعودية يدويًا.',
+								'locationError' => 'تعذر تحديد عنوانك. حاول مجددًا أو اختر نقطة على الخريطة أو أدخل العنوان يدويًا.',
 								'placeholder' => '',
 								'button'      => 'العثور على العنوان',
 								'hint'        => 'أدخل 4 أحرف و4 أرقام من العنوان الوطني السعودي.',
@@ -268,6 +277,15 @@ add_action(
 							)
 							: array(
 								'label'       => 'Saudi Short Address',
+								'locationButton' => 'Use my location',
+								'locationHint' => 'With your permission, your location is shared with Google Maps to fill your address. You can also enter it manually.',
+								'locationLoading' => 'Finding your location… Please allow location access in your browser.',
+								'locationReview' => 'Review the detected address and complete any missing building, apartment or postcode details. On cart, select Update to recalculate shipping.',
+								'locationDenied' => 'Location permission was denied. Allow it in your browser settings, or enter your address manually.',
+								'locationTimeout' => 'The location request timed out. Try again or enter your address manually.',
+								'locationUnsupported' => 'Location is unavailable in this browser. Use HTTPS or enter your address manually.',
+								'locationOutside' => 'The detected location is outside Saudi Arabia. Enter your Saudi delivery address manually.',
+								'locationError' => 'We could not detect your address. Try again, choose a point on the map, or enter it manually.',
 								'placeholder' => '',
 								'button'      => 'Find address',
 								'hint'        => 'Enter 4 letters and 4 numbers from your Saudi National Address.',
