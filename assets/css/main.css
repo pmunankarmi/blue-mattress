@@ -336,7 +336,7 @@ html[data-theme="dark"] .brand-logo--white { display: block; }
 }
 .nav-link:hover { background: rgba(14, 31, 56, .06); }
 .nav-link.accent { color: var(--brass-ink); font-weight: 700; }
-/* the clear Online Store tab */
+/* Active primary navigation pill (class shared with the original store styling). */
 .nav-link.nav-store {
   background: var(--royal); color: #fff; font-weight: 700;
   padding: 10px 20px;
@@ -402,6 +402,7 @@ li.open > .mega { opacity: 1; visibility: visible; pointer-events: auto; transfo
 .mobile-menu-links .sub-menu { margin:0; padding:0 1rem; list-style:none; }
 .mobile-menu a { font-family: var(--font-display); font-size: 1.25rem; line-height:1.5; padding: 10px 0; border:0; box-shadow:none; }
 .mobile-menu-links a { min-height:44px; }
+.mobile-menu-links a.blue-nav-current { padding:10px 20px; background:var(--royal); color:#fff; }
 .mobile-menu a.accent { color: var(--brass-ink); }
 .mobile-menu .mm-close {
   position:absolute; top:max(18px,env(safe-area-inset-top)); inset-inline-end:18px;

@@ -50,8 +50,24 @@ add_filter(
 		$classes[] = 'nav-link';
 		$shop_url  = blue_shop_url();
 		$item_url  = untrailingslashit( (string) $atts['href'] );
-		if ( $shop_url && untrailingslashit( $shop_url ) === $item_url ) {
+		$is_store = $shop_url && untrailingslashit( $shop_url ) === $item_url;
+		$item_classes = (array) $menu_item->classes;
+		$is_current = ! empty( $menu_item->current )
+			|| ( is_singular() && $item_url === untrailingslashit( (string) get_permalink( get_queried_object_id() ) ) );
+		$is_section = ! empty( array_intersect( array( 'current-menu-ancestor', 'current-page-ancestor' ), $item_classes ) );
+		if ( $is_store ) {
+			// WooCommerce may mark the shop as a parent; keep it active only in the catalog.
+			$is_current = function_exists( 'is_shop' ) && is_shop();
+			$is_section = function_exists( 'is_product' ) && ( is_product() || is_product_taxonomy() );
+		}
+		$classes = array_diff( $classes, array( 'nav-store', 'blue-nav-current' ) );
+		if ( $is_current || $is_section ) {
+			// Reuse the existing pill styling on the active item, not always the store.
 			$classes[] = 'nav-store';
+			$classes[] = 'blue-nav-current';
+			$atts['aria-current'] = $is_current ? 'page' : 'location';
+		} else {
+			unset( $atts['aria-current'] );
 		}
 		$atts['class'] = implode( ' ', array_unique( $classes ) );
 		return $atts;
