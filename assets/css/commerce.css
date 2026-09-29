@@ -370,6 +370,20 @@ body.woocommerce-checkout .select2-container--default .select2-selection--single
   background:var(--paper); color:var(--ink); font:400 .9rem/1.5 var(--font-body); outline:0;
 }
 body.woocommerce-checkout form .form-row textarea { min-height:105px; resize:vertical; }
+/* Additional notes can sit outside the main field wrapper in checkout layouts. */
+body.blue-commerce-flow textarea#order_comments {
+  display:block; box-sizing:border-box; width:100%; max-width:100%; min-height:120px;
+  margin:0; padding:12px 14px; border:1px solid var(--line); border-radius:var(--r-sm);
+  background:var(--paper); color:var(--ink); font:400 .9rem/1.5 var(--font-body);
+  text-align:start; resize:vertical; outline:0; -webkit-appearance:none; appearance:none;
+}
+body.blue-commerce-flow textarea#order_comments::placeholder { color:var(--ink-soft); opacity:1; }
+body.blue-commerce-flow textarea#order_comments:focus {
+  border-color:var(--royal); box-shadow:0 0 0 3px rgba(var(--royal-rgb),.1);
+}
+@media (max-width:767px) {
+  body.blue-commerce-flow textarea#order_comments { font-size:16px; }
+}
 body.woocommerce-checkout .select2-container--default .select2-selection--single { padding:10px 14px; }
 body.woocommerce-checkout .select2-container--default .select2-selection--single .select2-selection__rendered { padding:0; color:var(--ink); line-height:28px; }
 body.woocommerce-checkout .select2-container--default .select2-selection--single .select2-selection__arrow { top:12px; inset-inline-end:8px; }
