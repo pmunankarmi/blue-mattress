@@ -69,8 +69,10 @@ function fixture({ scope = 'billing', error, fallbackWorks = false, country = 'S
   const navigator = supported ? { geolocation: {
     getCurrentPosition(resolve, reject, options) {
       requests++;
-      assert.equal(options.timeout, 15000);
-      if (error && !(fallbackWorks && !options.enableHighAccuracy)) reject({ code: error });
+      assert.equal(options.timeout, options.enableHighAccuracy ? 30000 : 15000);
+      assert.equal(options.maximumAge, options.enableHighAccuracy ? 0 : 60000);
+      assert.equal(options.enableHighAccuracy, requests > 1);
+      if (error && !(fallbackWorks && options.enableHighAccuracy)) reject({ code: error });
       else resolve({ coords: { latitude: 24.7, longitude: 46.7 } });
     }
   } } : {};
@@ -115,7 +117,7 @@ for (const scope of ['billing', 'shipping', 'cart']) {
   });
 }
 
-test('retries unavailable GPS with lower accuracy and fills address', async () => {
+test('retries unavailable standard location with a longer high-accuracy request', async () => {
   const f = fixture({ error: 2, fallbackWorks: true });
   await f.click();
   assert.equal(f.counts().requests, 2);

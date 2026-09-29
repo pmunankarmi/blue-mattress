@@ -441,17 +441,20 @@
       try {
         const requestPosition = (highAccuracy) => withTimeout(new Promise((resolve, reject) => {
           navigator.geolocation.getCurrentPosition(resolve, reject, {
-            enableHighAccuracy: highAccuracy, timeout: 15000, maximumAge: 0
+            enableHighAccuracy: highAccuracy,
+            timeout: highAccuracy ? 30000 : 15000,
+            maximumAge: highAccuracy ? 0 : 60000
           });
-        }), 25000);
+        }), highAccuracy ? 40000 : 25000);
         let position;
         try {
-          position = await requestPosition(true);
-        } catch (error) {
-          // GPS may be unavailable indoors; retry using the device's other
-          // location sources. Never retry a denied permission.
-          if (![2, 3].includes(error.code)) throw error;
+          // Standard accuracy also allows a recent browser position instead of
+          // requiring a fresh GPS fix indoors or on a desktop.
           position = await requestPosition(false);
+        } catch (error) {
+          // Retry transient acquisition failures, never denied permissions.
+          if (![2, 3].includes(error.code) && error.message !== 'maps-timeout') throw error;
+          position = await requestPosition(true);
         }
         if (!wrapper.isConnected) return;
         locationStage = 'geocode';
