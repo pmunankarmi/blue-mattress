@@ -27,9 +27,10 @@ class Element {
   dispatchEvent() {}
 }
 
-function fixture({ scope = 'billing', error, errorMessage, fallbackWorks = false, country = 'SA', secure = true, supported = true, geocodeError = false, arabic = false } = {}) {
+function fixture({ scope = 'billing', error, errorMessage, deferPosition = false, country = 'SA', secure = true, supported = true, geocodeError = false, arabic = false } = {}) {
   let requests = 0;
   let geocodes = 0;
+  let resolvePosition;
   const fields = {};
   for (const prefix of ['billing', 'shipping', 'calc_shipping']) {
     for (const key of ['country', 'state', 'city', 'postcode', 'address_1', 'address_2']) {
@@ -69,10 +70,11 @@ function fixture({ scope = 'billing', error, errorMessage, fallbackWorks = false
   const navigator = supported ? { geolocation: {
     getCurrentPosition(resolve, reject, options) {
       requests++;
-      assert.equal(options.timeout, options.enableHighAccuracy ? 30000 : 15000);
-      assert.equal(options.maximumAge, options.enableHighAccuracy ? 0 : 60000);
-      assert.equal(options.enableHighAccuracy, requests > 1);
-      if (error && !(fallbackWorks && options.enableHighAccuracy)) reject({ code: error, message: errorMessage });
+      assert.equal(options.timeout, undefined);
+      assert.equal(options.maximumAge, 60000);
+      assert.equal(options.enableHighAccuracy, true);
+      if (deferPosition) { resolvePosition = resolve; return; }
+      if (error) reject({ code: error, message: errorMessage });
       else resolve({ coords: { latitude: 24.7, longitude: 46.7 } });
     }
   } } : {};
@@ -92,7 +94,8 @@ function fixture({ scope = 'billing', error, errorMessage, fallbackWorks = false
   const button = nodes(wrapper).find((node) => node.className?.includes('location-button'));
   const status = nodes(wrapper).find((node) => node.id === 'blue-short-address-' + scope + '-status');
   return { window, wrapper, button, status, fields, storage,
-    counts: () => ({ requests, geocodes }), click: () => button.listeners.click() };
+    counts: () => ({ requests, geocodes }), click: () => button.listeners.click(),
+    resolvePosition: () => resolvePosition({ coords: { latitude: 24.7, longitude: 46.7 } }) };
 }
 
 test('location is opt-in and fills only the chosen checkout address', async () => {
@@ -117,11 +120,30 @@ for (const scope of ['billing', 'shipping', 'cart']) {
   });
 }
 
-test('retries unavailable standard location with a longer high-accuracy request', async () => {
-  const f = fixture({ error: 2, fallbackWorks: true });
-  await f.click();
-  assert.equal(f.counts().requests, 2);
+test('accepts a delayed permission response without an acquisition deadline', async () => {
+  const f = fixture({ deferPosition: true });
+  const pending = f.click();
+  assert.equal(f.button.textContent, 'Cancel location detection');
+  assert.equal(f.counts().geocodes, 0);
+  f.resolvePosition();
+  await pending;
+  assert.equal(f.counts().requests, 1);
   assert.equal(f.fields['#billing_city'].value, 'Riyadh');
+  assert.equal(f.button.textContent, 'Use my location');
+});
+
+test('cancel ignores late location results and leaves fields unchanged', async () => {
+  const f = fixture({ deferPosition: true });
+  f.fields['#billing_city'].value = 'Manual city';
+  const pending = f.click();
+  await f.click();
+  await pending;
+  f.resolvePosition();
+  await Promise.resolve();
+  assert.equal(f.fields['#billing_city'].value, 'Manual city');
+  assert.equal(f.counts().geocodes, 0);
+  assert.equal(f.button.textContent, 'Use my location');
+  assert.equal(f.status.textContent, '');
 });
 
 test('denied permission is never retried', async () => {

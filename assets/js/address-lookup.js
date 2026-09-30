@@ -422,10 +422,15 @@
     let restoredAddress;
 
     let lookupTimer = 0;
+    let locationAttempt = null;
 
     // Never request location on page load: the customer must choose this action.
     locationButton.addEventListener('click', async () => {
-      if (locationButton.disabled) return;
+      if (locationAttempt) {
+        locationAttempt.cancelled = true;
+        locationAttempt.cancel?.();
+        return;
+      }
       status.className = 'blue-short-address__status';
       if (!window.isSecureContext || !navigator.geolocation) {
         status.className += ' is-error';
@@ -433,35 +438,37 @@
         return;
       }
       window.clearTimeout(lookupTimer);
-      locationButton.disabled = true;
+      const attempt = { cancelled: false, cancel: null };
+      locationAttempt = attempt;
+      locationButton.textContent = text('locationCancel', isArabic ? 'إلغاء تحديد الموقع' : 'Cancel location detection');
       button.disabled = true;
       locationButton.setAttribute('aria-busy', 'true');
       status.textContent = text('locationLoading', 'Finding your location… Please allow location access in your browser.');
       let locationStage = 'position';
-      try {
-        const requestPosition = (highAccuracy) => withTimeout(new Promise((resolve, reject) => {
-          navigator.geolocation.getCurrentPosition(resolve, reject, {
-            enableHighAccuracy: highAccuracy,
-            timeout: highAccuracy ? 30000 : 15000,
-            maximumAge: highAccuracy ? 0 : 60000
-          });
-        }), highAccuracy ? 40000 : 25000);
-        let position;
-        try {
-          // Standard accuracy also allows a recent browser position instead of
-          // requiring a fresh GPS fix indoors or on a desktop.
-          position = await requestPosition(false);
-        } catch (error) {
-          // Retry transient acquisition failures, never denied permissions.
-          if (![2, 3].includes(error.code) && error.message !== 'maps-timeout') throw error;
-          position = await requestPosition(true);
+      // Match the supplied working example: no acquisition deadline. A late
+      // permission response remains valid; the customer can cancel explicitly.
+      const slow = window.setTimeout(() => {
+        if (!attempt.cancelled && locationStage === 'position' && wrapper.isConnected) {
+          status.textContent = text('locationWaiting', isArabic
+            ? 'ما زلنا ننتظر موقعك. اسمح بالوصول في المتصفح، أو ألغِ المحاولة وأدخل العنوان يدويًا.'
+            : 'Still waiting for your location. Allow access in your browser, or cancel and enter the address manually.');
         }
-        if (!wrapper.isConnected) return;
+      }, 20000);
+      try {
+        const position = await new Promise((resolve, reject) => {
+          attempt.cancel = () => reject(new Error('location-cancelled'));
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            enableHighAccuracy: true,
+            maximumAge: 60000
+          });
+        });
+        window.clearTimeout(slow);
+        if (attempt.cancelled || !wrapper.isConnected) return;
         locationStage = 'geocode';
         const address = await reverseGeocode({
           lat: position.coords.latitude, lng: position.coords.longitude
         });
-        if (!wrapper.isConnected) return;
+        if (attempt.cancelled || !wrapper.isConnected) return;
         locationStage = 'fields';
         input.value = address.code || '';
         mapSearchInput.value = address.formattedAddress || '';
@@ -474,6 +481,11 @@
           mapControllerPromise.then((controller) => controller?.showAddress(address)).catch(() => {});
         }
       } catch (error) {
+        if (attempt.cancelled) {
+          status.replaceChildren();
+          status.textContent = '';
+          return;
+        }
         status.className = 'blue-short-address__status is-error';
         if (error.code === 1) {
           status.textContent = text('locationDenied', 'Location permission was denied. Allow it in your browser settings, or enter your address manually.');
@@ -503,6 +515,13 @@
           status.appendChild(diagnostic);
         }
       } finally {
+        window.clearTimeout(slow);
+        if (attempt.cancelled) {
+          status.replaceChildren();
+          status.textContent = '';
+        }
+        locationAttempt = null;
+        locationButton.textContent = text('locationButton', 'Use my location');
         locationButton.disabled = false;
         button.disabled = false;
         locationButton.removeAttribute('aria-busy');
