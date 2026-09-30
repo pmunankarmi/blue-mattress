@@ -16,8 +16,17 @@ function blue_woocommerce_email_styles( $css, $email = null ) {
 		return $css;
 	}
 
-	// System fonts include Arabic glyphs; WooCommerce retains its own RTL alignment.
-	return $css . "\n" . <<<'CSS'
+	// The storefront can be Arabic while Woo renders an English notification.
+	// Use the rendered heading rather than the customer's current storefront direction.
+	$heading = is_object( $email ) && is_callable( array( $email, 'get_heading' ) )
+		? wp_strip_all_tags( (string) $email->get_heading() )
+		: '';
+	$rtl = '' !== trim( $heading )
+		? (bool) preg_match( '/[\x{0590}-\x{08FF}]/u', $heading )
+		: is_rtl();
+	$direction = $rtl ? 'rtl' : 'ltr';
+	$alignment = $rtl ? 'right' : 'left';
+	$brand_css = <<<'CSS'
 /* Blue Mattress notification styling — no external fonts or images. */
 #wrapper, #outer_wrapper {
 	background-color: #f7f4ee;
@@ -123,6 +132,18 @@ function blue_woocommerce_email_styles( $css, $email = null ) {
 	#body_content_inner table.td th, #body_content_inner table.td td { padding: 8px !important; }
 }
 CSS;
+	// Explicit directions override inherited RTL and Woo's inline text alignment.
+	// Keep the footer centered; leave plain-text mail and notification logic alone.
+	$direction_css = "
+#wrapper, #outer_wrapper, #template_container, #template_header,
+#body_content, #body_content_inner, #body_content_inner table,
+#body_content_inner p, #body_content_inner li, #body_content_inner th,
+#body_content_inner td, #body_content_inner address, #body_content_inner h2,
+#body_content_inner h3, #header_wrapper, #header_wrapper h1 {
+	direction: {$direction} !important;
+	text-align: {$alignment} !important;
+}
+";
+	return $css . "\n" . $brand_css . "\n" . $direction_css;
 }
 add_filter( 'woocommerce_email_styles', 'blue_woocommerce_email_styles', 20, 2 );
-

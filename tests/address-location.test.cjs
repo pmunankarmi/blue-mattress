@@ -5,7 +5,7 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const path = require('node:path');
 const source = fs.readFileSync(path.join(__dirname, '../assets/js/address-lookup.js'), 'utf8')
-  .replace('  if (document.readyState', '  window.testCreateLookup = createLookup; window.testResetShipping = resetShippingAddress; window.testRestoreCart = restoreCartAddress;\n  if (document.readyState');
+  .replace('  if (document.readyState', '  window.testCreateLookup = createLookup; window.testCreateMapPicker = createMapPicker; window.testResetShipping = resetShippingAddress; window.testRestoreCart = restoreCartAddress;\n  if (document.readyState');
 
 class Element {
   constructor(tag = 'div') {
@@ -151,6 +151,38 @@ test('denied permission is never retried', async () => {
   await f.click();
   assert.equal(f.counts().requests, 1);
 });
+
+for (const eventName of ['click', 'dragend']) {
+  test(eventName + ' on map/pin fills city and address and clears old short code', async () => {
+    const f = fixture();
+    const events = {};
+    let markerOptions;
+    class MockMap {
+      addListener(name, callback) { events[name] = callback; }
+      setCenter() {}
+      setZoom() {}
+      getZoom() { return 17; }
+    }
+    f.window.google.maps.Marker = class {
+      constructor(options) { markerOptions = options; }
+      addListener(name, callback) { events[name] = callback; }
+      setPosition() {}
+      setVisible() {}
+    };
+    const originalImport = f.window.google.maps.importLibrary;
+    f.window.google.maps.importLibrary = async (name) => name === 'maps' ? { Map: MockMap } : originalImport(name);
+    let shortCode = 'ABCD1234';
+    const search = new Element('input');
+    await f.window.testCreateMapPicker(new Element(), f.status, 'billing',
+      () => shortCode, (value) => { shortCode = value; }, search, new Element('button'));
+    assert.equal(markerOptions.draggable, true);
+    await events[eventName]({ latLng: { lat: 24.7, lng: 46.7 } });
+    assert.equal(f.fields['#billing_city'].value, 'Riyadh');
+    assert.equal(f.fields['#billing_address_1'].value, '123، Test Road');
+    assert.equal(shortCode, '');
+    assert.equal(search.value, '123 Test Road, Riyadh');
+  });
+}
 
 test('unavailable location displays browser diagnostic as plain text without a map request', async () => {
   const f = fixture({ error: 2, errorMessage: '<b>CoreLocation failed</b>' });

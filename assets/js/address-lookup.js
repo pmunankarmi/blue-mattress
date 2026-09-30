@@ -152,7 +152,21 @@
     const geocoder = new Geocoder();
     const response = await withTimeout(geocoder.geocode({ location }));
     if (!response.results?.length) throw new Error('no-results');
-    return parseResult(response.results[0], '');
+    const best = response.results.find((result) => result.types?.includes('street_address')) || response.results[0];
+    const address = parseResult(best, '');
+    // Keep building/street details together, but recover missing area details
+    // from the same reverse-geocode response (as in the supplied working demo).
+    for (const result of response.results) {
+      const area = parseResult(result, '');
+      if (area.country && address.country && area.country !== address.country) continue;
+      for (const key of ['city', 'state', 'postcode', 'country']) {
+        if (!address[key] && area[key]) address[key] = area[key];
+      }
+    }
+    // Keep the pin where the customer selected it, not at Google's street centroid.
+    address.lat = typeof location.lat === 'function' ? location.lat() : location.lat;
+    address.lng = typeof location.lng === 'function' ? location.lng() : location.lng;
+    return address;
   };
 
   const dispatchChange = (field) => {
@@ -246,6 +260,7 @@
     const marker = new window.google.maps.Marker({
       map,
       position: countryCenter(selectedCountry(scope)),
+      draggable: true,
       visible: false
     });
     countryField(scope)?.addEventListener('change', () => {
@@ -303,8 +318,11 @@
       }
     });
 
-    map.addListener('click', async (event) => {
+    let pinRequest = 0;
+    const selectPoint = async (event) => {
       const location = event.latLng;
+      if (!location) return;
+      const request = ++pinRequest;
       marker.setPosition(location);
       marker.setVisible(true);
       status.className = 'blue-short-address__status';
@@ -312,19 +330,23 @@
       canvas.classList.add('is-loading');
       try {
         const address = await reverseGeocode(location);
-        const shortCode = normalizeCode(getShortCode?.() || '');
-        if (address.country === 'SA' && !address.code && /^[A-Z]{4}[0-9]{4}$/.test(shortCode)) address.code = shortCode;
-        setShortCode(address.code || '');
+        if (request !== pinRequest || !canvas.isConnected) return;
         fillWooAddress(address, scope);
+        // A moved pin must not retain a Short Address belonging to the old pin.
+        setShortCode(address.code || '');
+        searchInput.value = address.formattedAddress || '';
         showAddress(address, Math.max(map.getZoom() || 17, 16));
         renderResult(status, address);
       } catch (error) {
+        if (request !== pinRequest || !canvas.isConnected) return;
         status.className = 'blue-short-address__status is-error';
         status.textContent = text('mapError', 'We could not read that map location. Choose another point or enter the address manually.');
       } finally {
-        canvas.classList.remove('is-loading');
+        if (request === pinRequest) canvas.classList.remove('is-loading');
       }
-    });
+    };
+    map.addListener('click', selectPoint);
+    marker.addListener('dragend', selectPoint);
 
     if (window.ResizeObserver) {
       let lastWidth = canvas.offsetWidth;
