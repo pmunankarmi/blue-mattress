@@ -7,6 +7,19 @@
 
 defined( 'ABSPATH' ) || exit;
 
+/** Brand the paid-order confirmation without changing payment or email behavior. */
+function blue_paid_order_thankyou_message( $message, $order ) {
+	if ( ! $order instanceof WC_Order || ! $order->is_paid() ) {
+		return $message;
+	}
+	return '<span class="blue-thankyou-brand">' . esc_html( blue_text( 'Blue Mattress', 'بلو ماترس' ) ) . '</span>'
+		. '<span class="blue-thankyou-message">' . esc_html( blue_text(
+			'Thank you for choosing Blue Mattress! Your payment has been received. We look forward to bringing you a better night’s sleep.',
+			'شكرًا لاختيارك بلو ماترس! تم استلام دفعتك. نتطلع إلى منحك نومًا أفضل كل ليلة.'
+		) ) . '</span>';
+}
+add_filter( 'woocommerce_thankyou_order_received_text', 'blue_paid_order_thankyou_message', 20, 2 );
+
 /** Physical products do not need a Downloads entry in the account navigation. */
 add_filter( 'woocommerce_account_menu_items', static function ( array $items ): array {
 	unset( $items['downloads'] );

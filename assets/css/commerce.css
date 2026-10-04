@@ -508,6 +508,14 @@ body.woocommerce-checkout form.login {
 /* Order received: clear hierarchy with billing left and shipping right. */
 body.woocommerce-order-received .blue-prose { max-width:var(--container-wide); }
 body.woocommerce-order-received .woocommerce-order { display:grid; gap:24px; }
+body.woocommerce-order-received .blue-thankyou-brand {
+  display:block; margin:0 0 10px; color:var(--ink);
+  font:600 clamp(1.5rem,3vw,2rem)/1.25 var(--font-display);
+}
+body.woocommerce-order-received .blue-thankyou-message {
+  display:block; max-width:65ch; color:var(--ink-soft);
+  font:400 1rem/1.7 var(--font-body); text-align:start;
+}
 body.woocommerce-order-received .woocommerce-thankyou-order-received {
   margin:0; padding:18px 22px; border:1px solid rgba(63,155,106,.35); border-radius:var(--r-md);
   background:rgba(63,155,106,.1); color:var(--ink); font-size:1rem; font-weight:650;
