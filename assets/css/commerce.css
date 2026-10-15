@@ -406,6 +406,17 @@ body.woocommerce-checkout #order_review table.shop_table td { padding:14px 0; bo
 body.woocommerce-checkout #order_review table.shop_table thead th { padding-top:0; color:var(--ink); font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; }
 body.woocommerce-checkout #order_review table.shop_table .product-name { width:62%; padding-inline-end:14px; overflow-wrap:anywhere; }
 body.woocommerce-checkout #order_review table.shop_table .product-total { width:38%; }
+/* Order payment has three columns; checkout review has only two. */
+body.woocommerce-order-pay #order_review table.shop_table .product-name { width:58%; }
+body.woocommerce-order-pay #order_review table.shop_table th.product-quantity,
+body.woocommerce-order-pay #order_review table.shop_table td.product-quantity { width:12%; text-align:center; }
+body.woocommerce-order-pay #order_review table.shop_table .product-total,
+body.woocommerce-order-pay #order_review table.shop_table .product-subtotal { width:30%; text-align:end; }
+body.woocommerce-order-pay #order_review table.shop_table th,
+body.woocommerce-order-pay #order_review table.shop_table td { padding-inline:8px; }
+body.woocommerce-order-pay #order_review table.shop_table .product-subtotal { overflow-wrap:anywhere; }
+
+
 body.woocommerce-checkout #order_review table.shop_table td.product-name { color:var(--ink); font-weight:600; }
 body.woocommerce-checkout #order_review table.shop_table td.product-total,
 body.woocommerce-checkout #order_review table.shop_table tfoot td { color:var(--ink); text-align:end; }
