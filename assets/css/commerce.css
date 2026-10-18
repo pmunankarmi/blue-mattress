@@ -426,6 +426,10 @@ body.woocommerce-checkout #payment { border-radius:var(--r-md); background:var(-
 body.woocommerce-checkout #payment ul.payment_methods { padding:18px; border-color:var(--line-soft); }
 body.woocommerce-checkout #payment ul.payment_methods li { padding:7px 0; }
 body.woocommerce-checkout #payment ul.payment_methods li label { color:var(--ink); }
+body.woocommerce-checkout #payment ul.payment_methods li label img.blue-checkout-tamara-logo {
+  display:inline-block; float:none; width:85px; height:28px; max-width:100%;
+  margin:0; margin-inline-start:8px; vertical-align:middle; object-fit:contain;
+}
 body.woocommerce-checkout #payment div.payment_box { margin:10px 0; border-radius:var(--r-sm); background:var(--paper); color:var(--ink-soft); font-size:.8rem; }
 body.woocommerce-checkout #payment div.payment_box::before { border-bottom-color:var(--paper); }
 body.woocommerce-checkout #payment .payment_method_paymob-pixel>label {

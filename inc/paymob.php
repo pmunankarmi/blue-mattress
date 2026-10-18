@@ -11,6 +11,16 @@
 
 defined( 'ABSPATH' ) || exit;
 
+/** Display Tamara branding without changing gateway availability or payments. */
+function blue_checkout_tamara_icon( $icon, $gateway_id ) {
+	if ( ! function_exists( 'is_checkout' ) || ! is_checkout()
+		|| false === strpos( (string) $gateway_id, 'tamara' ) ) {
+		return $icon;
+	}
+	return '<img class="blue-checkout-tamara-logo" src="' . esc_url( blue_media_asset_url( 'pay-tamara-badge.svg' ) ) . '" alt="Tamara" width="85" height="28" />';
+}
+add_filter( 'woocommerce_gateway_icon', 'blue_checkout_tamara_icon', 30, 2 );
+
 add_filter(
 	'script_loader_src',
 	function ( string $src ): string {
