@@ -426,9 +426,18 @@ body.woocommerce-checkout #payment { border-radius:var(--r-md); background:var(-
 body.woocommerce-checkout #payment ul.payment_methods { padding:18px; border-color:var(--line-soft); }
 body.woocommerce-checkout #payment ul.payment_methods li { padding:7px 0; }
 body.woocommerce-checkout #payment ul.payment_methods li label { color:var(--ink); }
-body.woocommerce-checkout #payment ul.payment_methods li label img.blue-checkout-tamara-logo {
-  display:inline-block; float:none; width:85px; height:28px; max-width:100%;
-  margin:0; margin-inline-start:8px; vertical-align:middle; object-fit:contain;
+/* Both instalment brands share one label row, including RTL checkout. */
+body.woocommerce-checkout #payment ul.payment_methods li[class*="tamara"] > label,
+body.woocommerce-checkout #payment ul.payment_methods li[class*="tabby"] > label {
+  display:inline-flex; align-items:center; justify-content:space-between; gap:12px;
+  width:calc(100% - 32px); vertical-align:middle;
+}
+body.woocommerce-checkout #payment ul.payment_methods li[class*="tamara"] > label br,
+body.woocommerce-checkout #payment ul.payment_methods li[class*="tabby"] > label br { display:none; }
+body.woocommerce-checkout #payment ul.payment_methods li[class*="tamara"] > label img,
+body.woocommerce-checkout #payment ul.payment_methods li[class*="tabby"] > label img {
+  display:inline-block!important; float:none!important; width:85px!important; height:28px!important;
+  max-width:85px; max-height:28px; flex:0 0 85px; margin:0!important; object-fit:contain;
 }
 body.woocommerce-checkout #payment div.payment_box { margin:10px 0; border-radius:var(--r-sm); background:var(--paper); color:var(--ink-soft); font-size:.8rem; }
 body.woocommerce-checkout #payment div.payment_box::before { border-bottom-color:var(--paper); }

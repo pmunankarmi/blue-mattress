@@ -21,6 +21,32 @@ function blue_checkout_tamara_icon( $icon, $gateway_id ) {
 }
 add_filter( 'woocommerce_gateway_icon', 'blue_checkout_tamara_icon', 30, 2 );
 
+/** Translate checkout presentation only, leaving saved order/invoice titles intact. */
+function blue_checkout_payment_arabic( $text, $gateway_id ) {
+	if ( ! function_exists( 'is_checkout' ) || ! is_checkout()
+		|| is_admin() || 'ar' !== blue_language() ) {
+		return $text;
+	}
+	$gateway_id = (string) $gateway_id;
+	if ( false !== strpos( $gateway_id, 'tamara' ) ) {
+		return strtr( $text, array(
+			'Split in up to 4 payments or Pay in full securely with Tamara' => 'قسّم مشترياتك على ما يصل إلى 4 دفعات أو ادفع المبلغ كاملًا بأمان مع تمارا',
+			'Tamara' => 'تمارا',
+		) );
+	}
+	if ( false !== strpos( $gateway_id, 'tabby' ) ) {
+		return strtr( $text, array(
+			'Pay later with Tabby' => 'ادفع لاحقًا مع تابي',
+			'Use any card.' => 'استخدم أي بطاقة.',
+		) );
+	}
+	return 'paymob' === $gateway_id
+		? str_replace( 'Pay with Paymob', 'ادفع عبر باي موب', $text )
+		: $text;
+}
+add_filter( 'woocommerce_gateway_title', 'blue_checkout_payment_arabic', 40, 2 );
+add_filter( 'woocommerce_gateway_description', 'blue_checkout_payment_arabic', 40, 2 );
+
 add_filter(
 	'script_loader_src',
 	function ( string $src ): string {
