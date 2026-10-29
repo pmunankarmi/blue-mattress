@@ -1065,6 +1065,28 @@ add_action(
 	10
 );
 
+/**
+ * Payment callbacks have no storefront language. Use the order's checkout
+ * language for Woo's own return links, without changing payment verification.
+ */
+function blue_order_url_for_checkout_language( $url, $order ): string {
+	if ( ! $order instanceof WC_Order ) {
+		return $url;
+	}
+	$language = $order->get_meta( '_blue_language', true );
+	if ( ! in_array( $language, array( 'en', 'ar' ), true ) ) {
+		return $url;
+	}
+	// Never move orders between hosts or rewrite external gateway destinations.
+	$host = wp_parse_url( $url, PHP_URL_HOST );
+	if ( ! $host || strtolower( $host ) !== strtolower( (string) wp_parse_url( get_option( 'home' ), PHP_URL_HOST ) ) ) {
+		return $url;
+	}
+	return blue_url_for_language( $url, $language );
+}
+add_filter( 'woocommerce_get_checkout_order_received_url', 'blue_order_url_for_checkout_language', 30, 2 );
+add_filter( 'woocommerce_get_checkout_payment_url', 'blue_order_url_for_checkout_language', 30, 2 );
+
 /** Create missing Arabic translations of WooCommerce's four core pages. */
 function blue_ensure_woocommerce_page_translations(): void {
 	if ( ! function_exists( 'wc_get_page_id' ) || ! function_exists( 'pll_get_post' ) || ! function_exists( 'pll_set_post_language' ) || ! function_exists( 'pll_save_post_translations' ) ) {
